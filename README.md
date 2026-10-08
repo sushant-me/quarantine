@@ -121,6 +121,34 @@ that both incumbents miss was found**, so no bypass is claimed.
 The probe is **not malware**. `probe.invalid` is reserved by RFC 2606 and can never resolve; the
 artifact exists so the trace has a real out-of-artifact read and a real network attempt to show.
 
+## Technology, licence and dependencies
+
+Stated plainly because the organisers ask that *"source, license, model, and key dependencies"* be easy to
+verify:
+
+| | |
+|---|---|
+| **Licence** | Apache-2.0 ([`LICENSE`](LICENSE)) |
+| **Model** | `qwen2.5-coder-3b-instruct-q4_k_m` (Apache-2.0), served by local **llama.cpp** on `127.0.0.1` — the same runtime Ollama and LM Studio wrap. No API key, no account, no egress. `scripts/serve_model.sh` is the entire hosting story. |
+| **Language** | Python 3.12, standard library only for the analysis path |
+| **Containment** | Docker (`python:3.12-slim`), `--network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 512m --cpus 1` |
+| **Signing** | Ed25519 via `cryptography` (receipt only) |
+| **Dev/test** | `pytest`, `picklescan`, `fickling` and `huggingface_hub` are measurement and control tools — never imported by the analysis path |
+| **Vendored** | nothing; `corpus-real/` is fetched by [`scripts/fetch_real_models.py`](scripts/fetch_real_models.py) |
+
+[`requirements.txt`](requirements.txt) pins the single runtime dependency (the receipt signer);
+[`requirements-dev.txt`](requirements-dev.txt) pins the testing and *measurement* tools — kept separate on
+purpose, because the tool's own behaviour must not depend on the scanners it is measured against.
+`scripts/check_eligibility.py` additionally fails the build if a proprietary inference vendor is referenced
+anywhere in `src/` or `scripts/`.
+
+## Contributing and security
+
+[`CONTRIBUTING.md`](CONTRIBUTING.md) explains the evidence bar — a change that adds a detection needs the
+artifact that proves it, and a claim of improvement needs the measurement that shows it.
+[`SECURITY.md`](SECURITY.md) is the disclosure policy; a containment failure is treated as the most serious
+bug this tool can have.
+
 ## Status
 
 See [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) for what was measured, what failed, and what is still

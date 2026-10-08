@@ -1,0 +1,10 @@
+# Runtime dependencies for the analysis path.
+#
+# Deliberately tiny. The whole containment, tracing, verdict-routing, repair and
+# equivalence path is Python standard library; the only third-party runtime dependency is
+# used to sign the receipt.
+#
+# The model is NOT a pip dependency: it runs under llama.cpp, started by
+# scripts/serve_model.sh. Measured on this machine with
+# qwen2.5-coder-3b-instruct-q4_k_m.gguf (Apache-2.0).
+cryptography==50.0.2

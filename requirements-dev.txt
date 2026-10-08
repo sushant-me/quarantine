@@ -1,0 +1,11 @@
+# Development, testing and *measurement* dependencies.
+#
+# Nothing here is imported by the analysis path. picklescan and fickling are the incumbent
+# scanners we compare against; huggingface_hub only fetches the third-party control models
+# at setup time, never during analysis. Keeping the split explicit is the point: the tool's
+# own behaviour must not depend on the tools it is being measured against.
+-r requirements.txt
+pytest==9.1.1
+picklescan==1.0.5
+fickling==0.1.12
+huggingface-hub==2.1.1

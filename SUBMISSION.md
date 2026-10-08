@@ -7,6 +7,16 @@ blocks what it cannot explain, and repairs what it can — with a signed receipt
 
 Ten minutes end to end. Start with [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) if you want the numbers first.
 
+**Before you read on:** the organisers' six minimum requirements and their list of what counts as AI usage are
+quoted and mapped, one by one, in [`docs/EVENT-REQUIREMENTS.md`](docs/EVENT-REQUIREMENTS.md) — including the
+three rules from their guidelines that shaped this design: **no API keys are provided** (so the model runs
+locally), **open-weight only, self-hosted or hosted** (we are stricter: self-hosted only, and the model layer
+is one function so a buyer can point it at their own open-weight endpoint), and *"source, license, model, and
+key dependencies"* must be easy to verify (so they are stated in the README and checked by
+`scripts/check_eligibility.py`).
+
+*Questions for the organisers go to `events@lftechnology.com` — their stated contact.*
+
 ---
 
 ## 1. The five required items

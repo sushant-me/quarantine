@@ -42,11 +42,36 @@ REQUIRED_FILES = [
     ("README.md", "README"),
     ("SUBMISSION.md", "submission index"),
     ("LIMITATIONS.md", "limitations and future improvements"),
+    ("CONTRIBUTING.md", "contribution guide"),
+    ("SECURITY.md", "vulnerability disclosure policy"),
+    ("requirements.txt", "runtime dependencies are stated"),
+    ("requirements-dev.txt", "measurement dependencies are stated separately"),
     ("docs/AI-USAGE.md", "AI usage disclosure"),
+    ("docs/EVENT-REQUIREMENTS.md", "the event's requirements, mapped"),
     ("docs/DEMO-SCRIPT.md", "demo script"),
     ("reports/video/quarantine-demo.mp4", "demo video (required deliverable)"),
     ("corpus/MANIFEST.json", "the labeled corpus is published"),
     ("tests", "tests present"),
+]
+
+# "Makes its source, license, model, and key dependencies easy to verify" — the organizers'
+# own phrase in "What does a strong entry look like?". So it is checked, not assumed.
+README_MUST_STATE = [
+    ("Apache-2.0", "the licence"),
+    ("qwen2.5-coder-3b", "the exact model"),
+    ("llama.cpp", "how the model is served"),
+    ("requirements.txt", "where dependencies are pinned"),
+]
+
+# The minimum requirements, in the organizers' words. Each must appear in the mapping doc,
+# so the mapping cannot silently drift away from what the event actually asks for.
+EVENT_MINIMUM_REQUIREMENTS = [
+    "source code is public",
+    "limitations/future improvements",
+    "functional demonstration",
+    "a short demo showing the problem",
+    "part of core logic",
+    "naming the exact file/function",
 ]
 
 
@@ -139,6 +164,34 @@ def check_licence() -> list[dict]:
              else ("MIT" if "MIT License" in text else "unrecognized or missing")}]
 
 
+def check_verifiable_facts() -> list[dict]:
+    """Source, licence, model and dependencies must be easy to verify — the event asks for it.
+
+    Checked by substring rather than by vibes, because a README that stopped naming the
+    model would otherwise keep passing.
+    """
+    readme = (ROOT / "README.md").read_text(encoding="utf-8", errors="replace") \
+        if (ROOT / "README.md").exists() else ""
+    out = []
+    for needle, what in README_MUST_STATE:
+        ok = needle in readme
+        out.append({"check": f"README states {what}", "what": what, "ok": ok,
+                    "detail": f"found {needle!r}" if ok else f"MISSING {needle!r}"})
+    return out
+
+
+def check_event_requirements_mapped() -> list[dict]:
+    """The mapping doc must still quote the event's minimum requirements."""
+    path = ROOT / "docs" / "EVENT-REQUIREMENTS.md"
+    text = path.read_text(encoding="utf-8", errors="replace") if path.exists() else ""
+    out = []
+    for phrase in EVENT_MINIMUM_REQUIREMENTS:
+        ok = phrase in text
+        out.append({"check": f"requirement mapped: {phrase[:38]}", "what": "event requirement",
+                    "ok": ok, "detail": "quoted and mapped" if ok else "no longer quoted"})
+    return out
+
+
 def _docstring_lines(source: str) -> set[int]:
     """Line numbers occupied by docstrings.
 
@@ -215,6 +268,8 @@ def main() -> int:
     results: list[dict] = []
     results += check_files()
     results += check_licence()
+    results += check_verifiable_facts()
+    results += check_event_requirements_mapped()
     results += check_no_vendor_inference()
     results += check_doc_paths()
     results += check_disclosure_symbols()
