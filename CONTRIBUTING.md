@@ -49,7 +49,15 @@ that hopes.
   belongs in `scripts/fetch_real_models.py`, which runs at setup, not during analysis.
 - **Never let "we could not look" read as "it is fine."** `ALLOW` is admissible only when the harness
   independently observed the artifact and counted zero capability events. New code paths must preserve that.
-- **Tests for behaviour, not for shape.** Assert what the system does — that the pickle inside a checkpoint
+- **Stub the model to cover the paths that call it.** `tests/test_spike.py` monkeypatches
+`quarantine.llm.chat` so the analyst's and the repairer's *success* paths are exercised with no model server
+and no Docker, and they run in CI. This exists because a refactor once deleted a constant and left
+`out["model"] = resolve_model(MODEL)` behind it: the delete-the-AI measurement returned early and never reached
+the line, no test ran a successful analysis, and the first real artifact crashed. If you change a function that
+calls the model, add or extend a stubbed test for its success path — the integration tests skip in CI, so a
+green pipeline otherwise proves less than it looks like it does.
+
+**Tests for behaviour, not for shape.** Assert what the system does — that the pickle inside a checkpoint
   actually executes, that a renamed pickle is rejected, that a benign control is not flagged.
 
 ## Reporting a vulnerability in Quarantine itself

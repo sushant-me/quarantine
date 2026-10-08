@@ -914,3 +914,117 @@ def test_the_standalone_verifier_rejects_an_unrelated_key(tmp_path):
     done = _run_standalone(receipt, other)
     assert done.returncode == 1
     assert "does not match the public key" in done.stdout
+
+
+# ---------------------------------------- the model-calling success paths
+
+def test_the_analyst_success_path_with_a_stubbed_model(monkeypatch):
+    """Hermetic: no model server needed, and it covers the path a shipped bug escaped through.
+
+    A refactor deleted the module's MODEL constant and left `out["model"] = resolve_model(MODEL)`
+    behind it. The delete-the-AI experiment returned early and never reached that line, the suite
+    exercised no *successful* analysis, and the first real artifact crashed with NameError. A
+    stubbed client closes that hole and runs in CI.
+    """
+    from quarantine.semantic import analyst
+
+    monkeypatch.setattr(analyst, "resolve_model", lambda name: "stub-model")
+    monkeypatch.setattr(analyst.llm, "chat", lambda messages, schema=None, **kw: (
+        '{"verdict":"BLOCK","declared_matches_behaviour":false,'
+        '"mechanism":"read outside its directory","evidence_ids":[2],"confidence":0.9}', None))
+
+    events = [{"i": 1, "event": "import", "detail": "socket"},
+              {"i": 2, "event": "file.read", "detail": "/etc/hostname"}]
+    out = analyst.analyse_artifact("declared: a pure text transform", "code", events,
+                                   {"capability_graph": {}}, {})
+    assert out["reachable"] is True
+    assert out["verdict"]["verdict"] == "BLOCK"
+    assert out["grounded"] is True
+    assert out["cited_ids"] == [2]
+    assert out["model"] == "stub-model"           # the line that crashed
+
+
+def test_the_analyst_retries_when_a_block_cites_no_capability_event(monkeypatch):
+    """An ungrounded first answer is rejected and re-asked, never accepted."""
+    from quarantine.semantic import analyst
+
+    calls: list[int] = []
+
+    def fake_chat(messages, schema=None, **kw):
+        calls.append(1)
+        if len(calls) == 1:      # cites a context event, so the block is inadmissible
+            return ('{"verdict":"BLOCK","declared_matches_behaviour":false,"mechanism":"m",'
+                    '"evidence_ids":[1],"confidence":0.5}', None)
+        return ('{"verdict":"BLOCK","declared_matches_behaviour":false,"mechanism":"m",'
+                '"evidence_ids":[2],"confidence":0.9}', None)
+
+    monkeypatch.setattr(analyst, "resolve_model", lambda name: "stub-model")
+    monkeypatch.setattr(analyst.llm, "chat", fake_chat)
+    events = [{"i": 1, "event": "artifact.error", "detail": "boom"},
+              {"i": 2, "event": "socket.getaddrinfo", "detail": "x.invalid"}]
+    out = analyst.analyse_artifact("declared: no network", "code", events,
+                                   {"capability_graph": {}}, {})
+    assert len(calls) == 2, "the ungrounded block should have been re-asked"
+    assert out["grounded"] is True
+    assert out["cited_ids"] == [2]
+
+
+def test_the_analyst_reports_an_unreachable_model_without_raising(monkeypatch):
+    """An outage must surface as a reason, not as a traceback."""
+    from quarantine.semantic import analyst
+
+    def dead(messages, schema=None, **kw):
+        raise analyst.llm.ModelUnreachable("URLError: connection refused")
+
+    monkeypatch.setattr(analyst.llm, "chat", dead)
+    out = analyst.analyse_artifact("d", "c", [{"i": 1, "event": "import", "detail": "x"}],
+                                   {"capability_graph": {}}, {})
+    assert out["reachable"] is False
+    assert "connection refused" in out["error"]
+
+
+def test_the_repairer_success_path_with_a_stubbed_model(monkeypatch):
+    """The harness assembles the file; the model only writes bodies."""
+    from quarantine.repair import loader
+
+    monkeypatch.setattr(loader, "resolve_model", lambda name: "stub-model")
+    # The contract is specific: `body` is one string per line and `args` is required,
+    # because the harness writes the def line and the model only writes the body.
+    monkeypatch.setattr(loader.llm, "chat", lambda messages, schema=None, **kw: (
+        '{"functions":[{"name":"generate","args":"prompt",'
+        '"body":["return prompt.strip()"]}],"removed":["_sync"]}', None))
+    out = loader.synthesize_loader("declared: a pure text transform",
+                                   "def generate(prompt):\n    _sync()\n    return prompt\n",
+                                   {"verdict": "BLOCK", "mechanism": "network on load"})
+    assert out["ok"] is True
+    assert "def generate(prompt)" in out["code"], "the harness must write the def line and args"
+    assert "return prompt.strip()" in out["code"]
+    assert out["forbidden"] == []
+
+
+@pytest.mark.integration
+def test_the_whole_loop_on_a_known_probe(tmp_path):
+    """One artifact through the whole agent team, against the real local model.
+
+    Marked integration because it needs llama.cpp on 127.0.0.1:8081 and Docker; it skips
+    rather than fails when either is absent, so CI stays green without them.
+    """
+    from quarantine.agents.supervisor import run_case
+
+    probe = CORPUS / "probe-custom-generate"
+    if not probe.exists():
+        pytest.skip("corpus not present")
+    try:
+        llm_probe = __import__("quarantine.llm", fromlist=["chat"]).chat(
+            [{"role": "user", "content": "reply with the single word: ok"}], max_tokens=5)
+        del llm_probe
+    except Exception:                                  # noqa: BLE001
+        pytest.skip("local model server not reachable")
+
+    outcome = run_case(probe, tmp_path / "e2e")
+    assert outcome.decided == "BLOCK"
+    assert outcome.escalated is False
+    assert outcome.analysis and outcome.analysis["grounded"] is True
+    assert outcome.repair and outcome.repair["ok"] is True
+    assert outcome.equivalence and outcome.equivalence["equivalent"] is True
+    assert len(outcome.transcript) >= 4, "the transcript should carry the whole team's notes"
