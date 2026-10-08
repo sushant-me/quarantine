@@ -1,3 +1,0 @@
-{"i": 1, "event": "import", "detail": "socket"}
-{"i": 2, "event": "file.read", "detail": "/etc/hostname"}
-{"i": 3, "event": "socket.getaddrinfo", "detail": "da9c3ab6b5d5.probe.invalid"}

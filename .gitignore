@@ -19,8 +19,11 @@ reports/eval-runs*/
 reports/repair-runs/
 reports/escape-run/
 
-# Video frame intermediates; the encoded video and transcript are committed
+# Video build intermediates: the encoded video, the transcript and the narration are the
+# deliverables, and everything the build captured on the way is scratch.
 reports/video/frames/
+reports/video/session/
+reports/readme-gif/
 
 # NEVER commit key material. A leaked signing key makes every receipt worthless.
 # Curated evidence is tracked (runs/probe, runs/benign - the README verifies against

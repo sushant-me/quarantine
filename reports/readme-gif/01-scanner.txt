@@ -1,9 +1,0 @@
-$ picklescan --path corpus/probe-custom-generate
-
-Scanned files: 1
-Infected files: 0
-Suspicious globals: 0
-Dangerous globals: 0
-
-  The scanner everyone runs reports this artifact clean.
-  It never opens custom_generate/generate.py, where the payload lives.
