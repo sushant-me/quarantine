@@ -118,13 +118,13 @@ uv pip install --python .venv/bin/python cryptography picklescan fickling jsonsc
 
 ./scripts/serve_model.sh &                                   # local open-weight model, no API key
 .venv/bin/python scripts/make_corpus.py
-PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py       # detection vs the incumbents
-PYTHONPATH=src .venv/bin/python scripts/escape_attempt.py    # ten breakout primitives
-PYTHONPATH=src .venv/bin/python -m pytest -q                 # 80 tests
+.venv/bin/python scripts/eval_corpus.py       # detection vs the incumbents
+.venv/bin/python scripts/escape_attempt.py    # ten breakout primitives
+.venv/bin/python -m pytest -q                 # 80 tests
 
 # one artifact, the whole loop, offline
-PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-generate --out runs/probe
-PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.json \
+.venv/bin/quarantine inspect corpus/probe-custom-generate --out runs/probe
+.venv/bin/quarantine verify  runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
 ```
 

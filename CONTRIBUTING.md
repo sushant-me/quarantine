@@ -8,10 +8,11 @@ should come with the measurement that shows it.
 
 ```bash
 python -m venv .venv && . .venv/bin/activate
-uv pip install --python .venv/bin/python -r requirements-dev.txt
+uv pip install --python .venv/bin/python -e ".[dev]"   # the package + test tooling
+# or, if you prefer pinned versions: -r requirements-dev.txt
 ./scripts/serve_model.sh            # local llama.cpp, three open-weight models supported
 ./scripts/check_eligibility.py      # must pass
-PYTHONPATH=src .venv/bin/python -m pytest -q
+.venv/bin/python -m pytest -q
 ```
 
 ## What a good change looks like

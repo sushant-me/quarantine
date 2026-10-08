@@ -13,7 +13,7 @@ the narration.
 ```bash
 ./scripts/serve_model.sh &                       # wait for /health to return ok
 docker image ls python:3.12-slim                 # must be present, no pull on camera
-PYTHONPATH=src .venv/bin/python -m pytest -q     # 30 passed
+.venv/bin/python -m pytest -q                    # 80 tests
 rm -rf runs/demo                                 # start clean
 ```
 
@@ -50,7 +50,7 @@ file it looked at is the weights. The Python that runs on load is not in its inp
 ### 00:35–01:15 · Run it — the artifact executes where it cannot hurt you
 
 ```bash
-PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-generate --out runs/demo
+.venv/bin/quarantine inspect corpus/probe-custom-generate --out runs/demo
 ```
 
 **Narrate the trace as it prints, not before:**
@@ -88,7 +88,7 @@ Ed25519 signature with `openssl` (a different implementation than the one that s
 is committed. Flip the verdict in the JSON and it says NOT VERIFIED; that is the beat.
 
 ```bash
-PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py --prefix demo 2>&1 | tail -8
+.venv/bin/python scripts/eval_corpus.py --prefix demo 2>&1 | tail -8
 ```
 
 > "Twelve artifacts, the same declared API in every one. We catch eight of eight. Both scanners that everyone
