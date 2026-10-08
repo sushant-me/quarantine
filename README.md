@@ -190,6 +190,11 @@ artifact that proves it, and a claim of improvement needs the measurement that s
 [`SECURITY.md`](SECURITY.md) is the disclosure policy; a containment failure is treated as the most serious
 bug this tool can have.
 
+## Released
+
+[v0.1.0](https://github.com/sushant-me/quarantine/releases/tag/v0.1.0) carries the project-idea PDF and the
+demo video as downloadables, with the measured table and the honest counterweight in the notes.
+
 ## Demo Day deck
 
 [`presentation/quarantine-demo-day.html`](presentation/quarantine-demo-day.html) — 14 slides in one
