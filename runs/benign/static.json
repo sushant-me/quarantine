@@ -1,0 +1,92 @@
+{
+  "inventory": {
+    "files": [
+      {
+        "path": "README.md",
+        "size": 336,
+        "sha256": "f8d53731d2d2ba046c5bc760607ec5ca5872628d495970f452338e330b61defe"
+      },
+      {
+        "path": "config.json",
+        "size": 174,
+        "sha256": "667fade19b4f22cf4432466f9d2332d34bf9ada832723b43c6c7d7af93fa5873"
+      },
+      {
+        "path": "custom_generate/generate.py",
+        "size": 291,
+        "sha256": "2cccf7ec0e3e583d21e5212dcac6e43324343011374f762d374cf01132f4b504"
+      },
+      {
+        "path": "pytorch_model.bin",
+        "size": 184,
+        "sha256": "d72008411154f50a830140e4725878eda435345617b19e9a8b76cff006066902"
+      }
+    ],
+    "file_count": 4,
+    "tree_sha256": "002a3b18b7e16e39ff1b322469540b59022386ccd8d7592c00bf8c7573465dff"
+  },
+  "capability_graph": {
+    "python_files": 1,
+    "imports_of_interest": {},
+    "capabilities": {
+      "network": 0,
+      "process": 0,
+      "dynamic_code": 0,
+      "filesystem": 0,
+      "obfuscation": 0,
+      "deserialization": 0,
+      "environment": 0
+    },
+    "findings": []
+  },
+  "incumbents": {
+    "picklescan": {
+      "cmd": "/home/logic/win/quarantine/.venv/bin/python -m picklescan --path /home/logic/win/quarantine/corpus/benign-tiny-model",
+      "returncode": 0,
+      "stdout": "WARNING: Invalid PyTorch magic number for file /home/logic/win/quarantine/corpus/benign-tiny-model/pytorch_model.bin: None != 119547037146038801333356. Trying to scan as non-PyTorch file.\n----------- SCAN SUMMARY -----------\nScanned files: 1\nInfected files: 0\nSuspicious globals: 0\nDangerous globals: 0\n",
+      "stderr": ""
+    },
+    "fickling": [
+      {
+        "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus/benign-tiny-model/pytorch_model.bin",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "picklescan_parsed": {
+      "scanned_files": 1,
+      "infected": 0,
+      "suspicious": 0,
+      "dangerous": 0,
+      "says_clean": true
+    },
+    "fickling_parsed": {
+      "scanned_files": 1,
+      "flagged": [],
+      "says_clean": true
+    }
+  },
+  "incumbent_verdict": {
+    "picklescan": {
+      "scanned_files": 1,
+      "infected": 0,
+      "suspicious": 0,
+      "dangerous": 0,
+      "says_clean": true
+    },
+    "fickling": {
+      "scanned_files": 1,
+      "flagged": [],
+      "says_clean": true
+    },
+    "scanned_custom_python": false,
+    "shipped_python_files": [
+      "custom_generate/generate.py"
+    ],
+    "note": "Suffix-based scanners read pickle/weight files. Shipped Python (custom_generate/, modeling_*.py) is not in their input set at all, so an artifact can be 'clean' to every scanner and still execute arbitrary code on load."
+  },
+  "custom_code_files": [
+    "custom_generate/generate.py"
+  ]
+}

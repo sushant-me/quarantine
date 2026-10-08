@@ -1,0 +1,186 @@
+{
+  "generated_at": "2026-10-08T14:53:14+0545",
+  "kind": "corpus-real",
+  "n": 4,
+  "benign": 4,
+  "undeclared": 0,
+  "quarantine": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "tn": 4,
+    "detection_rate": null,
+    "false_positive_rate": 0.0
+  },
+  "incumbents_any": {
+    "tp": 0,
+    "fp": 4,
+    "fn": 0,
+    "tn": 0,
+    "detection_rate": null,
+    "false_positive_rate": 1.0
+  },
+  "picklescan": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "tn": 4,
+    "detection_rate": null,
+    "false_positive_rate": 0.0
+  },
+  "fickling": {
+    "tp": 0,
+    "fp": 4,
+    "fn": 0,
+    "tn": 0,
+    "detection_rate": null,
+    "false_positive_rate": 1.0
+  },
+  "cases": [
+    {
+      "name": "bert-tiny",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/bert-tiny/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact did not declare any specific behavior, so the decision is ALLOW.",
+      "elapsed_s": 11.27,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-gpt2",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-gpt2/pytorch_model.bin",
+            "output": "exit 1"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 0,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The declared behaviour is empty, so there's nothing to block.",
+      "elapsed_s": 9.57,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-bert",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-bert/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact did not declare any specific behavior, so the absence of capability events aligns with the ALLOW verdict.",
+      "elapsed_s": 8.23,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-gpt2",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-gpt2/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact did not declare any specific behavior, so the absence of capability events aligns with the ALLOW verdict.",
+      "elapsed_s": 8.08,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    }
+  ],
+  "note": "Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md."
+}

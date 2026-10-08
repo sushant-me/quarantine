@@ -1,0 +1,103 @@
+{
+  "inventory": {
+    "files": [
+      {
+        "path": "README.md",
+        "size": 691,
+        "sha256": "1a65587f6c5b55d871c0b78864d78e78ceba41181378dd1d1be425ca181b28a0"
+      },
+      {
+        "path": "config.json",
+        "size": 172,
+        "sha256": "6d207df6f25e3cbaac7abe06f2b9bb33b9c6b9643a6447e30ab704eea0207d33"
+      },
+      {
+        "path": "custom_generate/generate.py",
+        "size": 1215,
+        "sha256": "f88e28b0577b1467d3985556c837b1bf4f889a428a53f35e3f660b207afb50a9"
+      },
+      {
+        "path": "pytorch_model.bin",
+        "size": 184,
+        "sha256": "d72008411154f50a830140e4725878eda435345617b19e9a8b76cff006066902"
+      }
+    ],
+    "file_count": 4,
+    "tree_sha256": "7bb93fdb23be751aa9362399e79c5ee1a3a7464b9bab84adc43006c4843cc04c"
+  },
+  "capability_graph": {
+    "python_files": 1,
+    "imports_of_interest": {
+      "socket": [
+        "custom_generate/generate.py:18"
+      ]
+    },
+    "capabilities": {
+      "network": 1,
+      "process": 0,
+      "dynamic_code": 0,
+      "filesystem": 0,
+      "obfuscation": 0,
+      "deserialization": 0,
+      "environment": 0
+    },
+    "findings": [
+      {
+        "file": "custom_generate/generate.py",
+        "line": 30,
+        "capability": "network",
+        "call": "socket.getaddrinfo"
+      }
+    ]
+  },
+  "incumbents": {
+    "picklescan": {
+      "cmd": "/home/logic/win/quarantine/.venv/bin/python -m picklescan --path /home/logic/win/quarantine/corpus/probe-custom-generate",
+      "returncode": 0,
+      "stdout": "WARNING: Invalid PyTorch magic number for file /home/logic/win/quarantine/corpus/probe-custom-generate/pytorch_model.bin: None != 119547037146038801333356. Trying to scan as non-PyTorch file.\n----------- SCAN SUMMARY -----------\nScanned files: 1\nInfected files: 0\nSuspicious globals: 0\nDangerous globals: 0\n",
+      "stderr": ""
+    },
+    "fickling": [
+      {
+        "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus/probe-custom-generate/pytorch_model.bin",
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "picklescan_parsed": {
+      "scanned_files": 1,
+      "infected": 0,
+      "suspicious": 0,
+      "dangerous": 0,
+      "says_clean": true
+    },
+    "fickling_parsed": {
+      "scanned_files": 1,
+      "flagged": [],
+      "says_clean": true
+    }
+  },
+  "incumbent_verdict": {
+    "picklescan": {
+      "scanned_files": 1,
+      "infected": 0,
+      "suspicious": 0,
+      "dangerous": 0,
+      "says_clean": true
+    },
+    "fickling": {
+      "scanned_files": 1,
+      "flagged": [],
+      "says_clean": true
+    },
+    "scanned_custom_python": false,
+    "shipped_python_files": [
+      "custom_generate/generate.py"
+    ],
+    "note": "Suffix-based scanners read pickle/weight files. Shipped Python (custom_generate/, modeling_*.py) is not in their input set at all, so an artifact can be 'clean' to every scanner and still execute arbitrary code on load."
+  },
+  "custom_code_files": [
+    "custom_generate/generate.py"
+  ]
+}

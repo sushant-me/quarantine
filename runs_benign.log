@@ -1,0 +1,25 @@
+[1/6] static pass           /home/logic/win/quarantine/corpus/benign-tiny-model
+      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
+      static capabilities: none
+[2/6] behavioural pass       executing, network off
+      container rc=0  events=2
+        id=  1 compile: <code object>
+        id=  2 exec: <code object>
+[3/6] semantic pass          local open-weight model
+      reachable=True grounded=True verdict=ALLOW in 7.76s
+      mechanism: The shipped code exactly matches the declared API, performing the same operation with the same parameters and 
+[4/6] repair pass            local open-weight model
+      skipped (no grounded BLOCK)
+[5/6] equivalence proof
+      skipped (no verified repair)
+[6/6] sign receipt
+      new keypair -> /home/logic/win/quarantine/runs/benign/keys/quarantine.pub.pem
+      signed and verified: True  keyid=0ab2bbbbdab38457
+
+=== Quarantine verdict ===
+  artifact          benign-tiny-model
+  incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
+  behavioural trace 2 events, network=none
+  verdict           ALLOW  (grounded=True)
+  repair            ok=False equivalent=False
+  receipt           /home/logic/win/quarantine/runs/benign/receipt.json  verified=True

@@ -1,0 +1,81 @@
+{
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "",
+  "cmd": "run --rm --network none --read-only --cap-drop ALL --security-opt no-new-privileges --user 1000:1000 --workdir /work --pids-limit 128 --memory 512m --cpus 1 --tmpfs /tmp:rw,size=64m -e PYTHONDONTWRITEBYTECODE=1 -v /home/logic/win/quarantine/src/quarantine/sandbox_runner.py:/harness/runner.py:ro -v /home/logic/win/quarantine/reports/escape-run:/work:rw python:3.12-slim python /harness/runner.py escape /work/escape.json",
+  "identity": {
+    "uid": 1000,
+    "euid": 1000,
+    "pid": 1
+  },
+  "container_markers": {
+    "dockerenv": true,
+    "root_mounts": [
+      "overlay / overlay ro,relatime,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/1061/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/951/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/950/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/949/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/948/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/1062/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/1062/work,index=off 0 0",
+      "tmpfs /tmp tmpfs rw,nosuid,nodev,noexec,relatime,size=65536k,inode64,huge=advise 0 0"
+    ]
+  },
+  "probes": [
+    {
+      "probe": "write_rootfs",
+      "primitive": "write to the read-only root filesystem",
+      "succeeded": false,
+      "detail": "OSError: [Errno 30] Read-only file system: '/quarantine_escape_test'"
+    },
+    {
+      "probe": "read_shadow",
+      "primitive": "read /etc/shadow as an unprivileged user",
+      "succeeded": false,
+      "detail": "PermissionError: [Errno 13] Permission denied: '/etc/shadow'"
+    },
+    {
+      "probe": "read_host_path",
+      "primitive": "read a host file that was not mounted",
+      "succeeded": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/home/logic/win/NEW-IDEA-DECISION.md'"
+    },
+    {
+      "probe": "mount_tmpfs",
+      "primitive": "mount(2) a filesystem",
+      "succeeded": false,
+      "detail": "PermissionError: [Errno 1] Operation not permitted"
+    },
+    {
+      "probe": "unshare_userns",
+      "primitive": "unshare(CLONE_NEWUSER)",
+      "succeeded": false,
+      "detail": "PermissionError: [Errno 1] Operation not permitted"
+    },
+    {
+      "probe": "chroot",
+      "primitive": "chroot(2)",
+      "succeeded": false,
+      "detail": "PermissionError: [Errno 1] Operation not permitted: '/'"
+    },
+    {
+      "probe": "setuid_root",
+      "primitive": "become uid 0",
+      "succeeded": false,
+      "detail": "PermissionError: [Errno 1] Operation not permitted"
+    },
+    {
+      "probe": "raw_socket",
+      "primitive": "open a raw socket (CAP_NET_RAW)",
+      "succeeded": false,
+      "detail": "PermissionError: [Errno 1] Operation not permitted"
+    },
+    {
+      "probe": "reach_host",
+      "primitive": "connect to the host's model server over the loopback",
+      "succeeded": false,
+      "detail": "ConnectionRefusedError: [Errno 111] Connection refused"
+    },
+    {
+      "probe": "resolve_dns",
+      "primitive": "resolve a public name",
+      "succeeded": false,
+      "detail": "gaierror: [Errno -3] Temporary failure in name resolution"
+    }
+  ],
+  "escaped": []
+}

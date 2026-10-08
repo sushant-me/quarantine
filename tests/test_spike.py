@@ -1,0 +1,301 @@
+"""Deterministic invariants of the spike. No docker, no model, fast.
+
+The integration paths (contained execution, semantic verdict, repair, equivalence)
+are marked and run separately — see SPIKE-RESULTS.md for their measured outcomes.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import pytest
+
+from quarantine.receipt import canonical, generate_keypair, sign_receipt, verify_receipt
+from quarantine.repair.loader import forbidden_in_source
+from quarantine.static.scan import capability_graph, parse_fickling, parse_picklescan, static_pass
+
+CORPUS = Path(__file__).resolve().parents[1] / "corpus"
+PROBE = CORPUS / "probe-custom-generate"
+BENIGN = CORPUS / "benign-tiny-model"
+
+
+# ---------------------------------------------------------------- static pass
+
+def test_capability_graph_finds_the_network_call_in_the_probe():
+    graph = capability_graph(PROBE)
+    caps = [f for f in graph["findings"] if f["capability"] == "network"]
+    assert caps, "the probe's socket call must be visible to static analysis"
+    assert any("socket" in f["call"] for f in caps)
+    assert "socket" in graph["imports_of_interest"]
+
+
+def test_capability_graph_is_clean_on_the_benign_control():
+    graph = capability_graph(BENIGN)
+    assert graph["findings"] == []
+    assert graph["imports_of_interest"] == {}
+
+
+def test_picklescan_summary_is_parsed_not_guessed():
+    """'Infected files: 0' must not be read as the word 'Infected'."""
+    run = {"stdout": ("----------- SCAN SUMMARY -----------\nScanned files: 1\n"
+                      "Infected files: 0\nSuspicious globals: 0\nDangerous globals: 0\n")}
+    parsed = parse_picklescan(run)
+    assert parsed == {"scanned_files": 1, "infected": 0, "suspicious": 0,
+                      "dangerous": 0, "says_clean": True}
+
+
+def test_picklescan_parser_reports_a_dirty_scan():
+    run = {"stdout": "Scanned files: 2\nInfected files: 1\nSuspicious globals: 3\nDangerous globals: 1\n"}
+    assert parse_picklescan(run)["says_clean"] is False
+
+
+def test_fickling_silence_means_clean_but_output_means_flagged():
+    clean = parse_fickling([{"cmd": "fickling x", "returncode": 0, "stdout": "", "stderr": ""}])
+    assert clean["says_clean"] is True and clean["scanned_files"] == 1
+    flagged = parse_fickling([{"cmd": "fickling x", "returncode": 0,
+                               "stdout": "Warning: dangerous opcode", "stderr": ""}])
+    assert flagged["says_clean"] is False
+
+
+def test_the_incumbent_verdict_records_that_custom_python_is_never_scanned():
+    v = static_pass(PROBE)["incumbent_verdict"]
+    assert v["scanned_custom_python"] is False
+    assert v["shipped_python_files"] == ["custom_generate/generate.py"]
+
+
+# ------------------------------------------------------------------- repair
+
+def test_forbidden_in_source_catches_every_capability_class():
+    assert forbidden_in_source("import socket\ndef generate(p):\n    return p")
+    assert forbidden_in_source("import subprocess\ndef generate(p):\n    return p")
+    assert forbidden_in_source("def generate(p):\n    return eval(p)")
+    assert forbidden_in_source("def generate(p):\n    return open('/etc/passwd').read()")
+    assert forbidden_in_source("import base64\ndef generate(p):\n    return p")
+    assert forbidden_in_source("def generate(p):\n    return __import__('os').getcwd()")
+
+
+def test_forbidden_in_source_accepts_a_genuine_repair():
+    repaired = 'def generate(prompt: str) -> str:\n    """Declared behaviour only."""\n    return prompt.upper()\n'
+    assert forbidden_in_source(repaired) == []
+
+
+def test_forbidden_in_source_reports_unparseable_code_rather_than_crashing():
+    assert forbidden_in_source("def generate(:\n") != []
+
+
+def test_the_shipped_probe_is_rejected_by_the_repair_gate():
+    """The real artifact must fail the gate — that is what the gate is for."""
+    source = (PROBE / "custom_generate" / "generate.py").read_text()
+    assert forbidden_in_source(source)
+
+
+# ------------------------------------------------------------------ assembly
+
+def test_assemble_produces_compilable_python_and_keeps_the_api():
+    from quarantine.repair.loader import assemble
+    source = assemble([
+        {"name": "generate", "args": "prompt: str", "body": ["return prompt.upper()"]},
+    ])
+    compile(source, "<test>", "exec")           # must be valid Python
+    namespace: dict = {}
+    exec(source, namespace)                      # must actually run
+    assert namespace["generate"]("abc") == "ABC"
+
+
+def test_assemble_refuses_a_name_that_is_not_an_identifier():
+    from quarantine.repair.loader import assemble
+    source = assemble([{"name": "not a name", "args": "", "body": ["pass"]}])
+    assert "def " not in source
+
+
+def test_assembled_output_carries_no_capability_even_if_body_is_unindented():
+    from quarantine.repair.loader import assemble, forbidden_in_source
+    source = assemble([{"name": "generate", "args": "p", "body": ["return p.upper()"]}])
+    assert forbidden_in_source(source) == []
+
+
+# ------------------------------------------------------------------ model id
+
+def test_resolve_model_falls_back_when_no_server_is_reachable(monkeypatch):
+    from quarantine.modelinfo import resolve_model
+    monkeypatch.setenv("QUARANTINE_MODEL_URL", "http://127.0.0.1:9/v1/chat/completions")
+    assert resolve_model("fallback-name") == "fallback-name"
+
+
+# ------------------------------------------------------------------ receipt
+
+def test_receipt_roundtrip_and_tamper_detection(tmp_path):
+    payload = {"spec": "quarantine/receipt/v0", "artifact": {"tree_sha256": "abc"},
+               "verdict": {"decided": "BLOCK"}}
+    key = tmp_path / "k.pem"
+    pub = generate_keypair(key)
+    envelope = sign_receipt(payload, key)
+    assert verify_receipt(envelope, pub) is True
+
+    # a modified payload no longer verifies
+    tampered = json.loads(json.dumps(envelope))
+    body = json.loads(__import__("base64").b64decode(tampered["payload"]))
+    body["verdict"]["decided"] = "ALLOW"
+    import base64
+    tampered["payload"] = base64.b64encode(canonical(body)).decode()
+    assert verify_receipt(tampered, pub) is False
+
+
+def test_receipt_rejects_a_non_canonical_payload(tmp_path):
+    key = tmp_path / "k.pem"
+    pub = generate_keypair(key)
+    envelope = sign_receipt({"b": 1, "a": 2}, key)
+    import base64
+    envelope["payload"] = base64.b64encode(b'{"a": 2, "b": 1}').decode()  # not canonical
+    assert verify_receipt(envelope, pub) is False
+
+
+# --------------------------------------------------------------- integration
+
+def test_capability_events_excludes_interpreter_noise():
+    """`compile` and `import` are context; only real capability is evidence."""
+    from quarantine.events import capability_events
+    events = [
+        {"i": 1, "event": "compile", "detail": "<code object>"},
+        {"i": 2, "event": "import", "detail": "socket"},
+        {"i": 3, "event": "socket.getaddrinfo", "detail": "x.invalid"},
+        {"i": 4, "event": "file.read", "detail": "/etc/hostname"},
+        {"i": 5, "event": "subprocess.Popen", "detail": "/bin/echo"},
+    ]
+    assert [e["i"] for e in capability_events(events)] == [3, 4, 5]
+
+
+def test_weights_unreadable_is_context_not_evidence():
+    """A torch checkpoint is a zip, so a plain-pickle reader cannot open it. That is
+    our reader's limitation, not the artifact's behaviour, and must not be evidence."""
+    from quarantine.events import capability_events
+    events = [{"i": 1, "event": "weights.unreadable", "detail": "pytorch_model.bin: UnpicklingError"}]
+    assert capability_events(events) == []
+
+
+def test_capability_events_is_empty_for_a_clean_trace():
+    from quarantine.events import capability_events
+    assert capability_events([]) == []
+    assert capability_events([{"i": 1, "event": "import", "detail": "typing"}]) == []
+
+
+# ------------------------------------------------------- eligibility gate
+
+def _load_checker():
+    import importlib.util
+    root = CORPUS.parent
+    spec = importlib.util.spec_from_file_location("_check_eligibility", root / "scripts/check_eligibility.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_the_eligibility_gate_passes_on_this_repository():
+    checker = _load_checker()
+    results = (checker.check_files() + checker.check_licence()
+               + checker.check_no_vendor_inference() + checker.check_disclosure_symbols())
+    failures = [r for r in results if not r["ok"]]
+    assert failures == [], failures
+
+
+def test_the_eligibility_gate_can_actually_fail():
+    """A check that has never failed is a check nobody should believe.
+
+    The disclosure in a sibling codebase once named two symbols that did not exist and
+    passed a regex-based check. This checker imports the file, so it cannot.
+    """
+    checker = _load_checker()
+    ok, detail = checker._load_symbol("src/quarantine/nonexistent.py", "ghost_function")
+    assert ok is False
+    assert "does not exist" in detail
+    ok2, detail2 = checker._load_symbol("src/quarantine/events.py", "no_such_symbol")
+    assert ok2 is False
+    assert "no such symbol" in detail2
+
+
+def test_vendor_scan_ignores_prose_but_still_scans_string_literals():
+    checker = _load_checker()
+    doc_only = '"""This mentions openai in prose."""\nx = 1\n'
+    assert checker._docstring_lines(doc_only) == {1}
+    code = 'x = "https://api.openai.com/v1"\n'
+    assert checker._docstring_lines(code) == set()
+
+
+def test_corpus_manifest_matches_what_is_on_disk():
+    manifest = json.loads((CORPUS / "MANIFEST.json").read_text())
+    on_disk = sorted(p.name for p in CORPUS.iterdir() if p.is_dir())
+    assert sorted(c["name"] for c in manifest["cases"]) == on_disk
+    assert manifest["count"] == len(on_disk)
+
+
+def test_parse_json_survives_prose_around_the_object():
+    from quarantine.semantic.analyst import _parse_json
+    assert _parse_json('{"a": 1}') == {"a": 1}
+    assert _parse_json('here you go: {"a": 1} — done') == {"a": 1}
+    assert _parse_json("no json here") is None
+
+
+@pytest.mark.integration
+def test_real_published_models_produce_no_capability_events(tmp_path):
+    """Third-party negative controls: if these trip the detector, the detector is wrong.
+
+    Skipped when the models have not been fetched (`python scripts/fetch_real_models.py`).
+    """
+    real = CORPUS.parent / "corpus-real"
+    if not real.exists() or not any(p.is_dir() for p in real.iterdir()):
+        pytest.skip("real models not fetched")
+    from quarantine.events import capability_events
+    from quarantine.sandbox.execute import run_trace
+    for case in sorted(p for p in real.iterdir() if p.is_dir()):
+        result = run_trace(case, tmp_path / case.name)
+        caps = capability_events(result["events"])
+        assert caps == [], f"{case.name} produced capability events: {caps}"
+
+
+@pytest.mark.integration
+def test_the_trace_records_no_interpreter_noise(tmp_path):
+    """`compile`/`exec` fire for every ordinary module body. Recording them made the
+    benign control look like it executed dynamic code and produced a false BLOCK."""
+    from quarantine.sandbox.execute import run_trace
+    for name in ("benign-unicode", "benign-two-functions", "benign-typing-only"):
+        result = run_trace(CORPUS / name, tmp_path / name)
+        noisy = [e for e in result["events"] if e["event"] in {"compile", "exec"}]
+        assert noisy == [], f"{name} recorded interpreter noise: {noisy}"
+
+
+@pytest.mark.integration
+def test_process_spawning_is_visible_in_the_trace(tmp_path):
+    from quarantine.sandbox.execute import run_trace
+    result = run_trace(CORPUS / "probe-subprocess", tmp_path / "sp")
+    assert any(e["event"] == "subprocess.Popen" for e in result["events"])
+
+
+@pytest.mark.integration
+def test_the_pickle_path_is_executed_not_just_hashed(tmp_path):
+    """The other code path: unpickling is where the classic attacks live."""
+    from quarantine.sandbox.execute import run_trace
+    result = run_trace(CORPUS / "cve-2025-46417-pickle", tmp_path / "pk")
+    assert any(e["event"] == "pickle.find_class" and "ssl" in e["detail"]
+               for e in result["events"])
+    assert any(e["event"] == "socket.getaddrinfo" for e in result["events"])
+
+
+@pytest.mark.integration
+def test_contained_execution_records_the_exfiltration_attempt(tmp_path):
+    from quarantine.sandbox.execute import run_trace
+    result = run_trace(PROBE.resolve(), tmp_path / "trace")
+    assert result["returncode"] == 0
+    events = {(e["event"], e["detail"]) for e in result["events"]}
+    assert ("import", "socket") in events
+    assert any(ev == "file.read" and "/etc/hostname" in d for ev, d in events)
+    assert any(ev == "socket.getaddrinfo" for ev, _ in events)
+
+
+@pytest.mark.integration
+def test_benign_control_produces_no_capability_events(tmp_path):
+    from quarantine.sandbox.execute import run_trace
+    result = run_trace(BENIGN.resolve(), tmp_path / "trace")
+    assert result["returncode"] == 0
+    assert not [e for e in result["events"]
+                if e["event"] in {"socket.getaddrinfo", "file.read", "subprocess.Popen"}]

@@ -1,0 +1,25 @@
+{
+  "model": "qwen2.5-coder-3b-instruct-q4_k_m.gguf",
+  "reachable": true,
+  "grounded": true,
+  "raw": "{\n  \"verdict\": \"ALLOW\",\n  \"declared_matches_behaviour\": true,\n  \"mechanism\": \"The shipped code exactly matches the declared API, performing the same operation with the same parameters and return type.\",\n  \"evidence_ids\": [1, 2],\n  \"confidence\": 100\n}",
+  "verdict": {
+    "verdict": "ALLOW",
+    "declared_matches_behaviour": true,
+    "mechanism": "The shipped code exactly matches the declared API, performing the same operation with the same parameters and return type.",
+    "evidence_ids": [
+      1,
+      2
+    ],
+    "confidence": 100
+  },
+  "cited_ids": [
+    1,
+    2
+  ],
+  "valid_ids": [
+    1,
+    2
+  ],
+  "elapsed_s": 7.76
+}

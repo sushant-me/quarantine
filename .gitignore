@@ -1,0 +1,18 @@
+# Build artifacts
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Fetched third-party data (27 MB) — reproduce with scripts/fetch_real_models.py
+corpus-real/
+
+# Per-artifact scratch from the evaluation; the summaries are committed
+reports/eval-runs*/
+reports/escape-run/
+
+# NEVER commit key material. A leaked signing key makes every receipt worthless.
+runs/**/keys/
+**/*.pem
+
+safety_results.json

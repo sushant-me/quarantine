@@ -1,0 +1,81 @@
+{
+  "declared_api": "generate(prompt: str) -> str",
+  "hostname_suffix": ".invalid (RFC 2606, can never resolve)",
+  "count": 12,
+  "benign": 4,
+  "undeclared": 8,
+  "cases": [
+    {
+      "name": "benign-tiny-model",
+      "label": "benign",
+      "category": "control",
+      "note": "declared and shipped behaviour match exactly"
+    },
+    {
+      "name": "benign-typing-only",
+      "label": "benign",
+      "category": "control",
+      "note": "imports a pure stdlib module and does nothing else"
+    },
+    {
+      "name": "benign-two-functions",
+      "label": "benign",
+      "category": "control",
+      "note": "several pure helpers, no capability"
+    },
+    {
+      "name": "benign-unicode",
+      "label": "benign",
+      "category": "control",
+      "note": "pure transform using unicodedata"
+    },
+    {
+      "name": "probe-custom-generate",
+      "label": "undeclared",
+      "category": "network-at-import",
+      "note": "reads /etc/hostname and puts it in a DNS query on load"
+    },
+    {
+      "name": "probe-subprocess",
+      "label": "undeclared",
+      "category": "process-at-import",
+      "note": "spawns a process on load"
+    },
+    {
+      "name": "probe-env-exfil",
+      "label": "undeclared",
+      "category": "network-at-import",
+      "note": "reads the environment and puts it in a DNS query"
+    },
+    {
+      "name": "probe-file-read",
+      "label": "undeclared",
+      "category": "network-at-import",
+      "note": "reads /etc/passwd and puts it in a DNS query"
+    },
+    {
+      "name": "probe-lazy-trigger",
+      "label": "undeclared",
+      "category": "network-on-call",
+      "note": "the undeclared effect only fires when generate() is called"
+    },
+    {
+      "name": "probe-obfuscated",
+      "label": "undeclared",
+      "category": "obfuscated",
+      "note": "base64 + exec at import; the source does not name the behaviour"
+    },
+    {
+      "name": "probe-modeling-file",
+      "label": "undeclared",
+      "category": "network-at-import",
+      "note": "same probe shipped as modeling_*.py rather than custom_generate/"
+    },
+    {
+      "name": "cve-2025-46417-pickle",
+      "label": "undeclared",
+      "category": "pickle-cve-pattern",
+      "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
+    }
+  ]
+}

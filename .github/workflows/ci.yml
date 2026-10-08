@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: install
+        run: |
+          uv venv --python 3.12 .venv
+          uv pip install --python .venv/bin/python cryptography picklescan fickling jsonschema pytest
+
+      # The gate the challenge actually applies, machine-checked. This includes
+      # resolving every path::symbol named in the AI-usage disclosure.
+      - name: eligibility gate
+        run: PYTHONPATH=src .venv/bin/python scripts/check_eligibility.py
+
+      # Docker is available on the runner, so the contained-execution tests run too.
+      - name: tests
+        run: PYTHONPATH=src .venv/bin/python -m pytest -q
+
+      - name: push event regression check
+        run: |
+          # The audit hook must not record interpreter noise; this catches a regression
+          # of the false-positive bug documented as defect 7 in SPIKE-RESULTS.md.
+          PYTHONPATH=src .venv/bin/python -m pytest -q -k "no_interpreter_noise or capability_events"

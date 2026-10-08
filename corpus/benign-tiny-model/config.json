@@ -1,0 +1,10 @@
+{
+  "architectures": [
+    "CorpusCaseForCausalLM"
+  ],
+  "model_type": "corpus-case",
+  "torch_dtype": "float32",
+  "hidden_size": 8,
+  "num_hidden_layers": 1,
+  "vocab_size": 32
+}
