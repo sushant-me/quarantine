@@ -14,22 +14,31 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: install
+      # Install from the pinned files rather than a list written here, so CI also proves
+      # that the dependencies this repository documents are the ones it actually needs.
+      # `--clear` because setup-uv exports VIRTUAL_ENV pointing at .venv, which makes a
+      # bare `uv venv .venv` fail with "a virtual environment already exists" — the first
+      # two runs of this workflow failed exactly there.
+      - name: install from the pinned requirements
         run: |
-          uv venv --python 3.12 .venv
-          uv pip install --python .venv/bin/python cryptography picklescan fickling jsonschema pytest
+          uv venv --python 3.12 .venv --clear
+          uv pip install --python .venv/bin/python -r requirements-dev.txt
 
-      # The gate the challenge actually applies, machine-checked. This includes
-      # resolving every path::symbol named in the AI-usage disclosure.
+      # The gate the challenge actually applies, machine-checked. This resolves every
+      # path::symbol named in the AI-usage disclosure by importing the file, and checks
+      # that every repository path named in any document exists.
       - name: eligibility gate
         run: PYTHONPATH=src .venv/bin/python scripts/check_eligibility.py
 
-      # Docker is available on the runner, so the contained-execution tests run too.
+      # Docker is available on the runner, so the contained-execution tests run here too.
+      # Tests needing the local model server or the fetched third-party corpora skip
+      # themselves rather than failing: a fresh clone has neither.
       - name: tests
         run: PYTHONPATH=src .venv/bin/python -m pytest -q
 
-      - name: push event regression check
+      # The measured false-positive classes, on their own, because a regression in any of
+      # them silently converts an ALLOW into a BLOCK on real models.
+      - name: false-positive regressions, isolated
         run: |
-          # The audit hook must not record interpreter noise; this catches a regression
-          # of the false-positive bug documented as defect 7 in SPIKE-RESULTS.md.
-          PYTHONPATH=src .venv/bin/python -m pytest -q -k "no_interpreter_noise or capability_events"
+          PYTHONPATH=src .venv/bin/python -m pytest -q \
+            -k "no_interpreter_noise or capability_events or noise_floor or serialization_scaffolding"

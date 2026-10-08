@@ -1,5 +1,7 @@
 # Quarantine — spike
 
+[![ci](https://github.com/sushant-me/quarantine/actions/workflows/ci.yml/badge.svg)](https://github.com/sushant-me/quarantine/actions/workflows/ci.yml)
+
 **The offline clean room for untrusted model artifacts.**
 Every model you download is code you did not write. Quarantine runs it where it cannot hurt you,
 records what it does, has a local open-weight model read that behaviour against the artifact's own
