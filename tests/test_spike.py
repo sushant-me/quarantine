@@ -1131,3 +1131,18 @@ def test_an_honest_abstention_is_still_allowed(monkeypatch):
     )
     assert out["verdict"]["verdict"] == "UNKNOWN"
     assert out["reason_ok"] is True
+
+
+def test_the_receipt_reports_the_installed_version():
+    """The tool version in a receipt must be the package's version, not a literal that drifts.
+
+    It was `"0.2.0-agents"` in the CLI while `pyproject.toml` said `0.1.0` — and that string is not
+    a valid version at all. A receipt is a citable artifact; it should not misstate its producer.
+    """
+    from importlib.metadata import version
+
+    from quarantine.cli import VERSION
+
+    assert VERSION == version("quarantine"), (
+        f"the receipt would claim {VERSION!r} while the package is {version('quarantine')!r}")
+    assert VERSION.count(".") >= 2, f"{VERSION!r} does not look like a version"

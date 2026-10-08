@@ -1,0 +1,10 @@
+{
+  "payloadType": "application/vnd.quarantine.receipt+json",
+  "payload": "ewogICJhcnRpZmFjdCI6IHsKICAgICJmaWxlX2NvdW50IjogMiwKICAgICJuYW1lIjogImV4YW1wbGUtYXJ0aWZhY3QiLAogICAgInRyZWVfc2hhMjU2IjogIjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAiCiAgfSwKICAiYmVoYXZpb3VyIjogewogICAgImNvbnRhaW5lciI6IHsKICAgICAgImltYWdlIjogInB5dGhvbjozLjEyLXNsaW0iLAogICAgICAibmV0d29yayI6ICJub25lIgogICAgfQogIH0sCiAgIm5vdGUiOiAiU1lOVEhFVElDIHRlc3QgdmVjdG9yIC0gbm90IGEgcmVhbCBzY2FuIHJlc3VsdCIsCiAgInNwZWMiOiAicXVhcmFudGluZS9yZWNlaXB0L3YxIiwKICAidmVyZGljdCI6IHsKICAgICJjaXRlZF9pZHMiOiBbCiAgICAgIDIKICAgIF0sCiAgICAiZGVjaWRlZCI6ICJCTE9DSyIsCiAgICAiZ3JvdW5kZWQiOiB0cnVlCiAgfQp9",
+  "signatures": [
+    {
+      "keyid": "a2fbb9c6d4161aa2",
+      "sig": "uSgKHW4K+0aQz1zWoMUZvTg1ByXSm4D80kS9g5+zDe5c3PmRTOYV+ZV8WDa9JEtdH60Jc3q6MhX0X/MWuCkBCQ=="
+    }
+  ]
+}

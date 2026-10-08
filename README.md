@@ -71,6 +71,11 @@ happy-path test ever written.
 
 ## The receipt
 
+The format is specified in [`docs/RECEIPT-FORMAT.md`](docs/RECEIPT-FORMAT.md) so that a verifier can be
+implemented without reading this codebase, with a signed [test vector](docs/receipt-vector/) whose negative
+cases must **fail** — including a payload that is not canonical JSON but carries a valid signature over those
+exact bytes, which a signature-only verifier accepts.
+
 A DSSE-shaped envelope: `payloadType` is `application/vnd.quarantine.receipt+json`, the payload is
 canonical JSON (`sort_keys=True`, compact separators), and the signature is Ed25519 over those exact
 bytes with `keyid = sha256(public_key_pem)[:16]`. Inside the payload, the part an auditor reads:
@@ -252,7 +257,7 @@ bug this tool can have.
 
 ## Released
 
-[v0.1.0](https://github.com/sushant-me/quarantine/releases/tag/v0.1.0) carries the project-idea PDF and the
+[v0.2.0](https://github.com/sushant-me/quarantine/releases/tag/v0.2.0) carries the project-idea PDF, the
 demo video as downloadables, with the measured table and the honest counterweight in the notes.
 
 ## Demo video and narration

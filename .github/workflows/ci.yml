@@ -46,6 +46,11 @@ jobs:
       - name: verify the published receipts with openssl
         run: .venv/bin/python scripts/verify_published_receipts.py
 
+      # The format document is a specification so somebody else can implement a verifier. A spec
+      # with no test vector is guesswork, and a vector with no checker rots.
+      - name: check the receipt test vector
+        run: .venv/bin/python scripts/check_receipt_test_vector.py
+
       - name: tests
         run: PYTHONPATH=src .venv/bin/python -m pytest -q
 

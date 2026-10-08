@@ -28,7 +28,21 @@ from quarantine.llm import served_model
 from quarantine.receipt import generate_keypair, sign_receipt, verify_receipt
 from quarantine.sandbox.execute import IMAGE
 
-VERSION = "0.2.0-agents"
+def _package_version() -> str:
+    """The installed version, so the receipt cannot claim something the package does not.
+
+    This was a literal "0.2.0-agents" while `pyproject.toml` said 0.1.0 - and "0.2.0-agents" is not
+    even a valid version string. A receipt that misstates the tool that produced it is a receipt an
+    auditor cannot cite.
+    """
+    try:
+        from importlib.metadata import version
+        return version("quarantine")
+    except Exception:                                          # noqa: BLE001
+        return "0.2.0+unknown"
+
+
+VERSION = _package_version()
 EXIT_CODE = {"ALLOW": 0, "BLOCK": 1, "UNKNOWN": 2}
 
 
