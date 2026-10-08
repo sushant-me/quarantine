@@ -46,6 +46,8 @@ The challenge's test: *delete the AI call — does the product still do its job?
 (`src/quarantine/repair/loader.py::synthesize_loader`) — and both are verified by deterministic checks
 (grounding against the trace, and output-equivalence after repair).
 
+*A Demo Day deck is included — [`presentation/quarantine-demo-day.html`](presentation/quarantine-demo-day.html). One self-contained file, no external font or script, so it presents with the network off, which is the point it is making. Arrow keys advance; `#s6` deep-links to the evidence slide.*
+
 ## 3. What we measured, and what it cost the incumbents
 
 | | Quarantine | picklescan 1.0.5 | fickling 0.1.12 |

@@ -132,3 +132,7 @@ PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py --prefix demo 2>&1 | tail
 
 Cut nothing that shows a limitation. The two beats that win the room are the scanner saying **clean** and the
 trace showing what it missed; everything else is evidence that the first two are real.
+
+## Slides for Demo Day
+
+[`presentation/quarantine-demo-day.html`](../presentation/quarantine-demo-day.html) — 14 slides, self-contained, no external assets. Open it in a browser and use the arrow keys; `#s6` goes straight to the evidence slide, `#s8` to the receipt verification. It carries the same numbers as this script, including the one that argues against us.

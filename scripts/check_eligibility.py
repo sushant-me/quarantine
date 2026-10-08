@@ -57,6 +57,7 @@ REQUIRED_FILES = [
     ("scripts/eval_third_party.py", "the third-party corpus evaluation is reproducible"),
     ("reports/third-party-eval.md", "the third-party result is published"),
     ("tools/verify_receipt_standalone.py", "receipts verify without this codebase"),
+    ("presentation/quarantine-demo-day.html", "the Demo Day deck is present"),
     ("runs/probe/keys/quarantine.pub.pem", "the public key is published so anyone can verify"),
     ("baselines/python_3.12-slim.jsonl", "the default image's noise floor is recorded"),
     ("docs/DEMO-SCRIPT.md", "demo script"),
@@ -165,6 +166,27 @@ def check_files() -> list[dict]:
         out.append({"check": f"file: {rel}", "what": label, "ok": ok,
                     "detail": "present" if ok else "MISSING"})
     return out
+
+
+def check_deck_is_self_contained() -> list[dict]:
+    """The Demo Day deck must work with the network off — that is the whole theme.
+
+    A deck that pulls a font or a script from a CDN fails in the room, and it also fails the
+    claim this project makes about running offline.
+    """
+    import re as _re
+    path = ROOT / "presentation" / "quarantine-demo-day.html"
+    if not path.exists():
+        return [{"check": "deck is self-contained", "what": "presentation", "ok": False,
+                 "detail": "deck missing"}]
+    text = path.read_text(encoding="utf-8", errors="replace")
+    refs = [r for r in _re.findall(r'(?:src|href)="([^"]+)"', text)
+            if not r.startswith("#")]
+    slides = text.count('class="slide')
+    ok = not refs and slides >= 10
+    return [{"check": "deck is self-contained", "what": "presentation", "ok": ok,
+             "detail": (f"{slides} slides, no external references" if ok
+                        else f"{slides} slides but external refs: {refs[:3]}")}]
 
 
 def check_licence() -> list[dict]:
@@ -280,6 +302,7 @@ def main() -> int:
     results += check_files()
     results += check_licence()
     results += check_verifiable_facts()
+    results += check_deck_is_self_contained()
     results += check_event_requirements_mapped()
     results += check_no_vendor_inference()
     results += check_doc_paths()

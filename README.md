@@ -188,6 +188,13 @@ artifact that proves it, and a claim of improvement needs the measurement that s
 [`SECURITY.md`](SECURITY.md) is the disclosure policy; a containment failure is treated as the most serious
 bug this tool can have.
 
+## Demo Day deck
+
+[`presentation/quarantine-demo-day.html`](presentation/quarantine-demo-day.html) — 14 slides in one
+self-contained file with no external font or script, so it presents with the network off. Arrow keys advance;
+`#s6` deep-links to the evidence slide. The same numbers as the README, including the one that argues against
+us.
+
 ## Status
 
 See [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) for what was measured, what failed, and what is still
