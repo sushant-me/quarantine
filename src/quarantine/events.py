@@ -30,6 +30,11 @@ trace, not something the deterministic gate counts. Capability means it **happen
 
 from __future__ import annotations
 
+import hashlib
+import json
+import re
+from pathlib import Path
+
 CAPABILITY_EVENTS = {
     # network
     "socket.getaddrinfo", "socket.gethostbyname", "socket.gethostbyaddr",
@@ -97,14 +102,77 @@ def _find_class_is_evidence(detail: str) -> bool:
     return False
 
 
+def noise_key(event: str, detail: object) -> tuple[str, str]:
+    """A stable key for "this event, regardless of the random name in it".
+
+    `/tmp/torchinductor_uid_1000` and `/tmp/fleig390` are different strings and the same
+    kind of thing: something the interpreter or a library did to a temporary path.
+    """
+    text = re.sub(r"\d+", "#", str(detail))
+    text = re.sub(r"/tmp/[^/\s]+", "/tmp/#", text)
+    return (event, text)
+
+
+def baseline_path(image: str | None = None) -> Path:
+    """Where the measured noise floor for an image lives."""
+    if image is None:
+        from quarantine.sandbox.execute import IMAGE
+        image = IMAGE
+    slug = re.sub(r"[^A-Za-z0-9._-]", "_", image)
+    return Path(__file__).resolve().parents[2] / "baselines" / f"{slug}.jsonl"
+
+
+_BASELINE_CACHE: dict[str, set] = {}
+
+
+def baseline_keys(path: Path | None = None) -> set:
+    """The measured noise floor, as keys. Empty when none has been measured."""
+    path = path or baseline_path()
+    cache_key = str(path)
+    if cache_key in _BASELINE_CACHE:
+        return _BASELINE_CACHE[cache_key]
+    keys: set = set()
+    if path.exists():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                event = json.loads(line)
+                keys.add(noise_key(event["event"], event.get("detail", "")))
+            except (json.JSONDecodeError, KeyError):
+                continue
+    _BASELINE_CACHE[cache_key] = keys
+    return keys
+
+
+def baseline_info(image: str | None = None) -> dict:
+    """Provenance for the receipt: was a noise floor applied, and which one."""
+    path = baseline_path(image)
+    if not path.exists():
+        return {"applied": False, "note": "no noise floor measured for this image"}
+    keys = baseline_keys(path)
+    return {
+        "applied": True,
+        "file": path.name,
+        "keys": len(keys),
+        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "note": ("events this image produces by importing its own libraries are not "
+                 "evidence of the artifact's behaviour"),
+    }
+
+
 def capability_events(events: list[dict]) -> list[dict]:
     """The subset of a trace that is evidence of capability rather than context."""
+    floor = baseline_keys()
     out = []
     for event in events:
         name = event.get("event")
         if name not in CAPABILITY_EVENTS:
             continue
         if name == "pickle.find_class" and not _find_class_is_evidence(event.get("detail", "")):
+            continue
+        if floor and noise_key(name, event.get("detail", "")) in floor:
             continue
         out.append(event)
     return out

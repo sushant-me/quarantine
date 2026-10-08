@@ -26,6 +26,9 @@ runs/demo/
 runs/demo-escalated/
 runs/it2/
 
+# The baseline measurement's scratch container workdir (the measured floor itself is tracked)
+baselines/run/
+
 **/*.pem
 
 safety_results.json

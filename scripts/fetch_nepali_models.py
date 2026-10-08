@@ -26,13 +26,13 @@ DEST_ROOT = ROOT / "corpus-nepali"
 # (repo_id, local name, allow_patterns, why it is in the set)
 REPOS = [
     ("jangedoo/all-MiniLM-L6-v2-nepali", "nepali-minilm-embedder",
-     ["*.json", "*.txt", "*.safetensors"],
+     ["*.json", "*.md", "*.txt", "*.safetensors"],
      "a Nepali sentence-embedding model in safetensors form"),
     ("Rajan/NepaliBERT", "nepali-bert",
-     ["*.json", "*.txt", "*.bin"],
+     ["*.json", "*.md", "*.txt", "*.bin"],
      "one of the most-downloaded Nepali BERT models, shipped as a .bin checkpoint"),
     ("mradermacher/Qwen-0.6b-nepali-instruct-GGUF", "nepali-qwen-gguf",
-     ["Qwen-0.6b-nepali-instruct.Q2_K.gguf", "*.json", "*.txt"],
+     ["Qwen-0.6b-nepali-instruct.Q2_K.gguf", "*.json", "*.md", "*.txt"],
      "a Nepali-tuned Qwen quantised to GGUF — the format this community actually ships. "
      "Only the smallest quantisation is fetched, deliberately"),
     # --- the case that matters most: repositories that FORCE trust_remote_code=True.
@@ -44,7 +44,7 @@ REPOS = [
      "modeling_nepali_voice.py, so using it means running the author's Python on your machine. "
      "The 3.7 GB weights and the dataset zips are excluded — the question here is the code path"),
     ("prajdabre/rotary-indictrans2-en-indic-dist-200M", "indic-trans2-rotary",
-     ["*.py", "*.json", "*.bin", "*.SRC", "*.TGT", "*.model", "*.txt"],
+     ["*.py", "*.json", "*.md", "*.bin", "*.SRC", "*.TGT", "*.model", "*.txt"],
      "an Indic translation model (IndicTrans2 covers Nepali) with a custom architecture AND a real "
      "847 MB pickle checkpoint, so it exercises both the code path and the deserialisation path"),
 ]

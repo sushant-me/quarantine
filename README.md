@@ -90,6 +90,27 @@ The same predicate runs a second time, host-side, in `src/quarantine/events.py::
 suspicious the moment we could read it. That second use was found by the third-party controls, not by a
 hand-written case.
 
+## Two boxes, and a measured noise floor
+
+The **base image** (`python:3.12-slim`) is the default. `docker/Dockerfile.analysis` adds CPU-only torch and
+transformers, for artifacts whose custom `modeling_*.py` cannot run without them:
+
+```bash
+./scripts/build_analysis_image.sh
+QUARANTINE_IMAGE=quarantine-analysis:latest python -m quarantine.cli inspect <artifact>
+```
+
+It is **not** the default, and that is a measurement rather than a preference: on the Nepali/Indic controls it
+raised false positives from 0 to 2 of 5, because importing a dependency looks a great deal like an artifact
+doing something (`ctypes.dlopen`, its own environment variables, its cache directories). Every receipt names
+the image it ran in, so a result is never ambiguous about which box produced it.
+
+The fix for as much of that as can be fixed deterministically is **measured, not hand-listed**:
+`scripts/measure_image_baseline.py` imports the image's libraries in the same container and records what that
+alone produces — **0 events on the base image, 20 distinct keys on the analysis image** — and
+`src/quarantine/events.py::capability_events` subtracts it. A hand-written list of "torch things to ignore"
+would be a denylist by another name and would drift with every release.
+
 ## Why the box is the product
 
 ```

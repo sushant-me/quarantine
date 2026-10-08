@@ -49,7 +49,7 @@ REPOS = [
 ]
 
 # Everything needed to load and describe the artifact, nothing large.
-ALLOW = ["*.json", "*.bin", "*.py", "*.txt", "*.model", "*.safetensors"]
+ALLOW = ["*.json", "*.md", "*.bin", "*.py", "*.txt", "*.model", "*.safetensors"]
 SKIP = ["*.h5", "*.msgpack", "*.onnx", "*.tflite", "*.ot", "*.ckpt", "*.pth"]
 
 

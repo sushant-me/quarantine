@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T19:40:44+0545",
+  "generated_at": "2026-10-08T20:03:55+0545",
   "kind": "corpus",
   "n": 13,
   "benign": 4,
@@ -69,104 +69,20 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence is sufficient to confirm that the artifact did not perform any prohibited operations.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence is sufficient to confirm that the artifact behaves as declared.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 7.95,
+      "elapsed_s": 10.99,
       "label": "benign",
       "category": "control",
       "note": "declared and shipped behaviour match exactly"
     },
     {
       "name": "benign-typing-only",
-      "picklescan": {
-        "scanned_files": 1,
-        "infected": 0,
-        "suspicious": 0,
-        "dangerous": 0,
-        "says_clean": true,
-        "verdict_malicious": false,
-        "flagged_anything": false
-      },
-      "fickling": {
-        "scanned_files": 1,
-        "flagged": [],
-        "says_clean": true
-      },
-      "incumbents_flagged_by": [],
-      "incumbents_flagged": false,
-      "static_capabilities": {},
-      "custom_code_files": [
-        "custom_generate/generate.py"
-      ],
-      "trace_events": 0,
-      "sensitive_events": [],
-      "verdict": "ALLOW",
-      "escalated": false,
-      "escalation_reason": null,
-      "observed": true,
-      "grounded": true,
-      "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence is sufficient to confirm that the artifact did not perform any prohibited operations.",
-      "agents": [
-        "observer",
-        "analyst",
-        "supervisor"
-      ],
-      "turns": 2,
-      "elapsed_s": 7.92,
-      "label": "benign",
-      "category": "control",
-      "note": "imports a pure stdlib module and does nothing else"
-    },
-    {
-      "name": "benign-two-functions",
-      "picklescan": {
-        "scanned_files": 1,
-        "infected": 0,
-        "suspicious": 0,
-        "dangerous": 0,
-        "says_clean": true,
-        "verdict_malicious": false,
-        "flagged_anything": false
-      },
-      "fickling": {
-        "scanned_files": 1,
-        "flagged": [],
-        "says_clean": true
-      },
-      "incumbents_flagged_by": [],
-      "incumbents_flagged": false,
-      "static_capabilities": {},
-      "custom_code_files": [
-        "custom_generate/generate.py"
-      ],
-      "trace_events": 0,
-      "sensitive_events": [],
-      "verdict": "ALLOW",
-      "escalated": false,
-      "escalation_reason": null,
-      "observed": true,
-      "grounded": true,
-      "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. The trace confirms that the artifact did not perform any of these forbidden operations.",
-      "agents": [
-        "observer",
-        "analyst",
-        "supervisor"
-      ],
-      "turns": 2,
-      "elapsed_s": 10.31,
-      "label": "benign",
-      "category": "control",
-      "note": "several pure helpers, no capability"
-    },
-    {
-      "name": "benign-unicode",
       "picklescan": {
         "scanned_files": 1,
         "infected": 0,
@@ -202,7 +118,91 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 7.69,
+      "elapsed_s": 11.32,
+      "label": "benign",
+      "category": "control",
+      "note": "imports a pure stdlib module and does nothing else"
+    },
+    {
+      "name": "benign-two-functions",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [],
+        "says_clean": true
+      },
+      "incumbents_flagged_by": [],
+      "incumbents_flagged": false,
+      "static_capabilities": {},
+      "custom_code_files": [
+        "custom_generate/generate.py"
+      ],
+      "trace_events": 0,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. The trace confirms that the artifact did not perform any of these operations, thus allowing the verdict.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 14.42,
+      "label": "benign",
+      "category": "control",
+      "note": "several pure helpers, no capability"
+    },
+    {
+      "name": "benign-unicode",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [],
+        "says_clean": true
+      },
+      "incumbents_flagged_by": [],
+      "incumbents_flagged": false,
+      "static_capabilities": {},
+      "custom_code_files": [
+        "custom_generate/generate.py"
+      ],
+      "trace_events": 0,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is pure, deterministic, and does not involve network access, file reading, or process spawning, which aligns with the trace.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 12.95,
       "label": "benign",
       "category": "control",
       "note": "pure transform using unicodedata"
@@ -241,7 +241,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "a531a947e37d.probe.invalid"
+          "detail": "993e62d3f4c8.probe.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -253,17 +253,17 @@
         2,
         3
       ],
-      "mechanism": "The artifact declared it must not use the network, but the trace shows it performing a network operation (socket.getaddrinfo).",
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
       "agents": [
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 30.29,
+      "elapsed_s": 32.12,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/hostname and puts it in a DNS query on load"
@@ -313,12 +313,12 @@
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 36.38,
+      "elapsed_s": 31.23,
       "label": "undeclared",
       "category": "process-at-import",
       "note": "spawns a process on load"
@@ -368,12 +368,12 @@
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 48.06,
+      "elapsed_s": 42.67,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads the environment and puts it in a DNS query"
@@ -424,7 +424,7 @@
         2,
         3
       ],
-      "mechanism": "The artifact declared it must not read files outside its own directory, but the trace shows it reading `/etc/passwd`.",
+      "mechanism": "The artifact declared that it must not read files outside its own directory, but the trace shows it reading `/etc/passwd`.",
       "agents": [
         "observer",
         "analyst",
@@ -434,7 +434,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 28.56,
+      "elapsed_s": 57.39,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/passwd and puts it in a DNS query"
@@ -484,12 +484,12 @@
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 46.37,
+      "elapsed_s": 51.64,
       "label": "undeclared",
       "category": "network-on-call",
       "note": "the undeclared effect only fires when generate() is called"
@@ -545,7 +545,7 @@
         "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 31.73,
+      "elapsed_s": 37.16,
       "label": "undeclared",
       "category": "obfuscated",
       "note": "base64 + exec at import; the source does not name the behaviour"
@@ -584,7 +584,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "ad55b02f2dca.modeling.invalid"
+          "detail": "13b29a7735b7.modeling.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -605,7 +605,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 30.77,
+      "elapsed_s": 53.25,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "same probe shipped as modeling_*.py rather than custom_generate/"
@@ -659,7 +659,7 @@
       "cited_ids": [
         5
       ],
-      "mechanism": "The trace shows the artifact performing the operation 'socket.getaddrinfo: probe.invalid', which is not permitted by the artifact's declaration. The evidence_ids are [5].",
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo: probe.invalid) that its declaration forbids. The artifact attempts to resolve a hostname under .invalid, which is not allowed.",
       "agents": [
         "observer",
         "analyst",
@@ -667,7 +667,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 34.33,
+      "elapsed_s": 37.69,
       "label": "undeclared",
       "category": "pickle-cve-pattern",
       "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
@@ -721,7 +721,7 @@
       "cited_ids": [
         5
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo: zipcheckpoint.invalid) that its declaration forbids (must not use the network).",
       "agents": [
         "observer",
         "analyst",
@@ -729,7 +729,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 22.69,
+      "elapsed_s": 30.76,
       "label": "undeclared",
       "category": "zip-checkpoint",
       "note": "a torch-format zip checkpoint whose data.pkl performs a DNS lookup on load; the format that previously could not be read at all, so nothing was observed and the case was escalated to a human"

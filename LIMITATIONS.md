@@ -94,13 +94,12 @@ attached.
     we can state what we ran on 2026-10-08, not what the whole Nepali ecosystem contains. We also did not find
     a Nepali model shipping custom `modeling_*.py`, which would be the highest-risk case.
 
-17. **Custom model code that needs a modelling framework cannot be executed, so it escalates.** Two real
-    published models (`ujjwal5454/nepali-voice-engine-v4`, `prajdabre/rotary-indictrans2-en-indic-dist-200M`)
-    ship `modeling_*.py` that imports `torch`, which is not in the analysis image. We read the code statically
-    and refuse to judge it dynamically — an escalation, not a verdict. **Shipping an image with the common
-    modelling dependencies is the highest-value next step**, and it is what would turn these two escalations
-    into decisions.
-
+17. **Custom model code that needs a modelling framework escalates by default, and the image that fixes
+    it measures worse.** `docker/Dockerfile.analysis` (CPU torch + transformers, 362 MB) exists and works,
+    but on the Nepali/Indic controls it *raised* false positives from 0 to 2 of 5, and it broke legacy
+    `pytorch_model.bin` reading that the stubs had handled. It is therefore opt-in via
+    `QUARANTINE_IMAGE=quarantine-analysis:latest`, with the measurements behind that decision in
+    [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) §3b. Proper event attribution is what would make it the default.
 ## Future improvements, in the order they matter
 
 1. Reproduce a **still-live** published bypass rather than a fixed one, and publish the case either way.

@@ -58,8 +58,31 @@ class Outcome:
 
 
 def _declared(root: Path) -> str:
+    """What the artifact declares about itself: its README **and** its config.
+
+    The config matters as much as the prose. A repository that forces
+    `trust_remote_code=True` declares its custom modules in `config.json` via `auto_map`,
+    and names its architecture; leaving that out made a benign published model — whose
+    custom code legitimately imports torch — look like it had declared nothing at all.
+    """
+    parts: list[str] = []
     readme = root / "README.md"
-    return readme.read_text(encoding="utf-8") if readme.exists() else "(no README: nothing declared)"
+    if readme.exists():
+        parts.append(readme.read_text(encoding="utf-8"))
+    config = root / "config.json"
+    if config.exists():
+        try:
+            data = json.loads(config.read_text(encoding="utf-8"))
+            interesting = {k: data[k] for k in
+                           ("architectures", "auto_map", "model_type", "library_name",
+                            "dependencies", "transformers_version")
+                           if k in data}
+            if interesting:
+                parts.append("config.json declares:\n"
+                             + json.dumps(interesting, indent=2)[:1200])
+        except (json.JSONDecodeError, OSError):
+            pass
+    return "\n\n".join(parts) or "(no README and no config.json: nothing declared)"
 
 
 def _shipped_code(root: Path, custom_files: list[str]) -> str:

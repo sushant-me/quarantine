@@ -211,6 +211,42 @@ demonstrate.
 
 ---
 
+## 3b. The analysis image: an experiment that measured worse, and why
+
+Real repositories that force `trust_remote_code=True` ship `modeling_*.py` that begins
+`import torch`. Without torch in the image the code path cannot run, so the case is escalated. So the image
+was built (`docker/Dockerfile.analysis`, CPU-only torch + transformers, **362 MB**,
+`scripts/build_analysis_image.sh`) — and then measured, on the Nepali/Indic controls:
+
+| set | base image (now the default) | analysis image (torch + transformers) |
+|---|---|---|
+| Nepali/Indic, 5 models | **0 false positives**, 3 allowed, 2 escalated | **2 false positives (40%)**, 2 allowed, 1 escalated |
+| a plain English control (`bert-tiny`) | 0 capability events | **5 library-noise events**, and would have been a false positive |
+| legacy `pytorch_model.bin` (`Rajan/NepaliBERT`) | `ALLOW` | **escalated**: `AttributeError: 'NoneType' object has no attribute 'dtype'` |
+
+Three separate effects, all measured:
+
+1. **A dependency's import looks like the artifact's behaviour.** Importing torch performs
+   `ctypes.dlopen` of its own native libraries, sets and unsets `OPENBLAS_MAIN_FREE`, creates
+   its inductor cache, and reads `/harness/runner.py`. Those events are real and they are not
+   the artifact's doing.
+2. **The stubs stop being used.** With torch installed, a `pytorch_model.bin` resolves the
+   *real* `torch._utils._rebuild_tensor_v2`, which consumes the storages we deliberately stub
+   as `None` — so a checkpoint that read fine before now fails.
+3. The **fix for (1) is measured, not guessed**: `sandbox_runner.py::mode_baseline` imports the
+   image's libraries and records what that alone produces (**0 events on the base image, 20
+   distinct keys on the analysis image**), and `events.py::capability_events` subtracts it.
+   That removes the `bert-tiny` false positive (5 events → 0) but does **not** close the gap
+   for the artifact's own framework code path, which is why the image stays opt-in.
+
+**So the analysis image is built, documented, and off by default — and the reason is a
+measurement rather than a preference.** Making it the default needs proper event
+*attribution*: knowing that a `dlopen` came from a library's import rather than from the
+artifact. That is a real piece of engineering, and pretending a key-matching subtraction
+solved it would have shipped a 40% false-positive rate.
+
+---
+
 ## 4. The corpus
 
 `scripts/make_corpus.py` generates it deterministically; `corpus/MANIFEST.json` is the label file. All
@@ -238,7 +274,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Twenty defects found by running it
+## 5. Twenty-three defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -282,8 +318,11 @@ and exited 0 — and it is the reason the third outcome exists here.
 | 18 | **pointing the tool at the Nepali ecosystem escalated its dominant format** | GGUF is how most Nepali models reach users (six of the top thirty on the Hub are quantisations), and the reader did not know it | `load_gguf` validates the header and metadata framing; a pickle renamed `.gguf` fails the magic check and is escalated, never trusted |
 | 19 | a real published model (`rotary-indictrans2`) was **BLOCKed while benign**: its weights loaded, so the case counted as "observed", while its custom code had never run | escalation only fired when *nothing* was observed, so a partial observation slipped through and left the analyst to interpret a `ModuleNotFoundError` as evidence | if shipped Python exists and did not run and no capability was observed, the case escalates regardless of what else loaded (`agents/case.py::Case.code_path_unrun`) |
 | 20 | a `BLOCK` could be **grounded by citing an error** — every cited id existed, so the check passed | grounding verified that cited ids *exist*, not that they are *evidence of capability* | `semantic/analyst.py::verdict_is_grounded`: a BLOCK must cite at least one capability event. An error means we could not look |
+| 21 | the CLI **crashed with a traceback** on a real model (`NameError: name 'ids_ok' is not defined`) | a refactor extracted the grounding rule and left one reference to the removed variable behind — on the retry path, which only a model that produced an ungrounded first answer would reach | the retry feedback now distinguishes three cases (phantom ids, a block with no capability event, an allow with capability present); the real model that found it is a Nepali voice engine |
+| 22 | a model requiring `trust_remote_code=True` was **blocked because it appeared to declare nothing** | the declaration was built from `README.md` only — and `config.json`, which is where `auto_map` and the architecture are declared, was ignored. My own fetch patterns had also missed `*.md`, so there was no README either | `agents/supervisor.py::_declared` now includes the config's `architectures`, `auto_map`, `model_type`, `library_name` and declared dependencies; the fetchers take `*.md` |
+| 23 | installing torch made **a dependency's import look like the artifact's behaviour**, and every real model a false positive | capability was counted from events with no notion of who caused them | a *measured* noise floor (`mode_baseline` + `baselines/`) is subtracted; it fixes the plain-model case and, on the evidence, is not sufficient for the framework case — so the analysis image is opt-in (see §3b) |
 
-Twenty defects, and the pattern is consistent: every one was found by a control group, a
+Twenty-three defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked

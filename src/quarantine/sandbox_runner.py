@@ -368,6 +368,38 @@ def _find_weight_files(artifact: str) -> list[str]:
     return found
 
 
+BASELINE_MODULES = ("torch", "transformers", "numpy", "safetensors", "sentencepiece")
+
+
+def mode_baseline(out: str) -> int:
+    """Record the events this image produces **on its own**, by importing its libraries.
+
+    Why this exists. Once the analysis image ships torch and transformers, an artifact that
+    merely *references* them — an ordinary `pytorch_model.bin` whose pickle asks for
+    `torch._utils._rebuild_tensor_v2` — causes torch to be imported, and torch's own import
+    does `ctypes.dlopen` of its native libraries, sets and unsets its own environment
+    variables, and runs its cache setup. On a plain benign control that produced five
+    "capability events" and would have made every real model a false positive.
+
+    Those events really happen; they are simply not the *artifact's* behaviour. So instead of
+    guessing which events to ignore, we measure the noise floor of the image and subtract it.
+    """
+    global OUT
+    OUT = out
+    sys.addaudithook(_hook)
+
+    def _import_all() -> None:
+        for name in BASELINE_MODULES:
+            try:
+                importlib.import_module(name)
+            except Exception:                          # noqa: BLE001 - absence is fine
+                pass
+
+    _run_active(_import_all)
+    _flush(out)
+    return 0
+
+
 def mode_trace(artifact: str, out: str) -> int:
     global ARTIFACT, OUT
     ARTIFACT, OUT = artifact, out
@@ -562,6 +594,8 @@ def main() -> int:
         return mode_call(sys.argv[2], sys.argv[3], sys.argv[4])
     if mode == "escape":
         return mode_escape(sys.argv[2])
+    if mode == "baseline":
+        return mode_baseline(sys.argv[2])
     print(f"unknown mode {mode!r}")
     return 2
 

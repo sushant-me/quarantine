@@ -793,3 +793,44 @@ def test_a_block_must_cite_a_capability_event_not_an_error():
     assert verdict_is_grounded("ALLOW", [], valid, set()) is True     # no capability observed
     assert verdict_is_grounded("ALLOW", [], valid, caps) is False     # capability observed
     assert verdict_is_grounded("UNKNOWN", [], valid, caps) is True    # abstention is always admissible
+
+
+# ------------------------------------------------- the measured noise floor
+
+def test_noise_key_ignores_the_random_part_of_a_temporary_path():
+    from quarantine.events import noise_key
+    assert noise_key("os.mkdir", "/tmp/torchinductor_uid_1000") == noise_key("os.mkdir", "/tmp/fleig390")
+    assert noise_key("ctypes.dlopen", "/usr/lib/libtorch.so") != noise_key("ctypes.dlopen", "/usr/lib/libevil.so")
+
+
+def test_a_measured_noise_floor_is_subtracted_from_the_trace(tmp_path, monkeypatch):
+    """What the image does by importing its own libraries is not the artifact's behaviour."""
+    import json as _json
+    from quarantine import events as ev
+
+    floor = tmp_path / "floor.jsonl"
+    floor.write_text(
+        _json.dumps({"event": "ctypes.dlopen", "detail": "/usr/lib/libtorch.so"}) + "\n"
+        + _json.dumps({"event": "os.mkdir", "detail": "/tmp/torchinductor_uid_1000"}) + "\n",
+        encoding="utf-8")
+
+    monkeypatch.setattr(ev, "baseline_path", lambda image=None: floor)
+    ev._BASELINE_CACHE.clear()
+    trace = [
+        {"i": 1, "event": "ctypes.dlopen", "detail": "/usr/lib/libtorch.so"},   # in the floor
+        {"i": 2, "event": "os.mkdir", "detail": "/tmp/torchinductor_uid_1000"},  # in the floor
+        {"i": 3, "event": "socket.getaddrinfo", "detail": "exfil.invalid"},      # never in the floor
+        {"i": 4, "event": "ctypes.dlopen", "detail": "/tmp/evil.so"},            # a different library
+    ]
+    assert [e["i"] for e in ev.capability_events(trace)] == [3, 4]
+    ev._BASELINE_CACHE.clear()
+
+
+def test_an_unmeasured_image_subtracts_nothing(tmp_path, monkeypatch):
+    """A missing noise floor must fail safe: nothing is excused."""
+    from quarantine import events as ev
+    monkeypatch.setattr(ev, "baseline_path", lambda image=None: tmp_path / "does-not-exist.jsonl")
+    ev._BASELINE_CACHE.clear()
+    trace = [{"i": 1, "event": "ctypes.dlopen", "detail": "/usr/lib/libtorch.so"}]
+    assert [e["i"] for e in ev.capability_events(trace)] == [1]
+    ev._BASELINE_CACHE.clear()

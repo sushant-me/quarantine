@@ -205,9 +205,16 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
         if grounded or not valid_ids or round_no == 1:
             break
 
+        ids_ok = all(isinstance(i, int) and i in valid_ids for i in cited)
         if not ids_ok:
             feedback = (f"Your evidence_ids {cited} are not all real trace ids. The only valid ids "
                         f"are {sorted(valid_ids)}. Answer again, citing only ids from that list.")
+        elif verdict_name == "BLOCK":
+            # The block was grounded in nothing: it cited ids that exist but no capability
+            # event. Saying so is more useful than repeating the whole prompt.
+            feedback = (f"You answered BLOCK, but none of the ids you cited {cited} is a capability "
+                        f"event. The capability events are {[e['i'] for e in caps]}. A block must cite "
+                        "one of those; if there are none, the verdict cannot be BLOCK.")
         else:
             feedback = (f"You answered ALLOW, but the captured trace contains capability events "
                         f"{[e['i'] for e in caps]} that the declaration does not allow: "

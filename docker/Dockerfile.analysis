@@ -1,0 +1,29 @@
+# The analysis image: the base sandbox plus the modelling dependencies that custom model
+# code actually imports.
+#
+# WHY THIS EXISTS. Real repositories that force `trust_remote_code=True` ship
+# `modeling_*.py` that begins with `import torch` and `from transformers import ...`.
+# Without those present, the code path never runs, and a case whose code path never ran
+# cannot be approved or blocked — it has to be escalated to a human. Two real published
+# models motivated this image:
+#   ujjwal5454/nepali-voice-engine-v4              (740 downloads, modelling_nepali_voice.py)
+#   prajdabre/rotary-indictrans2-en-indic-dist-200M (1240 downloads, 847 MB pickle + custom code)
+#
+# THE TRADEOFF, STATED PLAINLY. A larger image is a larger attack surface for the artifact
+# it contains: torch and transformers bring a lot of code into the box. The containment
+# flags are unchanged and do the work (--network none, --read-only, --cap-drop ALL,
+# --no-new-privileges, unprivileged user, pid/memory/cpu limits, a CPython audit hook
+# recording every sensitive call), but a bigger image is still a bigger image. That is the
+# price of judging the code path instead of escalating it, and it is a deliberate choice.
+#
+# CPU wheels only: the artifact is being observed, not trained, and CUDA base images would
+# add gigabytes for a GPU the sandbox does not need.
+FROM python:3.12-slim
+
+# torch from the CPU index first, so transformers finds it satisfied and does not pull a
+# CUDA build in behind our back.
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch \
+ && pip install --no-cache-dir transformers safetensors sentencepiece
+
+# Everything the harness itself needs is standard library; nothing is added here.
+WORKDIR /work
