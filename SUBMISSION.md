@@ -16,7 +16,7 @@ Ten minutes end to end. Start with [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) if you
 | 1 | Public GitHub repository | this repository — source, tests, corpus generator, evaluation harness |
 | 2 | Documentation: README, architecture, technology, limitations | [`README.md`](README.md) · [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) · [`LIMITATIONS.md`](LIMITATIONS.md) |
 | 3 | Working demonstration | `python -m quarantine.cli inspect corpus/probe-custom-generate` — five commands in the README, no API key, no network |
-| 4 | Demo video | `docs/DEMO-SCRIPT.md` (the script; the recording is produced from it) |
+| 4 | Demo video | [`reports/video/quarantine-demo.mp4`](reports/video/quarantine-demo.mp4) — script in [`docs/DEMO-SCRIPT.md`](docs/DEMO-SCRIPT.md), transcript in [`reports/video/transcript.txt`](reports/video/transcript.txt), and an honest note on what the video is in [`reports/video/README.md`](reports/video/README.md) |
 | 5 | AI usage disclosure naming `file::function` | [`docs/AI-USAGE.md`](docs/AI-USAGE.md) — machine-checked by `scripts/check_eligibility.py` |
 
 ## 2. Why the AI is load-bearing

@@ -1,0 +1,6 @@
+WARNING: Invalid PyTorch magic number for file /home/logic/win/quarantine/corpus/probe-custom-generate/pytorch_model.bin: None != 119547037146038801333356. Trying to scan as non-PyTorch file.
+----------- SCAN SUMMARY -----------
+Scanned files: 1
+Infected files: 0
+Suspicious globals: 0
+Dangerous globals: 0

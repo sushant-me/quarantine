@@ -1,0 +1,176 @@
+=== 01-title  (6s)  quarantine — demo
+
+  Quarantine
+
+  the offline clean room for untrusted model artifacts
+
+  --------------------------------------------------------------
+
+  every model you download is code you did not write.
+
+  network OFF  ·  open-weight model, local  ·  Apache-2.0
+
+=== 02-scanner  (13s)  step 1 — what the scanner everyone runs says
+  $ picklescan --path corpus/probe-custom-generate
+
+WARNING: Invalid PyTorch magic number for file /home/logic/win/quarantine/corpus/probe-custom-generate/pytorch_model.bin: N…
+----------- SCAN SUMMARY -----------
+Scanned files: 1
+Infected files: 0
+Suspicious globals: 0
+Dangerous globals: 0
+
+  This artifact declares a pure text transform.
+
+=== 03-gap  (11s)  the gap
+  WHAT IT LOOKED AT
+
+    Scanned files: 1     <- the weights file
+
+  WHAT IT DID NOT LOOK AT
+
+    custom_generate/generate.py
+
+  The Python that runs on load is not in its input set.
+  That is not a detection failure. It is a coverage hole,
+  and it does not depend on the scanner's version.
+
+=== 04a-trace  (9s)  step 2 — execute it where it cannot hurt you
+  $ quarantine inspect corpus/probe-custom-generate
+
+[1/6] static pass           /home/logic/win/quarantine/corpus/probe-custom-generate
+      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
+      static capabilities: {'network': 1}
+[2/6] behavioural pass       executing, network off
+      container rc=0  events=4
+        id=  1 import: urllib
+        id=  2 import: socket
+        id=  3 file.read: /etc/hostname
+
+=== 04b-trace  (9s)  the artifact, in a box with no network
+  $ quarantine inspect corpus/probe-custom-generate
+
+[1/6] static pass           /home/logic/win/quarantine/corpus/probe-custom-generate
+      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
+      static capabilities: {'network': 1}
+[2/6] behavioural pass       executing, network off
+      container rc=0  events=4
+        id=  1 import: urllib
+        id=  2 import: socket
+        id=  3 file.read: /etc/hostname
+        id=  4 socket.getaddrinfo: b9ace7c138c9.probe.invalid
+[3/6] semantic pass          local open-weight model
+      reachable=True grounded=True verdict=BLOCK in 13.6s
+      mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that…
+[4/6] repair pass            local open-weight model
+      generated=True ok=True forbidden=[] in 8.08s
+[5/6] equivalence proof
+      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+
+=== 04c-trace  (11s)  the artifact, in a box with no network
+  $ quarantine inspect corpus/probe-custom-generate
+
+[1/6] static pass           /home/logic/win/quarantine/corpus/probe-custom-generate
+      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
+      static capabilities: {'network': 1}
+[2/6] behavioural pass       executing, network off
+      container rc=0  events=4
+        id=  1 import: urllib
+        id=  2 import: socket
+        id=  3 file.read: /etc/hostname
+        id=  4 socket.getaddrinfo: b9ace7c138c9.probe.invalid
+[3/6] semantic pass          local open-weight model
+      reachable=True grounded=True verdict=BLOCK in 13.6s
+      mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that…
+[4/6] repair pass            local open-weight model
+      generated=True ok=True forbidden=[] in 8.08s
+[5/6] equivalence proof
+      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+[6/6] sign receipt
+      signed and verified: True  keyid=98ef87ea5ba8a04e
+
+=== Quarantine verdict ===
+  artifact          probe-custom-generate
+  incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
+  behavioural trace 4 events, network=none
+  verdict           BLOCK  (grounded=True)
+  repair            ok=True equivalent=True
+  receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
+
+=== 05-verdict  (12s)  step 3 — a local model reads the evidence
+  $ quarantine inspect corpus/probe-custom-generate
+
+[4/6] repair pass            local open-weight model
+      generated=True ok=True forbidden=[] in 8.08s
+[5/6] equivalence proof
+      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+[6/6] sign receipt
+      signed and verified: True  keyid=98ef87ea5ba8a04e
+
+=== Quarantine verdict ===
+  artifact          probe-custom-generate
+  incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
+  behavioural trace 4 events, network=none
+  verdict           BLOCK  (grounded=True)
+  repair            ok=True equivalent=True
+  receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
+
+=== 06-numbers  (17s)  step 4 — measured, with a control group
+  DETECTION — 12 artifacts, the same declared API in every one
+
+  auditor         caught   detect   false pos  FP rate
+  ----------------------------------------------------
+  Quarantine         8/8     100%         0/4       0%
+  picklescan         1/8      12%         0/4       0%
+  fickling           1/8      12%         0/4       0%
+
+  FALSE POSITIVES — 4 real published models from the Hub
+
+  auditor         caught   detect   false pos  FP rate
+  ----------------------------------------------------
+  Quarantine           —      n/a         0/4       0%
+  picklescan           —      n/a         0/4       0%
+  fickling             —      n/a         4/4     100%
+
+  The incumbents' one catch is the only artifact whose payload is
+  a pickle — the only one inside their input set. And on real
+  models, one of them flags all four: a checkpoint is a zip
+  archive it cannot parse.
+
+=== 07-containment  (12s)  step 5 — containment, attacked on purpose
+  WE ATTACKED OUR OWN SANDBOX
+
+    Result: 0 of 10 breakout primitives succeeded.
+
+    read-only rootfs · /etc/shadow · unmounted host file · mount(2)
+    unshare(CLONE_NEWUSER) · chroot(2) · setuid(0) · raw socket
+    connecting to the host model server · public DNS
+
+  Ten primitives, not a fuzzing campaign. A clean table does
+  not mean the box cannot be broken.
+
+=== 08-limits  (11s)  said out loud, in the video
+  WHAT THIS DOES NOT CLAIM
+
+    the malicious corpus and its labels are ours
+    the third-party controls are tiny models
+    no live CVE bypass is claimed
+    one model size; equivalence is a 3-prompt smoke test
+    the receipt has not been independently verified
+
+  Limits: LIMITATIONS.md, in the repository.
+
+=== 09-end  (7s)  quarantine
+
+  Behaviour is the only ground truth about
+  what a model artifact does.
+
+  We measure it. We gate on it. We sign what we saw.
+
+  --------------------------------------------------------------
+
+  Apache-2.0  ·  offline  ·  run it yourself
+
+  This is a replay rendered from real captured output,
+  not a pixel capture of a screen.
+

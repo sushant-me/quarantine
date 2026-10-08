@@ -1,0 +1,16 @@
+{
+  "executed": [
+    {
+      "file": "custom_generate/generate.py",
+      "status": "executed"
+    }
+  ],
+  "weights_loaded": [
+    {
+      "file": "pytorch_model.bin",
+      "status": "loaded"
+    }
+  ],
+  "weights_unreadable": [],
+  "errors": []
+}

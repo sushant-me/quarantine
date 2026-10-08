@@ -1,0 +1,21 @@
+{
+  "prompts": [
+    "hello world",
+    "Quarantine probe 123",
+    "a"
+  ],
+  "original_outputs": [
+    "HELLO WORLD",
+    "QUARANTINE PROBE 123",
+    "A"
+  ],
+  "sanitized_outputs": [
+    "HELLO WORLD",
+    "QUARANTINE PROBE 123",
+    "A"
+  ],
+  "original_error": null,
+  "sanitized_error": null,
+  "equivalent": true,
+  "note": "identical outputs on the fixed prompt set"
+}

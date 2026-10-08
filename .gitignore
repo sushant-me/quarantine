@@ -11,6 +11,9 @@ corpus-real/
 reports/eval-runs*/
 reports/escape-run/
 
+# Video frame intermediates; the encoded video and transcript are committed
+reports/video/frames/
+
 # NEVER commit key material. A leaked signing key makes every receipt worthless.
 runs/**/keys/
 **/*.pem

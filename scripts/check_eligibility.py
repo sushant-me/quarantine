@@ -43,6 +43,8 @@ REQUIRED_FILES = [
     ("SUBMISSION.md", "submission index"),
     ("LIMITATIONS.md", "limitations and future improvements"),
     ("docs/AI-USAGE.md", "AI usage disclosure"),
+    ("docs/DEMO-SCRIPT.md", "demo script"),
+    ("reports/video/quarantine-demo.mp4", "demo video (required deliverable)"),
     ("corpus/MANIFEST.json", "the labeled corpus is published"),
     ("tests", "tests present"),
 ]

@@ -1,0 +1,26 @@
+[1/6] static pass           /home/logic/win/quarantine/corpus/probe-custom-generate
+      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
+      static capabilities: {'network': 1}
+[2/6] behavioural pass       executing, network off
+      container rc=0  events=4
+        id=  1 import: urllib
+        id=  2 import: socket
+        id=  3 file.read: /etc/hostname
+        id=  4 socket.getaddrinfo: b9ace7c138c9.probe.invalid
+[3/6] semantic pass          local open-weight model
+      reachable=True grounded=True verdict=BLOCK in 13.6s
+      mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that use
+[4/6] repair pass            local open-weight model
+      generated=True ok=True forbidden=[] in 8.08s
+[5/6] equivalence proof
+      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+[6/6] sign receipt
+      signed and verified: True  keyid=98ef87ea5ba8a04e
+
+=== Quarantine verdict ===
+  artifact          probe-custom-generate
+  incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
+  behavioural trace 4 events, network=none
+  verdict           BLOCK  (grounded=True)
+  repair            ok=True equivalent=True
+  receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
