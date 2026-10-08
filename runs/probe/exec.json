@@ -8,7 +8,8 @@
   "weights_loaded": [
     {
       "file": "pytorch_model.bin",
-      "status": "loaded"
+      "status": "loaded",
+      "how": "plain-pickle"
     }
   ],
   "weights_unreadable": [],

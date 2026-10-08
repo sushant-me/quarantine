@@ -18,22 +18,17 @@
     {
       "i": 1,
       "event": "import",
-      "detail": "urllib"
-    },
-    {
-      "i": 2,
-      "event": "import",
       "detail": "socket"
     },
     {
-      "i": 3,
+      "i": 2,
       "event": "file.read",
       "detail": "/etc/hostname"
     },
     {
-      "i": 4,
+      "i": 3,
       "event": "socket.getaddrinfo",
-      "detail": "d5d6bd70b20d.probe.invalid"
+      "detail": "f51c7a114442.probe.invalid"
     }
   ]
 }

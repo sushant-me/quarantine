@@ -47,6 +47,35 @@ python tools/verify_receipt_standalone.py runs/probe/receipt.json \
 Contributing without installing? `PYTHONPATH=src .venv/bin/python -m quarantine.cli …` works too;
 the scripts put `src/` on the path themselves. `scripts/check_eligibility.py` must pass either way.
 
+## The receipt
+
+A DSSE-shaped envelope: `payloadType` is `application/vnd.quarantine.receipt+json`, the payload is
+canonical JSON (`sort_keys=True`, compact separators), and the signature is Ed25519 over those exact
+bytes with `keyid = sha256(public_key_pem)[:16]`. Inside the payload, the part an auditor reads:
+
+| field | meaning |
+|---|---|
+| `artifact.tree_sha256` | sha256 over the artifact's file tree, so a verdict names exactly what was judged |
+| `behaviour.container` | the image, and the flags it ran under — network off, read-only, capabilities dropped |
+| `behaviour.events` | the captured trace, with capability events marked |
+| `behaviour.noise_floor` | which measured baseline was subtracted, and its hash |
+| `verdict.decided` | `ALLOW`, `BLOCK` or `UNKNOWN` — `UNKNOWN` is not a pass |
+| `verdict.grounded` | whether the verdict's citations survive the harness's own evidence rules |
+| `verdict.cited_ids` | the trace ids the model relied on |
+| `verdict.stated_reason` | the ground the model said it decided on, from a closed vocabulary |
+| `verdict.reason_consistent_with_counters` | whether that ground survives the counts the harness made itself |
+| `verdict.model_output` | the model's answer verbatim, so the reasoning is not paraphrased |
+| `verdict.challenge` | the challenger's attempt to refute it, and whether it succeeded |
+| `repair` | the rewritten loader, what was removed, and whether it is equivalent |
+| `equivalence` | identical outputs on 12 prompts, and capability operations before and after |
+| `agents.transcript` | every agent's notes, in order, with the turn count |
+
+`stated_reason` and its consistency flag are **annotations, not vetoes**: enforcing that ground was
+built, measured over two models and eleven artifacts, found to cost two correct decisions and save
+none, and removed — see §3f of [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md). The published example
+receipts in `runs/` are checked against this table by the eligibility gate, because they drifted
+from it once.
+
 ## The agent team
 
 Six roles. **Three use the local model; three are deterministic code** — a model decides what evidence

@@ -179,6 +179,53 @@ def check_files() -> list[dict]:
     return out
 
 
+def check_curated_receipts_match_the_documented_format() -> list[dict]:
+    """Every field the README's receipt table names must exist in the published receipt.
+
+    The README's table IS the receipt format's contract, and the curated receipt in `runs/probe`
+    is its worked example — the file the verification recipe in the same section points at. It
+    drifted once: the verdict gained a stated ground, the receipts kept the old shape, and the
+    table did not exist yet. This check makes the documentation and the artifact fail together.
+    """
+    import base64
+    import json as _json
+    import re as _re
+
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    documented = _re.findall(r"^\| `([a-z_.]+)` \|", readme, _re.M)
+    receipt = ROOT / "runs" / "probe" / "receipt.json"
+    out: list[dict] = []
+    if not documented:
+        return [{"check": "the receipt format is documented", "what": "receipt", "ok": False,
+                 "detail": "no field table found in README.md"}]
+    if not receipt.exists():
+        return [{"check": "the receipt format is documented", "what": "receipt", "ok": False,
+                 "detail": "runs/probe/receipt.json is missing"}]
+    try:
+        raw = _json.loads(receipt.read_text(encoding="utf-8"))
+        payload = _json.loads(base64.b64decode(raw["payload"])) if "payload" in raw else raw
+    except Exception as exc:                                      # noqa: BLE001
+        return [{"check": "the receipt format is documented", "what": "receipt", "ok": False,
+                 "detail": f"{type(exc).__name__}: {exc}"}]
+
+    def paths(node: dict, prefix: str = "") -> set:
+        found = set()
+        for key, value in node.items():
+            found.add(prefix + key)
+            if isinstance(value, dict):
+                found |= paths(value, prefix + key + ".")
+        return found
+
+    have = paths(payload)
+    missing = [field for field in documented if field not in have]
+    out.append({"check": "the documented receipt fields exist in the published receipt",
+                "what": "receipt", "ok": not missing,
+                "detail": (f"{len(documented)} documented fields, all present in a "
+                           f"{payload.get('verdict', {}).get('decided')} receipt"
+                           if not missing else f"documented but absent: {missing}")})
+    return out
+
+
 def check_no_generated_artifacts_are_tracked() -> list[dict]:
     """Nothing regenerable may be tracked under runs/ except the curated evidence.
 
@@ -382,6 +429,7 @@ def main() -> int:
     results += check_verifiable_facts()
     results += check_console_entry_point()
     results += check_no_generated_artifacts_are_tracked()
+    results += check_curated_receipts_match_the_documented_format()
     results += check_presentations_are_self_contained()
     results += check_event_requirements_mapped()
     results += check_no_vendor_inference()

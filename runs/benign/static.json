@@ -59,7 +59,9 @@
       "infected": 0,
       "suspicious": 0,
       "dangerous": 0,
-      "says_clean": true
+      "says_clean": true,
+      "verdict_malicious": false,
+      "flagged_anything": false
     },
     "fickling_parsed": {
       "scanned_files": 1,
@@ -73,7 +75,9 @@
       "infected": 0,
       "suspicious": 0,
       "dangerous": 0,
-      "says_clean": true
+      "says_clean": true,
+      "verdict_malicious": false,
+      "flagged_anything": false
     },
     "fickling": {
       "scanned_files": 1,
