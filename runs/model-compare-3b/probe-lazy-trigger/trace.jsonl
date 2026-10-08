@@ -1,2 +1,0 @@
-{"i": 1, "event": "import", "detail": "socket"}
-{"i": 2, "event": "socket.getaddrinfo", "detail": "lazy.probe.invalid"}

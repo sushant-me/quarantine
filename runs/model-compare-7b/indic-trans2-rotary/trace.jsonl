@@ -1,6 +1,0 @@
-{"i": 1, "event": "artifact.error", "detail": "modeling_rotary_indictrans.py: ModuleNotFoundError: No module named 'torch'"}
-{"i": 2, "event": "pickle.find_class", "detail": "torch._utils._rebuild_tensor_v2"}
-{"i": 3, "event": "pickle.find_class", "detail": "torch.FloatStorage"}
-{"i": 4, "event": "pickle.find_class", "detail": "collections.OrderedDict"}
-{"i": 5, "event": "weights.stubbed", "detail": "torch._utils._rebuild_tensor_v2"}
-{"i": 6, "event": "weights.stubbed", "detail": "torch.FloatStorage"}

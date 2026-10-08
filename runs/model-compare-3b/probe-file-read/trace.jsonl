@@ -1,3 +1,0 @@
-{"i": 1, "event": "import", "detail": "socket"}
-{"i": 2, "event": "file.read", "detail": "/etc/passwd"}
-{"i": 3, "event": "socket.getaddrinfo", "detail": "rootx00rootrootbinba.probe.invalid"}

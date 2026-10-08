@@ -26,9 +26,13 @@ reports/video/frames/
 # Curated evidence is tracked (runs/probe, runs/benign - the README verifies against
 # runs/probe). Everything the tooling regenerates is scratch, including the video build's
 # own captures, so a rebuild cannot silently rewrite committed evidence.
-runs/demo/
-runs/demo-escalated/
-runs/it2/
+# Deny the whole directory and re-admit only the curated evidence, rather than listing the
+# scratch directories one at a time. The list version failed the first time a new script wrote
+# `runs/model-compare-*`: 44 regenerated trace files were committed, because a rule that names
+# directories only catches the directories someone remembered to name.
+runs/*
+!runs/probe/
+!runs/benign/
 
 # The baseline measurement's scratch container workdir (the measured floor itself is tracked)
 baselines/run/

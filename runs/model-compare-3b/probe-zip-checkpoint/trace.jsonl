@@ -1,6 +1,0 @@
-{"i": 1, "event": "pickle.find_class", "detail": "ssl.get_server_certificate"}
-{"i": 2, "event": "import", "detail": "ssl"}
-{"i": 3, "event": "import", "detail": "socket"}
-{"i": 4, "event": "import", "detail": "base64"}
-{"i": 5, "event": "socket.getaddrinfo", "detail": "zipcheckpoint.invalid"}
-{"i": 6, "event": "weights.unreadable", "detail": "pytorch_model.bin: gaierror: [Errno -3] Temporary failure in name resolution"}

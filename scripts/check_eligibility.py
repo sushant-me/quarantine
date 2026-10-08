@@ -179,6 +179,27 @@ def check_files() -> list[dict]:
     return out
 
 
+def check_no_generated_artifacts_are_tracked() -> list[dict]:
+    """Nothing regenerable may be tracked under runs/ except the curated evidence.
+
+    This exists because a measurement script wrote `runs/model-compare-*/` and 44 trace files
+    went into a commit: `.gitignore` listed scratch directories by name, which only catches the
+    names someone remembered. A rule that depends on attention is not a rule.
+    """
+    import subprocess
+    allowed = ("runs/probe/", "runs/benign/")
+    try:
+        tracked = subprocess.run(["git", "ls-files", "runs"], cwd=ROOT, capture_output=True,
+                                 text=True, timeout=60).stdout.split()
+    except Exception as exc:                                    # noqa: BLE001
+        return [{"check": "no generated artifacts are tracked", "what": "hygiene", "ok": False,
+                 "detail": f"could not list tracked files: {exc}"}]
+    stray = [f for f in tracked if not f.startswith(allowed)]
+    return [{"check": "no generated artifacts are tracked", "what": "hygiene",
+             "ok": not stray, "detail": (f"{len(tracked)} curated evidence files" if not stray
+                                         else f"regenerable output is tracked: {stray[:3]}")}]
+
+
 def check_presentations_are_self_contained() -> list[dict]:
     """The deck and the project-idea document must work with the network off.
 
@@ -360,6 +381,7 @@ def main() -> int:
     results += check_licence()
     results += check_verifiable_facts()
     results += check_console_entry_point()
+    results += check_no_generated_artifacts_are_tracked()
     results += check_presentations_are_self_contained()
     results += check_event_requirements_mapped()
     results += check_no_vendor_inference()
