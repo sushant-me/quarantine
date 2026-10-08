@@ -83,6 +83,10 @@ Point at `cited_ids: [5, 6]` on screen.
 
 ### 02:15–02:40 · The receipts, and the honest numbers
 
+**Verify it without trusting us** — `tools/verify_receipt_standalone.py` is stdlib-only, checks the
+Ed25519 signature with `openssl` (a different implementation than the one that signed it), and the public key
+is committed. Flip the verdict in the JSON and it says NOT VERIFIED; that is the beat.
+
 ```bash
 PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py --prefix demo 2>&1 | tail -8
 ```

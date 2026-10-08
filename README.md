@@ -34,7 +34,7 @@ PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.jso
 python tools/verify_receipt_standalone.py runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
 
-PYTHONPATH=src .venv/bin/python -m pytest -q     # 66 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q     # 75 tests
 ```
 
 ## The agent team

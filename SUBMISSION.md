@@ -113,7 +113,7 @@ uv pip install --python .venv/bin/python cryptography picklescan fickling jsonsc
 .venv/bin/python scripts/make_corpus.py
 PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py       # detection vs the incumbents
 PYTHONPATH=src .venv/bin/python scripts/escape_attempt.py    # ten breakout primitives
-PYTHONPATH=src .venv/bin/python -m pytest -q                 # 66 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q                 # 75 tests
 
 # one artifact, the whole loop, offline
 PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-generate --out runs/probe

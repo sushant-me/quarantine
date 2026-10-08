@@ -393,7 +393,11 @@ found only because there was a control group and a rate to compute. That is the 
    not a specification.
 6. **The escape attempt is ten primitives, not a fuzzing campaign.** A clean table means *these ten*
    failed. It is not a claim that the box cannot be broken, and no kernel exploit was attempted.
-7. **No independent receipt verification.** Our own verifier, our own key. Standard primitives, unaudited.
+7. **Receipt verification no longer needs our code, but the key is still ours.**
+   [`tools/verify_receipt_standalone.py`](../tools/verify_receipt_standalone.py) is stdlib-only, imports
+   nothing from the package, and checks the Ed25519 signature with `openssl`; it was observed rejecting a
+   verdict flipped from `BLOCK` to `ALLOW` and an unrelated key. The key is self-signed, no external party
+   has verified a receipt, and the primitives are unaudited.
 8. **Python only, and zip-format checkpoints are not executed.** ONNX custom ops, GGUF metadata, and
    torch zip archives (the common real format) are read as *unreadable*, not inspected. `safetensors` is
    not even attempted — though it is the format that removes pickle execution by design.
