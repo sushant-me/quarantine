@@ -58,6 +58,8 @@ REQUIRED_FILES = [
     ("reports/third-party-eval.md", "the third-party result is published"),
     ("tools/verify_receipt_standalone.py", "receipts verify without this codebase"),
     ("presentation/quarantine-demo-day.html", "the Demo Day deck is present"),
+    ("presentation/quarantine-project-idea.html", "the project-idea document source"),
+    ("presentation/Quarantine-Project-Idea.pdf", "the project-idea PDF all these documents explain"),
     ("runs/probe/keys/quarantine.pub.pem", "the public key is published so anyone can verify"),
     ("baselines/python_3.12-slim.jsonl", "the default image's noise floor is recorded"),
     ("docs/DEMO-SCRIPT.md", "demo script"),
@@ -168,25 +170,37 @@ def check_files() -> list[dict]:
     return out
 
 
-def check_deck_is_self_contained() -> list[dict]:
-    """The Demo Day deck must work with the network off — that is the whole theme.
+def check_presentations_are_self_contained() -> list[dict]:
+    """The deck and the project-idea document must work with the network off.
 
-    A deck that pulls a font or a script from a CDN fails in the room, and it also fails the
-    claim this project makes about running offline.
+    That is the theme, and a document that pulls a font from a CDN fails in the room it is
+    presented in. The PDF is checked too: it is what gets shared, so it has to exist and be
+    a real document rather than a truncated render.
     """
     import re as _re
-    path = ROOT / "presentation" / "quarantine-demo-day.html"
-    if not path.exists():
-        return [{"check": "deck is self-contained", "what": "presentation", "ok": False,
-                 "detail": "deck missing"}]
-    text = path.read_text(encoding="utf-8", errors="replace")
-    refs = [r for r in _re.findall(r'(?:src|href)="([^"]+)"', text)
-            if not r.startswith("#")]
-    slides = text.count('class="slide')
-    ok = not refs and slides >= 10
-    return [{"check": "deck is self-contained", "what": "presentation", "ok": ok,
-             "detail": (f"{slides} slides, no external references" if ok
-                        else f"{slides} slides but external refs: {refs[:3]}")}]
+    out = []
+    for rel, minimum in (("presentation/quarantine-demo-day.html", 10),
+                         ("presentation/quarantine-project-idea.html", 6)):
+        path = ROOT / rel
+        if not path.exists():
+            out.append({"check": f"{rel} is self-contained", "what": "presentation",
+                        "ok": False, "detail": "missing"})
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        refs = [r for r in _re.findall(r'(?:src|href)="([^"]+)"', text) if not r.startswith("#")]
+        sections = text.count('class="slide') + text.count('class="page')
+        ok = not refs and sections >= minimum
+        out.append({"check": f"{rel} is self-contained", "what": "presentation", "ok": ok,
+                    "detail": (f"{sections} sections, no external references" if ok
+                               else f"{sections} sections, external refs: {refs[:3]}")})
+
+    pdf = ROOT / "presentation" / "Quarantine-Project-Idea.pdf"
+    size = pdf.stat().st_size if pdf.exists() else 0
+    header_ok = pdf.exists() and pdf.read_bytes()[:5] == b"%PDF-"
+    out.append({"check": "the project-idea PDF is a real PDF", "what": "presentation",
+                "ok": header_ok and size > 50_000,
+                "detail": f"%PDF header, {size/1024:.0f} KB" if header_ok else "missing or not a PDF"})
+    return out
 
 
 def check_licence() -> list[dict]:
@@ -302,7 +316,7 @@ def main() -> int:
     results += check_files()
     results += check_licence()
     results += check_verifiable_facts()
-    results += check_deck_is_self_contained()
+    results += check_presentations_are_self_contained()
     results += check_event_requirements_mapped()
     results += check_no_vendor_inference()
     results += check_doc_paths()

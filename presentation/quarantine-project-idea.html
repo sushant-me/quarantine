@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quarantine — project idea</title>
+<style>
+  @page { size: A4; margin: 15mm 16mm; }
+  :root{ --ink:#111418; --dim:#5b6673; --line:#d6dce3; --accent:#0b6bcb; --code:#f4f6f9;
+         --good:#0a7d3c; --bad:#b3261e; --warn:#8a5a00; }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+  body{margin:0;color:var(--ink);
+    font:11.2pt/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .page{page-break-after:always}
+  .page:last-child{page-break-after:auto}
+  h1{font-size:24pt;line-height:1.15;margin:0 0 4pt}
+  h2{font-size:14pt;margin:0 0 8pt;padding-bottom:3pt;border-bottom:1.5pt solid var(--line)}
+  h3{font-size:11pt;margin:12pt 0 3pt;color:var(--accent);text-transform:uppercase;letter-spacing:.4pt}
+  p{margin:5pt 0}
+  ul{margin:5pt 0 5pt 14pt;padding:0}
+  li{margin:2.5pt 0}
+  code{background:var(--code);border:0.5pt solid var(--line);border-radius:3pt;padding:0.5pt 2.5pt;
+    font:10.2pt/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:var(--code);border:0.5pt solid var(--line);border-radius:4pt;padding:8pt 10pt;
+    font:9.4pt/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;white-space:pre-wrap;margin:6pt 0}
+  table{border-collapse:collapse;width:100%;margin:6pt 0;font-size:10.2pt}
+  th,td{border-bottom:0.5pt solid var(--line);padding:4pt 6pt;text-align:left;vertical-align:top}
+  th{color:var(--dim);font-weight:600}
+  .dim{color:var(--dim)}
+  .lead{font-size:12.5pt}
+  .good{color:var(--good);font-weight:600}.bad{color:var(--bad);font-weight:600}.warn{color:var(--warn);font-weight:600}
+  .cover{display:flex;flex-direction:column;justify-content:center;min-height:255mm}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:1.4pt;text-transform:uppercase;font-size:10pt}
+  .rule{height:2.5pt;background:var(--ink);width:56pt;margin:10pt 0 16pt}
+  .box{border:0.5pt solid var(--line);border-radius:4pt;padding:9pt 12pt;margin:7pt 0;background:#fbfcfd}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10pt}
+  .tag{display:inline-block;border:0.5pt solid var(--line);border-radius:9pt;padding:1pt 6pt;
+    margin:2pt 3pt 2pt 0;font-size:9pt;color:var(--dim)}
+  .note{font-size:9.6pt;color:var(--dim)}
+  pre.diagram{font-size:8.1pt;line-height:1.35;white-space:pre;overflow:hidden}
+  blockquote{margin:7pt 0;padding:2pt 0 2pt 10pt;border-left:2.5pt solid var(--accent);color:var(--dim)}
+  footer{margin-top:14pt;padding-top:6pt;border-top:0.5pt solid var(--line);font-size:9.4pt;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<!-- ───────────── cover ───────────── -->
+<section class="page cover">
+  <div class="kicker">Frogtoberfest 2026 · Build with AI · project idea</div>
+  <div class="rule"></div>
+  <h1>Quarantine</h1>
+  <p class="lead">The offline clean room for untrusted model artifacts.</p>
+  <p>Every model you download is code you did not write. Quarantine runs it where it cannot hurt you, records
+  everything it does, has a local open-weight model read that behaviour against the artifact's own declaration,
+  blocks what it cannot explain, repairs what it can — and signs a receipt you can verify with OpenSSL.</p>
+  <p style="margin-top:10pt">
+    <span class="tag">an agent team, 3 of 6 using the model</span>
+    <span class="tag">contained execution</span>
+    <span class="tag">three outcomes</span>
+    <span class="tag">verified repair</span>
+    <span class="tag">signed receipts</span>
+    <span class="tag">no API key, no egress</span>
+  </p>
+  <div class="box" style="margin-top:18pt">
+    <p style="margin:0"><strong>Repository</strong> —
+      <code>https://github.com/sushant-me/quarantine</code> (public, Apache-2.0)</p>
+    <p style="margin:4pt 0 0"><strong>Runs on</strong> — Python 3.12, Docker, and a local
+      <code>qwen2.5-coder-3b</code> served by llama.cpp. No account, no paid API, no network at analysis time.</p>
+    <p style="margin:4pt 0 0"><strong>Status</strong> — working, measured, 75 tests, 60/60 eligibility checks.</p>
+  </div>
+  <footer>This document describes the idea, how it works, and what has actually been measured — including the
+  result that argues against us.</footer>
+</section>
+
+<!-- ───────────── 1. problem ───────────── -->
+<section class="page">
+  <h2>1. The problem</h2>
+  <p>A model artifact is not data. A <code>pytorch_model.bin</code> is a pickle; a repository with
+  <code>auto_map</code> in its config is a <code>modeling_*.py</code> that runs on your machine the moment the
+  model is loaded. Loading it executes a stranger's code with your credentials, inside your network, on your
+  laptop.</p>
+  <p>This is not hypothetical: pickles execute arbitrary code on unpickle by design, and the
+  <code>trust_remote_code=True</code> flag exists precisely because model repositories ship custom Python that
+  the framework is expected to run.</p>
+
+  <h3>What the existing scanners do</h3>
+  <ul>
+    <li>Match global names against a denylist of dangerous functions, and read <em>pickle opcodes</em>.</li>
+    <li>They are useful and fast — but <strong>neither picklescan nor fickling opens a <code>.py</code> file</strong>,
+    so the code path is outside their input set entirely.</li>
+    <li>They stop at a label. They cannot say what the artifact <em>did</em>, and they give you nothing to ship
+    afterwards.</li>
+  </ul>
+  <div class="box">
+    <p style="margin:0"><strong>Measured on our labeled corpus</strong> (9 undeclared artifacts that all declare the
+    same innocent API): picklescan <span class="bad">2/9</span>, fickling <span class="bad">2/9</span>. The two they
+    catch are the two whose payload is a <em>pickle</em> — the only ones inside their input set. The other seven
+    live in <code>custom_generate/generate.py</code> and <code>modeling_*.py</code>.</p>
+  </div>
+</section>
+
+<!-- ───────────── 2. the idea ───────────── -->
+<section class="page">
+  <h2>2. The idea</h2>
+  <p class="lead"><strong>Judge what the artifact did, against what it declared — inside a box where doing it is
+  harmless.</strong></p>
+  <p>Three convictions hold the design together:</p>
+  <ul>
+    <li><strong>The box is the analysis.</strong> Containment is not a safety net around the scan; executing the
+    artifact is how you learn the truth. Behaviour cannot be evaded by renaming a function.</li>
+    <li><strong>The AI decides meaning; code decides facts.</strong> A model reads the evidence and reaches a
+    verdict. Deterministic code decides what was observed, whether a claim is admissible, and whether a repair
+    is correct — so no verdict rests on a model's opinion of its own work.</li>
+    <li><strong>"We could not look" is a first-class outcome.</strong> It is never reported as "fine". The first
+    version of this tool did exactly that — it reported ALLOW for an artifact it had failed to run — and that
+    defect is why the third outcome exists.</li>
+  </ul>
+
+  <h3>An agent team, not a pipeline</h3>
+  <p>Six roles. <strong>Three use the local model; three are deterministic code.</strong> They never call each
+  other: each posts to an append-only case file (<code>board.jsonl</code>) and a supervisor routes from what is
+  on it. The whole transcript travels inside the signed receipt.</p>
+  <table>
+    <tr><th>agent</th><th>kind</th><th>what it does</th></tr>
+    <tr><td>observer</td><td class="dim">deterministic</td><td>executes the artifact in Docker with the network off and records every sensitive operation via a CPython audit hook (PEP 578)</td></tr>
+    <tr><td>analyst</td><td>AI</td><td>reads the trace, the static capability graph and the declaration; returns ALLOW / BLOCK / UNKNOWN with evidence cited by trace id</td></tr>
+    <tr><td>challenger</td><td>AI</td><td>tries to <em>refute</em> the analyst — and may only succeed by quoting, verbatim, the sentence in the declaration that permits the behaviour</td></tr>
+    <tr><td>repairer</td><td>AI</td><td>writes the replacement function bodies; the harness writes the boilerplate, and an AST gate rejects any residual capability</td></tr>
+    <tr><td>verifier</td><td class="dim">deterministic</td><td>re-runs original and repair: identical outputs <em>and</em> zero capability operations</td></tr>
+    <tr><td>scribe</td><td class="dim">deterministic</td><td>assembles and signs the receipt, transcript included</td></tr>
+  </table>
+  <p class="note">Routing is a policy, not a prompt. Three branches exist purely to avoid the worst outcome for a
+  security gate — saying "fine" when we did not look: nothing observed → escalate; the agents disagree and the
+  challenger <em>grounded</em> its objection → escalate; the model was unreachable → escalate.</p>
+</section>
+
+<!-- ───────────── 3. how it behaves ───────────── -->
+<section class="page">
+  <h2>3. How it behaves</h2>
+<pre class="diagram">observer ──trace──▶ analyst ──BLOCK──▶ challenger ──refuted?──▶ supervisor
+                     │                   │                        │
+                     │ ALLOW             │ no admissible          │ escalate
+                     ▼                   ▼ refutation             ▼ (UNKNOWN, exit 2)
+                  receipt            repairer ─▶ verifier ─▶ receipt (exit 0/1)</pre>
+  <table>
+    <tr><th>kind of artifact</th><th>verdict</th><th>exit</th><th>why</th></tr>
+    <tr><td>hides a DNS call on load</td><td class="bad">BLOCK</td><td>1</td><td>capability observed, and the declaration forbids it</td></tr>
+    <tr><td>benign control</td><td class="good">ALLOW</td><td>0</td><td>looked, saw nothing capability-like</td></tr>
+    <tr><td>code path that cannot run</td><td class="warn">UNKNOWN</td><td>2</td><td>never observed → a human decides, never "fine"</td></tr>
+  </table>
+  <p>The exit code is the integration point: <code>0</code> allow, <code>1</code> block, <code>2</code> escalate.
+  <strong>2 is not 0.</strong></p>
+
+  <h3>The repair is proven, not asserted</h3>
+  <p>A block with no path forward is just a complaint. So the blocked artifact is repaired, and the repair is
+  accepted only if it produces <strong>identical outputs on 12 prompts</strong> and performs <strong>zero
+  capability operations</strong> while doing so — the second half measured from the trace, not read off the
+  source. On the reference artifact the original performed 2 capability operations
+  (<code>file.read /etc/hostname</code>, <code>socket.getaddrinfo</code>); the repair performed 0.</p>
+  <p class="note">Across the corpus: 9/9 blocked · 7 repairs attempted · 7/7 capability-clean · 6/7 verified. The
+  seventh is a refusal, not a failure — the original cannot be executed at all, so equivalence with it cannot be
+  established, and the receipt says exactly that.</p>
+
+  <h3>The receipt is verifiable without trusting us</h3>
+<pre>$ python tools/verify_receipt_standalone.py runs/probe/receipt.json \
+      --pub runs/probe/keys/quarantine.pub.pem
+
+ok    payload is canonical JSON (re-serialising reproduces the signed bytes)
+ok    keyid matches the public key (ae3b68aa78ee693d)
+ok    openssl: Signature Verified Successfully
+
+  artifact   probe-custom-generate   verdict   BLOCK
+VERIFIED — signed by the holder of this key, and the payload is unmodified.</pre>
+  <p class="note">That verifier imports nothing from this project and no third-party package, and checks the
+  Ed25519 signature with <strong>OpenSSL</strong> — a different implementation than the one that signed it. Flip
+  the verdict in the JSON from <code>BLOCK</code> to <code>ALLOW</code> and it reports
+  <span class="bad">NOT VERIFIED</span>. Both directions were tested.</p>
+</section>
+
+<!-- ───────────── 4. evidence ───────────── -->
+<section class="page">
+  <h2>4. What has been measured</h2>
+  <table>
+    <tr><th></th><th>Quarantine</th><th>picklescan 1.0.5</th><th>fickling 0.1.12</th></tr>
+    <tr><td>our labeled corpus — 9 undeclared artifacts</td><td class="good">9/9</td><td>2/9</td><td>2/9</td></tr>
+    <tr><td>4 benign controls</td><td class="good">0 false positives</td><td>0</td><td>0</td></tr>
+    <tr><td><strong>20 real published models from the Hub</strong></td><td class="good">20 allowed, 0 escalated</td><td>0 FP</td><td class="bad">18 FP (90%)</td></tr>
+    <tr><td><strong>their</strong> corpus — 91 malicious samples, one per GHSA advisory</td><td class="warn">43 observed (47%)</td><td class="good">88 (97%)</td><td>—</td></tr>
+    <tr><td>5 real Nepali/Indic models, incl. 2 requiring <code>trust_remote_code=True</code></td><td class="good">0 false positives</td><td>0</td><td>2 FP</td></tr>
+    <tr><td>deliberate sandbox escape, 10 primitives</td><td class="good">0 escaped</td><td>—</td><td>—</td></tr>
+  </table>
+
+  <div class="box">
+    <p style="margin:0"><strong>The row that argues against us.</strong> On picklescan's <em>own</em> published
+    corpus we observe 47% of the payloads and their denylist flags 97%. The reason is what each approach can
+    see: their payloads mostly <em>name</em> a vulnerable entry point in a host library
+    (<code>cProfile.run</code>, <code>pty.spawn</code>, <code>torch.utils.collect_env.run</code>) and call nothing
+    when loaded in isolation — so there is no behaviour to observe, while a denylist reads the name and flags it
+    anyway. Ours act on load.</p>
+    <p style="margin:6pt 0 0"><strong>So this is not a replacement for a pickle scanner. It is the other half of
+    the pair</strong> — and the half that opens the <code>.py</code> files, and repairs what it blocks.</p>
+  </div>
+
+  <h3>Negative results we published rather than buried</h3>
+  <ul>
+    <li><strong>No scanner bypass is claimed.</strong> 19 one-pickle probes for standard-library callables that
+    reach the network, the filesystem, a process or dynamic code: we looked for one that both incumbents miss and
+    did not find it.</li>
+    <li><strong>The torch analysis image measured worse and ships off by default.</strong> It raised false
+    positives from 0 to 2 of 5 on the Nepali/Indic controls, because importing a dependency performs
+    <code>ctypes.dlopen</code>, sets its own environment variables and creates cache directories. A
+    <em>measured</em> noise floor is subtracted; it fixes the plain-model case, not the framework one.</li>
+  </ul>
+  <p class="note">Twenty-four defects were found by running the tool, and every one came from a control group, a
+  third-party artifact, a rate or a corpus — never from the case being demonstrated. If you delete the AI calls
+  from this codebase, what remains is a syscall trace and an AST listing: exactly the thing that already fails.</p>
+</section>
+
+<!-- ───────────── 5. Nepal ───────────── -->
+<section class="page">
+  <h2>5. Pointed at Nepal</h2>
+  <p>The challenge is about the Nepali open-source community, so the tool was pointed at it rather than described
+  as if it applied.</p>
+  <ul>
+    <li>A search of <strong>268 Nepali/Indic repositories</strong> found <strong>46 shipping <code>.py</code>
+    files and 15 declaring <code>auto_map</code></strong> — models that force
+    <code>trust_remote_code=True</code>, i.e. running the author's Python on your machine. Neither incumbent
+    scanner opens a single one of those files.</li>
+    <li>Two real models joined the control set, including a <strong>Nepali voice engine</strong> (740 downloads)
+    with a custom architecture. Running them <strong>exposed two defects in our own tool</strong> — a partial
+    observation that was not escalated, and a <code>BLOCK</code> that could be grounded by citing an
+    <em>error</em> rather than a capability.</li>
+    <li>The first Nepali model we ran <strong>escalated</strong>, and the reason was the shape of the ecosystem:
+    of the thirty most-downloaded Nepali models on the Hub, six are <strong>GGUF</strong> quantisations — the
+    format most Nepali users actually download. Our reader did not know it. It does now.</li>
+  </ul>
+  <div class="box">
+    <p style="margin:0"><strong>What it costs us, stated plainly.</strong> Remote-code models are
+    <em>escalated</em> by default, because their <code>modeling_*.py</code> needs torch and we will not approve or
+    block a code path we never ran. The image that fixes it exists and measures worse. Proper event attribution
+    is the work that closes this, and it is the clearest next step in the project.</p>
+  </div>
+</section>
+
+<!-- ───────────── 6. business + not claiming ───────────── -->
+<section class="page">
+  <h2>6. Why it is a business, and what it is not</h2>
+  <p><strong>The constraint is the product.</strong> A local open-weight model with no API key, no vendor account
+  and no bandwidth requirement is the only kind of artifact scanner that can be pointed at a customer's private
+  model registry or run air-gapped — which is precisely where cloud-based scanners are structurally excluded.
+  The free incumbents are static; hosting and containment, evidence an auditor will accept, and a repair you can
+  ship are what a buyer pays for.</p>
+  <p><strong>Beachhead: Nepal and South Asia.</strong> Closest design partners, cheapest go-to-market, and a
+  deployment reality — intermittent bandwidth, data-residency rules — that this architecture already fits. The
+  hook is the finding, not a pitch: a Nepali model author can be shown in one command whether their own artifact
+  is checkable.</p>
+  <p><strong>Intellectual property, honestly.</strong> The code is Apache-2.0 and is not the moat. The defensible
+  assets are the labeled corpus and evaluation harness, the receipt format as an adopted standard, and the
+  deterministic rule that binds an <code>ALLOW</code> to independently observed behaviour. Prior art is dense
+  where a patent looks most tempting, and we say so.</p>
+
+  <h3>What we are not claiming</h3>
+  <ul>
+    <li><strong>No proof the box cannot be broken.</strong> Ten breakout primitives failed; that is a
+    measurement, not a guarantee, and no kernel exploit was attempted.</li>
+    <li><strong>Poisoned weights are out of scope.</strong> We validate <code>safetensors</code> and
+    <code>gguf</code> containers and read pickles — a code-execution question, not a values question.</li>
+    <li><strong>The malicious corpus is ours</strong>, which is why the third-party controls, the 20 real
+    models, the Nepali models and the incumbent's own GHSA corpus exist — and why the 9/9 appears on the same
+    page as the 47%.</li>
+    <li>Nineteen limitations are listed in <code>LIMITATIONS.md</code>, including the ones that flatter the
+    numbers least.</li>
+  </ul>
+
+  <h3>Try it in three commands</h3>
+<pre>git clone https://github.com/sushant-me/quarantine &amp;&amp; cd quarantine
+./scripts/serve_model.sh                       # local open-weight model, no API key
+python -m quarantine.cli inspect &lt;artifact&gt;    # 0 allow · 1 block · 2 escalate</pre>
+  <p class="note">Then verify a receipt without trusting any of it:</p>
+<pre>python tools/verify_receipt_standalone.py runs/probe/receipt.json \
+       --pub runs/probe/keys/quarantine.pub.pem   # openssl says Signature Verified</pre>
+
+  <footer>
+    <strong>Quarantine</strong> — Frogtoberfest 2026 · <code>github.com/sushant-me/quarantine</code> · Apache-2.0 ·
+    75 tests · 60/60 eligibility checks · presented with the network off by design.
+  </footer>
+</section>
+
+</body>
+</html>
