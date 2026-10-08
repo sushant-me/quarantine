@@ -1,0 +1,175 @@
+{
+  "generated_at": "2026-10-08T21:40:08+0545",
+  "core_test": "if you deleted the AI call from your codebase, would the product still do its job?",
+  "with_model": {
+    "n": 13,
+    "allowed": 4,
+    "blocked": 9,
+    "escalated": 0
+  },
+  "without_model": {
+    "n": 13,
+    "allowed": 0,
+    "blocked": 0,
+    "escalated": 13
+  },
+  "without_model_rows": [
+    {
+      "artifact": "benign-tiny-model",
+      "label": "benign",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "benign-typing-only",
+      "label": "benign",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "benign-two-functions",
+      "label": "benign",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "benign-unicode",
+      "label": "benign",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "probe-custom-generate",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "probe-subprocess",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "probe-env-exfil",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "probe-file-read",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "probe-lazy-trigger",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "probe-obfuscated",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "probe-modeling-file",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "cve-2025-46417-pickle",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    },
+    {
+      "artifact": "probe-zip-checkpoint",
+      "label": "undeclared",
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "reason": "the local model was unreachable (URLError: <urlopen error [Errno 111] Connection refused>), so no verdict was reached",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ]
+    }
+  ],
+  "note": "The model was made unreachable by pointing the endpoint at a closed port, so this measures the pipeline without the AI rather than a description of it."
+}

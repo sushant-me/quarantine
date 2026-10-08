@@ -16,7 +16,7 @@ every Python file under `src/` and `scripts/` and reports none.
 | | |
 |---|---|
 | model | `qwen2.5-coder-3b-instruct-q4_k_m` (Apache-2.0), served by local **llama.cpp** on `127.0.0.1` |
-| transport | `src/quarantine/llm.py::chat` — one place that talks to the model, no API key, no vendor, no egress |
+| transport | `src/quarantine/llm.py::chat` — **the only place that sends inference requests**; all three AI call sites (analyst, challenger, repairer) go through it, and no other file in `src/` opens a connection to run a model. Until this was fixed the analyst and the repairer each held a private HTTP client, which made this row false — defect 29 in `SPIKE-RESULTS.md`. `src/quarantine/modelinfo.py::resolve_model` also reaches the server, but only reads `/v1/models` so the receipt names the model that actually answered. No API key, no vendor, no egress. |
 | name recorded | read back from the server's `/v1/models` by `src/quarantine/modelinfo.py::resolve_model`, never a default |
 
 The receipt records which model answered, because a receipt that names the wrong model is a false record.

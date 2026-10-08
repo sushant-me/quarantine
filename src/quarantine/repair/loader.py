@@ -28,9 +28,8 @@ import ast
 import json
 import os
 import time
-import urllib.error
-import urllib.request
 
+import quarantine.llm as llm
 from quarantine.modelinfo import resolve_model
 from quarantine.static.scan import CAPABILITY_CALLS, _dotted
 
@@ -67,8 +66,6 @@ SYSTEM = (
     "subprocess, no eval/exec."
 )
 
-URL = os.environ.get("QUARANTINE_MODEL_URL", "http://127.0.0.1:8081/v1/chat/completions")
-MODEL = os.environ.get("QUARANTINE_MODEL_NAME", "qwen2.5-coder-3b-instruct-q4_k_m")
 MAX_ATTEMPTS = int(os.environ.get("QUARANTINE_REPAIR_ATTEMPTS", "3"))
 
 FORBIDDEN_CAPABILITIES = ("network", "process", "dynamic_code", "filesystem",
@@ -124,13 +121,6 @@ def assemble(functions: list[dict]) -> str:
     return "\n".join(parts).rstrip() + "\n"
 
 
-def _post(payload: dict, timeout: int = 240) -> dict:
-    req = urllib.request.Request(URL, data=json.dumps(payload).encode(),
-                                 headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode())
-
-
 def _extract(text: str) -> dict | None:
     try:
         return json.loads(text)
@@ -160,30 +150,21 @@ def synthesize_loader(declared: str, code: str, verdict: dict | None) -> dict:
             "Return the kept functions now.")},
     ]
 
-    out: dict = {"model": resolve_model(MODEL), "ok": False, "removed": [], "code": None,
+    out: dict = {"model": resolve_model(llm.MODEL), "ok": False, "removed": [], "code": None,
                  "forbidden": [], "error": None, "attempts": [],
                  "assembled_by": "quarantine (def/indent) + model (bodies)"}
 
+    # Through `llm.chat`, like every other model call. This file used to hold its own HTTP
+    # client as well, which made the AI-usage disclosure's "one place that talks to the
+    # model" inaccurate for the repairer too.
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        payloads = [
-            {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 600,
-             "stream": False,
-             "response_format": {"type": "json_schema",
-                                 "json_schema": {"name": "repair", "schema": SCHEMA}}},
-            {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 600,
-             "stream": False},
-        ]
-        text = ""
-        for payload in payloads:
-            try:
-                body = _post(payload)
-            except (urllib.error.URLError, TimeoutError, OSError) as exc:
-                out["error"] = f"{type(exc).__name__}: {exc}"
-                out["elapsed_s"] = round(time.time() - started, 2)
-                return out
-            text = body.get("choices", [{}])[0].get("message", {}).get("content", "")
-            if _extract(text):
-                break
+        try:
+            text, parsed = llm.chat(messages, schema=SCHEMA, max_tokens=600)
+        except llm.ModelUnreachable as exc:
+            out["error"] = str(exc)
+            out["elapsed_s"] = round(time.time() - started, 2)
+            return out
+        _ = parsed
 
         candidate = _extract(text) or {}
         functions = candidate.get("functions") if isinstance(candidate.get("functions"), list) else None

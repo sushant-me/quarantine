@@ -19,9 +19,8 @@ from __future__ import annotations
 import json
 import os
 import time
-import urllib.error
-import urllib.request
 
+import quarantine.llm as llm
 from quarantine.events import capability_events
 from quarantine.modelinfo import resolve_model
 
@@ -68,10 +67,6 @@ SYSTEM = (
     "verdict is ALLOW; (4) if the evidence is insufficient, the verdict is UNKNOWN. "
     "A trace with no capability events means nothing suspicious happened. Reply with JSON only."
 )
-
-URL = os.environ.get("QUARANTINE_MODEL_URL", "http://127.0.0.1:8081/v1/chat/completions")
-MODEL = os.environ.get("QUARANTINE_MODEL_NAME", "qwen2.5-1.5b-instruct-q4_k_m")
-
 
 def _prompt(declared: str, code: str, events: list[dict], static: dict,
             execution: dict | None = None) -> str:
@@ -156,13 +151,6 @@ def _prompt(declared: str, code: str, events: list[dict], static: dict,
     )
 
 
-def _post(payload: dict, timeout: int = 180) -> dict:
-    req = urllib.request.Request(URL, data=json.dumps(payload).encode(),
-                                 headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode())
-
-
 def _parse_json(text: str) -> dict | None:
     try:
         return json.loads(text)
@@ -212,36 +200,28 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
         {"role": "system", "content": SYSTEM},
         {"role": "user", "content": _prompt(declared, code, events, static, execution)},
     ]
-    out: dict = {"model": MODEL, "reachable": False, "grounded": False, "raw": None}
+    out: dict = {"model": llm.MODEL, "reachable": False, "grounded": False, "raw": None}
 
-    # Two rounds: if the model cites evidence that does not exist, it is told exactly
+    # Up to MAX_ROUNDS: if the model cites evidence that does not exist, it is told exactly
     # which ids are valid and asked again. An ungrounded verdict is never accepted.
+    #
+    # The call goes through `llm.chat` rather than a private copy of the HTTP client. It used
+    # to have its own URL and model constants, which quietly falsified the AI-usage
+    # disclosure's claim that `src/quarantine/llm.py::chat` is the one place that talks to the
+    # model — and it made a "delete the AI" measurement silently measure nothing, because
+    # patching the shared endpoint had no effect on this file.
     for round_no in range(MAX_ROUNDS):
-        candidates = [
-            {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 400,
-             "stream": False,
-             "response_format": {"type": "json_schema",
-                                 "json_schema": {"name": "verdict",
-                                                 "schema": verdict_schema(sorted(valid_ids))}}},
-            {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 400,
-             "stream": False, "response_format": {"type": "json_object"}},
-            {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 400,
-             "stream": False},
-        ]
-        parsed, text = None, ""
-        for payload in candidates:
-            try:
-                body = _post(payload)
-            except (urllib.error.URLError, TimeoutError, OSError) as exc:
-                out["error"] = f"{type(exc).__name__}: {exc}"
-                out["elapsed_s"] = round(time.time() - started, 2)
-                return out
-            out["reachable"] = True
-            text = body.get("choices", [{}])[0].get("message", {}).get("content", "")
-            out["raw"] = text
+        try:
+            text, parsed = llm.chat(messages, schema=verdict_schema(sorted(valid_ids)),
+                                    max_tokens=400)
+        except llm.ModelUnreachable as exc:
+            out["error"] = str(exc)
+            out["elapsed_s"] = round(time.time() - started, 2)
+            return out
+        out["reachable"] = True
+        out["raw"] = text
+        if parsed is None:
             parsed = _parse_json(text)
-            if parsed:
-                break
         if not parsed:
             break
 
@@ -279,6 +259,6 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
             {"role": "user", "content": feedback + " Answer again with JSON only."},
         ]
 
-    out["model"] = resolve_model(MODEL)
+    out["model"] = resolve_model(llm.MODEL)
     out["elapsed_s"] = round(time.time() - started, 2)
     return out

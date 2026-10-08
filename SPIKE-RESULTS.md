@@ -331,6 +331,31 @@ payload's doing.
 
 ---
 
+## 3d. The Core Test, measured
+
+The organisers publish the bar: *"if you deleted the AI call from your codebase, would the product still do
+its job? If yes, it doesn't qualify."* That is answerable by experiment, so it was measured rather than
+argued. `scripts/measure_delete_the_ai.py` runs the same artifacts through the same pipeline with the model
+endpoint pointed at a closed port.
+
+| | with the model | **without the model** |
+|---|---|---|
+| decided `ALLOW` | 4 | **0** |
+| decided `BLOCK` | 9 | **0** |
+| escalated to a human | 0 | **13 of 13** |
+
+**Delete the AI and the product decides nothing.** What remains is exactly what the deterministic half always
+did — containment, the audit-hook trace, the capability graph, the equivalence check, the signing — plus an
+escalation queue. It does not degrade to a scanner, because a scanner answers "clean or suspicious" and this
+answers "what did it do, and does the declaration permit it".
+
+Two things this does **not** claim. The AI is load-bearing for the *decision*, not for the *safety*: an
+artifact is executed in a contained box with the network off whether or not a model is reachable, and an
+unreachable model can never produce an `ALLOW`. And the failure mode of an outage is too much caution, which
+is the direction a security gate should fail in.
+
+---
+
 ## 4. The corpus
 
 `scripts/make_corpus.py` generates it deterministically; `corpus/MANIFEST.json` is the label file. All
@@ -358,7 +383,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Twenty-eight defects found by running it
+## 5. Twenty-nine defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -410,8 +435,9 @@ and exited 0 — and it is the reason the third outcome exists here.
 | 26 | a real Nepali model failed with `ImportError: attempted relative import` — and we blamed the artifact | `modeling_*.py` was imported as a standalone module, while `transformers` loads remote code inside a package so that relative imports resolve | `sandbox_runner.py::_load_in_package` registers a synthetic parent package; the analysis image also gained `einops`, which another real model declares |
 | 27 | a benign real model was **abstained on** because the analyst read the interpreter's own noise as the artifact's doing | the prompt showed the raw trace with no distinction between evidence and context, so `ctypes.dlopen` and a temp directory looked like capability | every trace line is now marked `[EVIDENCE]` or `[context]` by the harness, and the decision procedure says `[context]` is never a reason to answer UNKNOWN |
 | 28 | the analyst appeared to **hallucinate trace ids** (161/166/248 in a 25-event trace) | the static findings printed `file:line`, so source line numbers and trace ids were two namespaces rendered in the same shape — the model was reading one as the other | the evidence field is now enumerated in the JSON schema, which the runtime compiles to a grammar, so an id that does not exist **cannot be emitted**; findings print `file (source line N)`; behaviour-over-static precedence is stated as a rule |
+| 29 | the AI-usage disclosure claimed `src/quarantine/llm.py::chat` is **one place that talks to the model**, and it was not true | `analyst.py` and `repair/loader.py` each held their own HTTP client, own URL and own default model — the analyst's default was even the 1.5B while `llm.py` said 3B | both now call `llm.chat`; the duplicate clients and constants are deleted. Found because a "delete the AI" experiment patched the shared endpoint and measured **identical** results, which was the clue that nothing had been deleted |
 
-Twenty-eight defects, and the pattern is consistent: every one was found by a control group, a
+Twenty-nine defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T18:41:23+0545",
+  "generated_at": "2026-10-08T21:57:16+0545",
   "n": 9,
   "with_custom_code": 7,
   "blocked": 9,
@@ -20,9 +20,9 @@
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "repair_attempted": true,
       "repair_ok": true,
@@ -32,7 +32,7 @@
       "sanitized_capability_ops": 0,
       "name": "probe-custom-generate",
       "category": "network-at-import",
-      "elapsed_s": 37.1
+      "elapsed_s": 53.6
     },
     {
       "cli_rc": 1,
@@ -59,7 +59,7 @@
       "sanitized_capability_ops": 0,
       "name": "probe-subprocess",
       "category": "process-at-import",
-      "elapsed_s": 56.0
+      "elapsed_s": 48.9
     },
     {
       "cli_rc": 1,
@@ -74,9 +74,9 @@
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "repair_attempted": true,
       "repair_ok": true,
@@ -86,7 +86,7 @@
       "sanitized_capability_ops": 0,
       "name": "probe-env-exfil",
       "category": "network-at-import",
-      "elapsed_s": 57.2
+      "elapsed_s": 36.4
     },
     {
       "cli_rc": 1,
@@ -101,9 +101,9 @@
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "repair_attempted": true,
       "repair_ok": true,
@@ -113,7 +113,7 @@
       "sanitized_capability_ops": 0,
       "name": "probe-file-read",
       "category": "network-at-import",
-      "elapsed_s": 37.7
+      "elapsed_s": 30.1
     },
     {
       "cli_rc": 1,
@@ -128,9 +128,9 @@
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "repair_attempted": true,
       "repair_ok": true,
@@ -140,7 +140,7 @@
       "sanitized_capability_ops": 0,
       "name": "probe-lazy-trigger",
       "category": "network-on-call",
-      "elapsed_s": 61.1
+      "elapsed_s": 47.3
     },
     {
       "cli_rc": 1,
@@ -167,7 +167,7 @@
       "sanitized_capability_ops": 0,
       "name": "probe-obfuscated",
       "category": "obfuscated",
-      "elapsed_s": 47.5
+      "elapsed_s": 29.9
     },
     {
       "cli_rc": 1,
@@ -194,7 +194,7 @@
       "sanitized_capability_ops": 0,
       "name": "probe-modeling-file",
       "category": "network-at-import",
-      "elapsed_s": 35.4
+      "elapsed_s": 77.6
     },
     {
       "cli_rc": 1,
@@ -217,7 +217,7 @@
       "sanitized_capability_ops": 0,
       "name": "cve-2025-46417-pickle",
       "category": "pickle-cve-pattern",
-      "elapsed_s": 40.0
+      "elapsed_s": 24.3
     },
     {
       "cli_rc": 1,
@@ -240,7 +240,7 @@
       "sanitized_capability_ops": 0,
       "name": "probe-zip-checkpoint",
       "category": "zip-checkpoint",
-      "elapsed_s": 32.4
+      "elapsed_s": 32.8
     }
   ],
   "note": "Repair is only attempted when the verdict is a grounded BLOCK, and an artifact whose payload is a pickle ships no custom code to repair."

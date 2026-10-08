@@ -56,6 +56,8 @@ REQUIRED_FILES = [
     ("scripts/measure_image_baseline.py", "the noise floor is measurable"),
     ("scripts/eval_third_party.py", "the third-party corpus evaluation is reproducible"),
     ("reports/third-party-eval.md", "the third-party result is published"),
+    ("scripts/measure_delete_the_ai.py", "the Core Test is measurable"),
+    ("reports/delete-the-ai.md", "the Core Test result is published"),
     ("tools/verify_receipt_standalone.py", "receipts verify without this codebase"),
     ("presentation/quarantine-demo-day.html", "the Demo Day deck is present"),
     ("presentation/quarantine-project-idea.html", "the project-idea document source"),

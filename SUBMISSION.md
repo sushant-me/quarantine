@@ -82,6 +82,11 @@ pickle scanner; it is the other half of the pair** — with the code path (no sc
 repair (no scanner attempts one) as the parts only this tool covers.
 [`reports/third-party-eval.md`](reports/third-party-eval.md)
 
+**The organisers' Core Test, measured.** They ask: *"if you deleted the AI call from your codebase, would
+the product still do its job?"* With the model endpoint pointed at a closed port, the same pipeline decides
+**0 ALLOW and 0 BLOCK — all 13 artifacts escalate.** The deterministic half still contains, traces, checks
+equivalence and signs; it cannot decide. `scripts/measure_delete_the_ai.py` · [`reports/delete-the-ai.md`](reports/delete-the-ai.md)
+
 **Three outcomes, and `UNKNOWN` is not a pass.** Exit codes make it a gate: **0 ALLOW · 1 BLOCK · 2 UNKNOWN**.
 Escalation is reserved for cases a human must decide — nothing was observed, the agents disagreed, or the model
 was unreachable. Before that outcome existed, an artifact whose dependency was missing was reported ALLOW:
