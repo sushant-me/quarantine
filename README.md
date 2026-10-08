@@ -178,6 +178,7 @@ verify:
 | | |
 |---|---|
 | **Licence** | Apache-2.0 ([`LICENSE`](LICENSE)) |
+| **Model choice** | Measured, not asserted. `scripts/compare_analyst_models.py` runs the analyst stage over the same eleven artifacts against whichever model the server hosts: the 7B abstains **twice as often** as the 3B (4 against 2) and is **2.1× slower**, including a benign control it should have allowed and a malicious probe it should have blocked. The default is the 3B because it measured better — see §3c of [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md). |
 | **Model** | `qwen2.5-coder-3b-instruct-q4_k_m` (Apache-2.0), served by local **llama.cpp** on `127.0.0.1` — the same runtime Ollama and LM Studio wrap. No API key, no account, no egress. `scripts/serve_model.sh` is the entire hosting story. |
 | **Language** | Python 3.12, standard library only for the analysis path |
 | **Containment** | Docker (`python:3.12-slim`), `--network none --read-only --cap-drop ALL --security-opt no-new-privileges --pids-limit 128 --memory 512m --cpus 1` |

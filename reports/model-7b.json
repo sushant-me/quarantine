@@ -1,0 +1,141 @@
+{
+  "summary": {
+    "label": "7b",
+    "model": "qwen2.5-coder-7b-instruct-q4_k_m.gguf",
+    "artifacts": 11,
+    "abstained": 4,
+    "unreachable": 0,
+    "mean_elapsed_s": 24.1
+  },
+  "rows": [
+    {
+      "artifact": "benign-tiny-model",
+      "kind": "control",
+      "verdict": "ALLOW",
+      "abstained": false,
+      "grounded": true,
+      "cited": [],
+      "capability_events": 0,
+      "observed": true,
+      "elapsed_s": 22.3
+    },
+    {
+      "artifact": "benign-two-functions",
+      "kind": "control",
+      "verdict": "UNKNOWN",
+      "abstained": true,
+      "grounded": true,
+      "cited": [],
+      "capability_events": 0,
+      "observed": true,
+      "elapsed_s": 20.2
+    },
+    {
+      "artifact": "benign-typing-only",
+      "kind": "control",
+      "verdict": "ALLOW",
+      "abstained": false,
+      "grounded": true,
+      "cited": [],
+      "capability_events": 0,
+      "observed": true,
+      "elapsed_s": 20.6
+    },
+    {
+      "artifact": "benign-unicode",
+      "kind": "control",
+      "verdict": "ALLOW",
+      "abstained": false,
+      "grounded": true,
+      "cited": [],
+      "capability_events": 0,
+      "observed": true,
+      "elapsed_s": 20.4
+    },
+    {
+      "artifact": "probe-custom-generate",
+      "kind": "undeclared",
+      "verdict": "BLOCK",
+      "abstained": false,
+      "grounded": true,
+      "cited": [
+        2
+      ],
+      "capability_events": 2,
+      "observed": true,
+      "elapsed_s": 23.3
+    },
+    {
+      "artifact": "probe-file-read",
+      "kind": "undeclared",
+      "verdict": "BLOCK",
+      "abstained": false,
+      "grounded": true,
+      "cited": [
+        2
+      ],
+      "capability_events": 2,
+      "observed": true,
+      "elapsed_s": 23.5
+    },
+    {
+      "artifact": "probe-subprocess",
+      "kind": "undeclared",
+      "verdict": "BLOCK",
+      "abstained": false,
+      "grounded": true,
+      "cited": [
+        2
+      ],
+      "capability_events": 1,
+      "observed": true,
+      "elapsed_s": 21.7
+    },
+    {
+      "artifact": "probe-zip-checkpoint",
+      "kind": "undeclared",
+      "verdict": "UNKNOWN",
+      "abstained": true,
+      "grounded": true,
+      "cited": [],
+      "capability_events": 2,
+      "observed": true,
+      "elapsed_s": 24.5
+    },
+    {
+      "artifact": "probe-lazy-trigger",
+      "kind": "undeclared",
+      "verdict": "BLOCK",
+      "abstained": false,
+      "grounded": true,
+      "cited": [
+        2
+      ],
+      "capability_events": 1,
+      "observed": true,
+      "elapsed_s": 23.7
+    },
+    {
+      "artifact": "indic-trans2-rotary",
+      "kind": "real-remote-code",
+      "verdict": "UNKNOWN",
+      "abstained": true,
+      "grounded": true,
+      "cited": [],
+      "capability_events": 0,
+      "observed": true,
+      "elapsed_s": 34.9
+    },
+    {
+      "artifact": "nepali-voice-engine",
+      "kind": "real-remote-code",
+      "verdict": "UNKNOWN",
+      "abstained": true,
+      "grounded": true,
+      "cited": [],
+      "capability_events": 0,
+      "observed": true,
+      "elapsed_s": 29.8
+    }
+  ]
+}

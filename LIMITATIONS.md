@@ -109,8 +109,14 @@ attached.
     exist**, even though it now states the distinction correctly in its own words. The citation problem behind
     that behaviour is fixed structurally — the evidence field is enumerated in the JSON schema, which the
     runtime compiles to a grammar, so an id that does not exist cannot be emitted — and the case escalates
-    rather than guessing. The residual is a model-capability limit at 3B; a larger open-weight model is the
-    obvious remedy and is a configuration change, not a code change. Second, **version skew is unsolvable in a
+    rather than guessing. **The remedy is not a bigger model, and that was measured rather than assumed:**
+    swapping the 3B for a 7B made abstention worse, not better — 4 abstentions against 2, twice as slow,
+    including a benign control it should have allowed and a malicious probe it should have blocked (see §3c
+    of `SPIKE-RESULTS.md`). Both new abstentions blamed *"unresolved globals"*, a number the harness counts as
+    zero for those artifacts. The obstacle is a model's willingness to reason from the harness's counters
+    rather than from its own impression, and that does not improve monotonically with parameter count. The fix
+    is to make the condition impossible to misstate, as was already done for evidence ids. Second, **version
+    skew is unsolvable in a
     single image**: a real model needs an older `transformers.pytorch_utils`. Per-artifact dependency
     resolution from the artifact's own manifest is the real feature, and it is not in this release.
 18. **Behaviour-based detection is weak against payloads that cannot fire in isolation — measured, not

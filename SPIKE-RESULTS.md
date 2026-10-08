@@ -331,6 +331,41 @@ payload's doing.
 
 ---
 
+## 3c. Does a larger model fix the abstention? No — measured
+
+`LIMITATIONS.md` said the remedy for the analyst's abstention was "a larger open-weight model" and that it
+would be "a configuration change, not a code change". That was asserted, not measured. So it was measured:
+`scripts/compare_analyst_models.py` runs only the analyst stage, on identical evidence, over the same eleven
+artifacts, against whichever model the server hosts — one variable, one stage.
+
+| | `qwen2.5-coder-3b` | `qwen2.5-coder-7b` |
+|---|---|---|
+| abstained (UNKNOWN) | **2** | **4** |
+| benign controls decided ALLOW | **4 of 4** | 3 of 4 |
+| undeclared probes decided BLOCK | **5 of 5** | 4 of 5 |
+| real remote-code models | 2 abstain | 2 abstain |
+| mean latency per artifact | **11.3s** | 24.1s |
+
+**The larger model is twice as slow and abstains twice as often.** It introduced an abstention on a benign
+control (a false escalation) and on a malicious probe (a missed block) — both of which the 3B decided
+correctly.
+
+The reason is more useful than the ranking. Both new abstentions gave the same stated mechanism:
+*"unresolved globals"*. The harness counts that number itself, and for those two artifacts it is **zero**:
+`benign-two-functions` has 0 unresolved globals and 0 capability events, which by the written decision
+procedure *requires* ALLOW. The 7B invented a condition its own input contradicts. The 3B was the more
+rule-faithful model here.
+
+So the obstacle is not capacity — it is a model's willingness to reason from the harness's counters instead
+of its own impression, which does not improve monotonically with parameters. The fix is therefore the class
+of fix already applied to evidence citations: make the condition impossible to misstate, rather than ask a
+larger model to restate it correctly.
+
+Caveat on the latency column: this machine's `llama.cpp` build reports *"no usable GPU found, --gpu-layers
+option will be ignored"*, so both models ran on 6 CPU threads. The ratio is CPU inference, not GPU.
+
+---
+
 ## 3d. The Core Test, measured
 
 The organisers publish the bar: *"if you deleted the AI call from your codebase, would the product still do
@@ -383,7 +418,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Twenty-nine defects found by running it
+## 5. Thirty defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -436,8 +471,10 @@ and exited 0 — and it is the reason the third outcome exists here.
 | 27 | a benign real model was **abstained on** because the analyst read the interpreter's own noise as the artifact's doing | the prompt showed the raw trace with no distinction between evidence and context, so `ctypes.dlopen` and a temp directory looked like capability | every trace line is now marked `[EVIDENCE]` or `[context]` by the harness, and the decision procedure says `[context]` is never a reason to answer UNKNOWN |
 | 28 | the analyst appeared to **hallucinate trace ids** (161/166/248 in a 25-event trace) | the static findings printed `file:line`, so source line numbers and trace ids were two namespaces rendered in the same shape — the model was reading one as the other | the evidence field is now enumerated in the JSON schema, which the runtime compiles to a grammar, so an id that does not exist **cannot be emitted**; findings print `file (source line N)`; behaviour-over-static precedence is stated as a rule |
 | 29 | the AI-usage disclosure claimed `src/quarantine/llm.py::chat` is **one place that talks to the model**, and it was not true | `analyst.py` and `repair/loader.py` each held their own HTTP client, own URL and own default model — the analyst's default was even the 1.5B while `llm.py` said 3B | both now call `llm.chat`; the duplicate clients and constants are deleted. Found because a "delete the AI" experiment patched the shared endpoint and measured **identical** results, which was the clue that nothing had been deleted |
+| 30 | `LIMITATIONS.md` named "a larger open-weight model" as the remedy for analyst abstention, and it was never tested | an untested remedy in a limitations list reads as a plan; this one was wrong, and it sat in the same document as the numbers it contradicted | measured instead with `scripts/compare_analyst_models.py`: the 7B abstains twice as often, twice as slowly, and states a reason the harness's own count contradicts. The remedy is struck from the documents |
 
-Twenty-nine defects, and the pattern is consistent: every one was found by a control group, a
+
+Thirty defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked

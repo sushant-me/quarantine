@@ -1,0 +1,2 @@
+{"i": 1, "event": "import", "detail": "subprocess"}
+{"i": 2, "event": "subprocess.Popen", "detail": "/bin/echo"}

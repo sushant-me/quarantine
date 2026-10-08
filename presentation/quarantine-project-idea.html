@@ -206,12 +206,19 @@ VERIFIED — signed by the holder of this key, and the payload is unmodified.</p
     <li><strong>No scanner bypass is claimed.</strong> 19 one-pickle probes for standard-library callables that
     reach the network, the filesystem, a process or dynamic code: we looked for one that both incumbents miss and
     did not find it.</li>
+    <li><strong>Our own proposed remedy was wrong, and we measured it.</strong> We wrote that the analyst's
+    occasional abstention would be fixed by a larger open-weight model. Swapping the 3B for a 7B made it
+    <em>worse</em>: four abstentions instead of two, 2.1&times; slower, including a benign control it should have
+    allowed and a malicious probe it should have blocked. Both new abstentions blamed <em>"unresolved
+    globals"</em> &mdash; a number the harness counts as zero for those artifacts. The remedy is struck from the
+    documents, and the real obstacle is now identified: a model restating the harness's counters instead of
+    reasoning from them.</li>
     <li><strong>The torch analysis image measured worse and ships off by default.</strong> It raised false
     positives from 0 to 2 of 5 on the Nepali/Indic controls, because importing a dependency performs
     <code>ctypes.dlopen</code>, sets its own environment variables and creates cache directories. A
     <em>measured</em> noise floor is subtracted; it fixes the plain-model case, not the framework one.</li>
   </ul>
-  <p class="note">Twenty-nine defects were found by running the tool, and every one came from a control group, a
+  <p class="note">Thirty defects were found by running the tool, and every one came from a control group, a
   third-party artifact, a rate or a corpus — never from the case being demonstrated. If you delete the AI calls
   from this codebase, what remains is a syscall trace and an AST listing: exactly the thing that already fails.</p>
 </section>
