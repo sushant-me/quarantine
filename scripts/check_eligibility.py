@@ -53,6 +53,7 @@ REQUIRED_FILES = [
     ("scripts/verify_published_receipts.py", "independent verification is runnable"),
     ("docs/RECEIPT-FORMAT.md", "the receipt format is a specification somebody else can build against"),
     ("docs/receipt-vector/valid-receipt.json", "the format has a signed test vector"),
+    ("docs/receipt-vector/public-key.pub.pem", "the test vector is useless without its key"),
     ("docs/receipt-vector/tampered-not-canonical.json", "the vector includes the case a signature-only verifier fails"),
     ("scripts/check_receipt_test_vector.py", "the test vector is checked, not just published"),
     ("scripts/fetch_nepali_models.py", "the Nepali control set is reproducible"),

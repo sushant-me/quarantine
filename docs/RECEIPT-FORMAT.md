@@ -93,7 +93,7 @@ cannot be re-signed.
 | [`tampered-verdict.json`](receipt-vector/tampered-verdict.json) | no | the verdict edited `BLOCK`→`ALLOW` and re-canonicalised, so the signature covers different bytes |
 | [`tampered-not-canonical.json`](receipt-vector/tampered-not-canonical.json) | no | the payload is **not** canonical JSON but carries a **valid signature over those exact bytes** — an implementation that only checks the signature accepts this one |
 
-[`public-key.pem`](receipt-vector/public-key.pem) is the key; its `sha256[:16]` is the `keyid` in the
+[`public-key.pub.pem`](receipt-vector/public-key.pub.pem) is the key; its `sha256[:16]` is the `keyid` in the
 envelope, which is also a check that §3 is implemented correctly.
 
 An implementation is conforming when it accepts case 1 and rejects cases 2 and 3.

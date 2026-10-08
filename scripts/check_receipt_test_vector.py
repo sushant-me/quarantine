@@ -40,7 +40,7 @@ CASES = [
 
 def main() -> int:
     problems: list[str] = []
-    pub = VECTOR / "public-key.pem"
+    pub = VECTOR / "public-key.pub.pem"
     if not pub.exists():
         print(f"FAIL the test vector is missing ({pub})")
         return 1
@@ -53,7 +53,7 @@ def main() -> int:
         problems.append(f"keyid mismatch: envelope says {declared_keyid}, "
                         f"sha256(public key)[:16] is {expected_keyid}")
     else:
-        print(f"ok   keyid is sha256(public-key.pem)[:16] = {expected_keyid}")
+        print(f"ok   keyid is sha256(public-key.pub.pem)[:16] = {expected_keyid}")
 
     if envelope.get("payloadType") != PAYLOAD_TYPE:
         problems.append(f"payloadType is {envelope.get('payloadType')!r}")
