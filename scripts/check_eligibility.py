@@ -179,6 +179,32 @@ def check_files() -> list[dict]:
     return out
 
 
+def _mp4_duration_seconds(path: Path) -> float | None:
+    """Read an MP4's duration from its `mvhd` box, with no external tool.
+
+    The first version of this check shelled out to ffprobe, and CI failed on the very next push
+    because the runner has no ffprobe: a gate that breaks the build when an optional binary is
+    absent is worse than the drift it was written to catch. The `mvhd` box carries timescale and
+    duration in big-endian, which is all this needs.
+    """
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return None
+    offset = data.find(b"mvhd")
+    if offset < 0 or offset + 32 > len(data):
+        return None
+    cursor = offset + 4                       # past the "mvhd" type field
+    version = data[cursor]
+    if version == 1:
+        timescale = int.from_bytes(data[cursor + 20:cursor + 24], "big")
+        duration = int.from_bytes(data[cursor + 24:cursor + 32], "big")
+    else:
+        timescale = int.from_bytes(data[cursor + 12:cursor + 16], "big")
+        duration = int.from_bytes(data[cursor + 16:cursor + 20], "big")
+    return (duration / timescale) if timescale else None
+
+
 def check_quoted_video_duration_is_true() -> list[dict]:
     """A duration quoted next to the demo video must match the video.
 
@@ -187,21 +213,16 @@ def check_quoted_video_duration_is_true() -> list[dict]:
     document against the artifact finds that in ten seconds, so the comparison is a script's job.
     """
     import re as _re
-    import subprocess
 
     video = ROOT / "reports" / "video" / "quarantine-demo.mp4"
     if not video.exists():
         return [{"check": "the quoted demo duration is true", "what": "docs", "ok": False,
                  "detail": "the demo video is missing"}]
-    try:
-        seconds = float(subprocess.run(
-            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
-             "-of", "default=noprint_wrappers=1:nokey=1", str(video)],
-            capture_output=True, text=True, timeout=60).stdout.strip())
-    except Exception as exc:                                      # noqa: BLE001
+    seconds = _mp4_duration_seconds(video)
+    if seconds is None:
         return [{"check": "the quoted demo duration is true", "what": "docs", "ok": False,
-                 "detail": f"ffprobe failed: {exc}"}]
-    true_stamp = f"{int(seconds) // 60}:{int(seconds) % 60:02d}"
+                 "detail": "could not read the mp4 duration from the file"}]
+    true_stamp = f"{int(seconds) // 60}:{int(round(seconds)) % 60:02d}"
 
     bad = []
     for path in sorted(ROOT.rglob("*.md")):
