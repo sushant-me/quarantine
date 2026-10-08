@@ -2,11 +2,11 @@
   "model": "qwen2.5-coder-3b-instruct-q4_k_m.gguf",
   "reachable": true,
   "grounded": true,
-  "raw": "{\n  \"verdict\": \"BLOCK\",\n  \"declared_matches_behaviour\": false,\n  \"mechanism\": \"The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that uses the network (socket.getaddrinfo).\",\n  \"evidence_ids\": [4],\n  \"confidence\": 100\n}",
+  "raw": "{\n  \"verdict\": \"BLOCK\",\n  \"declared_matches_behaviour\": false,\n  \"mechanism\": \"The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that involves a DNS query, which is a network operation.\",\n  \"evidence_ids\": [4],\n  \"confidence\": 100\n}",
   "verdict": {
     "verdict": "BLOCK",
     "declared_matches_behaviour": false,
-    "mechanism": "The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that uses the network (socket.getaddrinfo).",
+    "mechanism": "The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that involves a DNS query, which is a network operation.",
     "evidence_ids": [
       4
     ],
@@ -26,5 +26,5 @@
     3,
     4
   ],
-  "elapsed_s": 13.6
+  "elapsed_s": 13.56
 }

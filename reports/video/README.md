@@ -37,6 +37,7 @@ What is not:
 | the artifact executes with the network off | yes (live trace) |
 | the local model reads it and blocks | yes |
 | repair + output-equivalence proof | yes |
+| repair measured across the corpus, with the refusal stated | yes |
 | measured numbers with a control group | yes (two tables) |
 | containment, attacked on purpose | yes |
 | the limits, said out loud | yes |

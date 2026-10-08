@@ -6,14 +6,14 @@
         id=  1 import: urllib
         id=  2 import: socket
         id=  3 file.read: /etc/hostname
-        id=  4 socket.getaddrinfo: b9ace7c138c9.probe.invalid
+        id=  4 socket.getaddrinfo: 652cdc00c26a.probe.invalid
 [3/6] semantic pass          local open-weight model
-      reachable=True grounded=True verdict=BLOCK in 13.6s
-      mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that use
+      reachable=True grounded=True verdict=BLOCK in 13.56s
+      mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that inv
 [4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 8.08s
+      generated=True ok=True forbidden=[] in 7.37s
 [5/6] equivalence proof
-      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+      equivalent=True over 12 prompts; capability ops original=2 repaired=0
 [6/6] sign receipt
       signed and verified: True  keyid=98ef87ea5ba8a04e
 

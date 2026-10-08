@@ -2,7 +2,38 @@
   "outputs": [
     "HELLO WORLD",
     "QUARANTINE PROBE 123",
-    "A"
+    "A",
+    "",
+    "   SPACED   ",
+    "MIXED CASE WITH 1234 AND PUNCTUATION?!",
+    "\u0928\u092e\u0938\u094d\u0924\u0947 \u2014 NON-ASCII INPUT",
+    "\u00dc\u00d1\u00cf\u00c7\u00d8\u00d0\u00c9",
+    "LINE ONE\nLINE TWO",
+    "0",
+    "\t TAB AND TRAILING SPACE ",
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   ],
-  "error": null
+  "error": null,
+  "events": [
+    {
+      "i": 1,
+      "event": "import",
+      "detail": "urllib"
+    },
+    {
+      "i": 2,
+      "event": "import",
+      "detail": "socket"
+    },
+    {
+      "i": 3,
+      "event": "file.read",
+      "detail": "/etc/hostname"
+    },
+    {
+      "i": 4,
+      "event": "socket.getaddrinfo",
+      "detail": "6fdd43b9b609.probe.invalid"
+    }
+  ]
 }

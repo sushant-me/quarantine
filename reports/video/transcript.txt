@@ -58,14 +58,14 @@ Dangerous globals: 0
         id=  1 import: urllib
         id=  2 import: socket
         id=  3 file.read: /etc/hostname
-        id=  4 socket.getaddrinfo: b9ace7c138c9.probe.invalid
+        id=  4 socket.getaddrinfo: 652cdc00c26a.probe.invalid
 [3/6] semantic pass          local open-weight model
-      reachable=True grounded=True verdict=BLOCK in 13.6s
+      reachable=True grounded=True verdict=BLOCK in 13.56s
       mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that…
 [4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 8.08s
+      generated=True ok=True forbidden=[] in 7.37s
 [5/6] equivalence proof
-      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+      equivalent=True over 12 prompts; capability ops original=2 repaired=0
 
 === 04c-trace  (11s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
@@ -78,14 +78,14 @@ Dangerous globals: 0
         id=  1 import: urllib
         id=  2 import: socket
         id=  3 file.read: /etc/hostname
-        id=  4 socket.getaddrinfo: b9ace7c138c9.probe.invalid
+        id=  4 socket.getaddrinfo: 652cdc00c26a.probe.invalid
 [3/6] semantic pass          local open-weight model
-      reachable=True grounded=True verdict=BLOCK in 13.6s
+      reachable=True grounded=True verdict=BLOCK in 13.56s
       mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that…
 [4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 8.08s
+      generated=True ok=True forbidden=[] in 7.37s
 [5/6] equivalence proof
-      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+      equivalent=True over 12 prompts; capability ops original=2 repaired=0
 [6/6] sign receipt
       signed and verified: True  keyid=98ef87ea5ba8a04e
 
@@ -101,9 +101,9 @@ Dangerous globals: 0
   $ quarantine inspect corpus/probe-custom-generate
 
 [4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 8.08s
+      generated=True ok=True forbidden=[] in 7.37s
 [5/6] equivalence proof
-      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+      equivalent=True over 12 prompts; capability ops original=2 repaired=0
 [6/6] sign receipt
       signed and verified: True  keyid=98ef87ea5ba8a04e
 
@@ -136,6 +136,25 @@ Dangerous globals: 0
   a pickle — the only one inside their input set. And on real
   models, one of them flags all four: a checkpoint is a zip
   archive it cannot parse.
+
+=== 06b-repair  (15s)  step 4b — the repair, measured across the corpus
+  THE REPAIR, across all 8 undeclared artifacts
+
+    blocked by the local model ......... 8/8
+    repair attempted ................... 7/8   (one ships only weights)
+    produced and capability-clean ...... 7/7
+    verified by output-equivalence ..... 6/7
+
+  The criterion is both halves: identical outputs on 12 prompts,
+  AND zero capability operations by the repaired loader —
+  measured from the trace, not read off the source.
+
+  On the reference artifact the original performed 2 capability
+  operations and the repair performed 0.
+
+  The one non-pass is a refusal, not a failure: that artifact's
+  original will not execute at all, so equivalence cannot be
+  established and the receipt says so.
 
 === 07-containment  (12s)  step 5 — containment, attacked on purpose
   WE ATTACKED OUR OWN SANDBOX
