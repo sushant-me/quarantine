@@ -10,20 +10,18 @@
 ### 1.1 Detection on a labeled corpus of 12 artifacts
 
 Every artifact declares the **same** API (`generate(prompt) -> str`, a pure deterministic transform).
-Four ship exactly that. Eight ship something else as well.
+Four ship exactly that. Nine ship something else as well.
 
-| auditor | caught (of 8) | detection rate | false positives (of 4 controls) | FP rate |
+| auditor | caught (of 9) | detection rate | false positives (of 4 controls) | FP rate |
 |---|---|---|---|---|
-| **Quarantine (BLOCK, grounded)** | **8** | **100%** | **0** | **0%** |
-| picklescan 1.0.5 | 1 | 12% | 0 | 0% |
-| fickling 0.1.12 | 1 | 12% | 0 | 0% |
+| **Quarantine (BLOCK, grounded)** | **9** | **100%** | **0** | **0%** |
+| picklescan 1.0.5 | 2 | 22% | 0 | 0% |
+| fickling 0.1.12 | 2 | 22% | 0 | 0% |
 
-**Read the incumbents' 1/8 correctly.** The single case they catch is `cve-2025-46417-pickle` — the
-only artifact in the corpus whose payload is a **pickle**, i.e. the only one inside their input set.
-picklescan caught it via its denylist (`dangerous globals: 1`, `ssl.get_server_certificate`); fickling
-exited non-zero. The other seven payloads live in `custom_generate/generate.py` and `modeling_custom.py`,
-files neither scanner opens. That is not a detection-logic failure, it is a **coverage hole**, and it is
-version-independent.
+**Read the incumbents' 2/9 correctly.** The two cases they catch are the two whose payload is a **pickle** —
+the only ones inside their input set, and picklescan deserves credit for reading inside zip archives. The
+other **seven** payloads live in `custom_generate/generate.py` and `modeling_custom.py`, files neither scanner
+opens. That is not a detection-logic failure, it is a **coverage hole**, and it is version-independent.
 
 ### 1.2 The containment attempt
 
@@ -82,14 +80,14 @@ everything. Behaviour is the only common ground.
 
 ### 1.4 The repair path, evaluated across the whole corpus
 
-The repair was previously exercised on one artifact. It is now run end to end on all eight undeclared
+The repair was previously exercised on one artifact. It is now run end to end on all nine undeclared
 artifacts, with every number read back from the **signed receipt** (`scripts/eval_repair.py`) so this measures
 what the product emits rather than a parallel code path.
 
 | measure | result |
 |---|---|
-| blocked by the local model (grounded) | **8/8** |
-| repair attempted (needs a grounded BLOCK) | 7/8 |
+| blocked by the local model (grounded) | **9/9** |
+| repair attempted (needs a grounded BLOCK) | 7/9 |
 | repair produced and passed the capability gate | **7/7** |
 | repair **verified by output-equivalence** | **6/7** |
 
@@ -102,9 +100,9 @@ nothing of the kind *happened*. On the reference artifact the original performed
 
 **The two non-passes are both honest and both worth saying out loud:**
 
-1. **1 of 8 was not attempted** — `cve-2025-46417-pickle` ships no Python. An artifact whose payload is a
-   weight file has nothing to rewrite as a loader; repairing it means re-serialising the weights
-   (`safetensors`), a different operation. The receipt records
+1. **2 of 9 were not attempted** — `cve-2025-46417-pickle` and `probe-zip-checkpoint` ship no Python. An
+   artifact whose payload is a weight file has nothing to rewrite as a loader; repairing it means
+   re-serialising the weights (`safetensors`), a different operation. The receipt records
    `skipped_reason: "no shipped Python to repair (payload is a weight file)"`.
 2. **1 of 7 was refused, not failed** — `probe-obfuscated` cannot be proven equivalent because **the original
    cannot be executed at all**: its payload raises `gaierror` during import and kills the process. The repaired
@@ -125,21 +123,52 @@ Six roles: **observer** (deterministic), **analyst** / **challenger** / **repair
 | artifact hiding a DNS call on load | **BLOCK** | 1 | capability observed and not permitted by the declaration |
 | benign control | **ALLOW** | 0 | looked, saw nothing capability-like |
 | realistic custom code whose dependency is missing | **UNKNOWN** | 2 | *could not be executed* → escalated to a human |
-| a real published checkpoint | **UNKNOWN** | 2 | *format not readable by this reader* → never examined → escalated |
+| a real published checkpoint (torch zip) | **ALLOW** | 0 | the reader now opens the format — and doing so found defect 15 |
 
-Two of those branches exist because of measured failures, and both are documented below as defects 12 and 14.
-The one that matters most: **before this outcome existed, the artifact whose dependency was missing was
-reported `ALLOW`.** *"We could not run it, so we saw nothing, so it is fine"* is the most dangerous possible
-default for a security gate.
+Two of those branches exist because of measured failures, documented below as defects 12 and 14. The one that
+matters most: **before this outcome existed, the artifact whose dependency was missing was reported `ALLOW`.**
+*"We could not run it, so we saw nothing, so it is fine"* is the most dangerous possible default for a security
+gate.
 
-On the 12-artifact corpus the agent team reaches **8/8 with zero escalations and zero false positives** — the
-adversarial check and the escalation path cost nothing on decidable cases. On the four real published models,
-**3 of 4 are escalated** because their checkpoint is a zip archive this reader cannot open: that is a coverage
-gap stated plainly rather than an ALLOW we did not earn.
+On the 13-artifact corpus the agent team reaches **9/9 with zero escalations and zero false positives** — the
+adversarial check and the escalation path cost nothing on decidable cases. On the four real published models
+**0 of 4 escalate**: the reader opens torch's zip format, so a benign checkpoint is now *looked at* and allowed
+rather than referred to a human. Getting there introduced defect 15, which the controls caught.
 
 ---
 
-## 2. The corpus
+## 2. What the reader can open, and why it matters
+
+The single most important fix in this spike is not a new detection: it is that the reader
+can now **open the format real models actually ship**.
+
+A modern `pytorch_model.bin` is a **zip archive** containing `archive/data.pkl` plus tensor
+storage files. A plain-pickle reader cannot open it, which meant that on the four real
+published models **three were escalated** — honest, but a tool that escalates the common
+format is not usable in a pipeline.
+
+The reader now detects the zip magic, reads `data.pkl`, and unpickles it under the audit
+hook — which is exactly what `torch.load` does. The security question is *what code runs*,
+and that code now runs.
+
+**What is stubbed, and why the line is where it is.** A checkpoint's pickle rebuilds tensors
+through helpers that live in torch; with torch absent the lookup fails and the whole
+unpickling aborts. Those helpers are stubbed — but only by a narrow structural rule
+(`is_serialization_helper`): torch's `*Storage` types and `_rebuild*` family, numpy's array
+reconstruction, and the standard library's pickle scaffolding (`collections`, `copyreg`,
+`types`). **Nothing that can reach the network or the filesystem is ever stubbed**, and
+`builtins.eval/exec/open/__import__` are excluded explicitly.
+
+**That line runs in two places, and the second one was found by the third-party controls.**
+Reading real checkpoints made them ask for `collections.OrderedDict`,
+`torch._utils._rebuild_tensor_v2` and `torch.LongStorage` — and `pickle.find_class` was
+counted as evidence, so every legitimate model suddenly looked suspicious. The same
+predicate now filters that event, so only a global that is *not* scaffolding counts as
+evidence (defect 15 below).
+
+---
+
+## 3. The corpus
 
 `scripts/make_corpus.py` generates it deterministically; `corpus/MANIFEST.json` is the label file. All
 hostnames are under `.invalid` (RFC 2606) and can never resolve — **nothing here is malware.**
@@ -166,7 +195,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 3. Fourteen defects found by running it
+## 4. Fifteen defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -200,13 +229,22 @@ small to contain the case. Neither would have appeared in a demo.
 bug found in a sibling codebase — a path that exists but holds nothing scannable walked nothing, found nothing,
 and exited 0 — and it is the reason the third outcome exists here.
 
+### And the defect the fix for the format introduced
+
+| # | What broke | Root cause | Fix |
+|---|---|---|---|
+| 15 | after the reader learned to open torch zip checkpoints, **every legitimate model started looking suspicious** | `pickle.find_class` was treated as evidence of capability, and a real checkpoint asks for `collections.OrderedDict`, `torch._utils._rebuild_tensor_v2` and `torch.LongStorage` | the same `is_serialization_helper` predicate now filters that event, so only a global that is *not* scaffolding counts. **Caught by the third-party negative controls**, not by any hand-written case |
+
+Fifteen defects, and the pattern is consistent: every one was found by a control group, a
+third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
+
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked
 everything, and neither would have been visible in a demo — a demo shows the case you chose. They were
 found only because there was a control group and a rate to compute. That is the argument for the corpus.
 
 ---
 
-## 4. What is NOT proven
+## 5. What is NOT proven
 
 1. **The malicious set and its labels are ours.** Eight undeclared artifacts were written by us. Four real
    published models now cover the *negative* side, so the false-positive finding is third-party evidence —
@@ -243,7 +281,7 @@ found only because there was a control group and a rate to compute. That is the 
 
 ---
 
-## 5. Timing (this machine, model warm)
+## 6. Timing (this machine, model warm)
 
 | stage | per artifact |
 |---|---|
@@ -254,7 +292,7 @@ found only because there was a control group and a rate to compute. That is the 
 
 ---
 
-## 6. Next
+## 7. Next
 
 1. Reproduce `GHSA-93mv-x874-956g` and `CERT VU#290`/`CVE-2026-80047` as *current-version* bypass cases —
    the pickle case here is caught by today's picklescan, so a case that still defeats it is the honest test.

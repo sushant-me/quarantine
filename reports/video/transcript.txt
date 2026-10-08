@@ -38,50 +38,51 @@ Dangerous globals: 0
 === 04a-trace  (9s)  step 2 — execute it where it cannot hurt you
   $ quarantine inspect corpus/probe-custom-generate
 
-[1/4] observer    4 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
-      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (m…
-[3/4] challenger  refuted=False grounded=True in 26.22s
-      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in th…
-[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+[1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 16.1s
+      mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
+[3/4] challenger  refuted=False grounded=True in 32.66s
+      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifac…
+[4/4] repairer    ok=True removed=['_sync'] in 9.79s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-
+      keypair     -> quarantine.pub.pem
 
 === 04b-trace  (9s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
 
-[1/4] observer    4 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
-      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (m…
-[3/4] challenger  refuted=False grounded=True in 26.22s
-      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in th…
-[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+[1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 16.1s
+      mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
+[3/4] challenger  refuted=False grounded=True in 32.66s
+      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifac…
+[4/4] repairer    ok=True removed=['_sync'] in 9.79s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
   incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
-  behavioural trace 4 events, network=none, observed=True
+  behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
   agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
-  receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
 
 === 04c-trace  (11s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
 
-[1/4] observer    4 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
-      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (m…
-[3/4] challenger  refuted=False grounded=True in 26.22s
-      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in th…
-[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+[1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 16.1s
+      mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
+[3/4] challenger  refuted=False grounded=True in 32.66s
+      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifac…
+[4/4] repairer    ok=True removed=['_sync'] in 9.79s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
   incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
-  behavioural trace 4 events, network=none, observed=True
+  behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
   agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
@@ -91,17 +92,17 @@ Dangerous globals: 0
 === 05-verdict  (15s)  step 3 — an agent team, three of them using the model
   $ quarantine inspect corpus/probe-custom-generate
 
-[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
-      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (m…
-[3/4] challenger  refuted=False grounded=True in 26.22s
-      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in th…
-[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+      mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
+[3/4] challenger  refuted=False grounded=True in 32.66s
+      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifac…
+[4/4] repairer    ok=True removed=['_sync'] in 9.79s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
   incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
-  behavioural trace 4 events, network=none, observed=True
+  behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
   agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
@@ -136,13 +137,13 @@ Dangerous globals: 0
   That is the most dangerous default a security gate can have.
 
 === 06-numbers  (17s)  step 4 — measured, with a control group
-  DETECTION — 12 artifacts, the same declared API in every one
+  DETECTION — 13 artifacts, the same declared API in every one
 
   auditor         caught   detect   false pos  FP rate
   ----------------------------------------------------
-  Quarantine         8/8     100%         0/4       0%
-  picklescan         1/8      12%         0/4       0%
-  fickling           1/8      12%         0/4       0%
+  Quarantine         9/9     100%         0/4       0%
+  picklescan         2/9      22%         0/4       0%
+  fickling           2/9      22%         0/4       0%
 
   FALSE POSITIVES — 4 real published models from the Hub
 
@@ -152,10 +153,10 @@ Dangerous globals: 0
   picklescan           —      n/a         0/4       0%
   fickling             —      n/a         4/4     100%
 
-  The incumbents' one catch is the only artifact whose payload is
-  a pickle — the only one inside their input set. And on real
-  models, one of them flags all four: a checkpoint is a zip
-  archive it cannot parse.
+  The incumbents' catches are the artifacts whose payload is a
+  pickle — the only ones inside their input set. The seven code
+  paths in custom_generate/ and modeling_*.py, neither scanner
+  opens. And on real models, one of them flags all four.
 
 === 06b-repair  (15s)  step 4b — the repair, measured across the corpus
   THE REPAIR, across all 8 undeclared artifacts

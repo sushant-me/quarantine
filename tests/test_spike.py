@@ -257,6 +257,91 @@ def test_parse_json_survives_prose_around_the_object():
     assert _parse_json("no json here") is None
 
 
+# --------------------------------------------------------- weight-file reader
+
+def test_only_tensor_machinery_is_stubbed_never_anything_that_can_do_io():
+    """The allowlist is the security boundary: stub the serialization scaffolding, nothing else."""
+    from quarantine.sandbox_runner import is_serialization_helper
+    assert is_serialization_helper("torch._utils", "_rebuild_tensor_v2")
+    assert is_serialization_helper("torch", "LongStorage")
+    assert is_serialization_helper("torch.storage", "UntypedStorage")
+    assert is_serialization_helper("numpy.core.multiarray", "_reconstruct")
+    assert is_serialization_helper("collections", "OrderedDict")
+    for module, name in (("ssl", "get_server_certificate"), ("socket", "getaddrinfo"),
+                         ("os", "system"), ("subprocess", "Popen"), ("builtins", "eval"),
+                         ("torch", "load"), ("numpy", "load")):
+        assert not is_serialization_helper(module, name), f"{module}.{name} must never be stubbed"
+
+
+def test_the_reader_opens_a_torch_zip_and_actually_runs_the_pickle_inside(tmp_path):
+    """The whole point of the format fix: the pickle inside a checkpoint must execute."""
+    import os as _os
+    import pickle as _pickle
+    import zipfile
+    from quarantine.sandbox_runner import load_weights
+
+    class Probe:
+        def __reduce__(self):
+            return (_os.getcwd, ())          # a real call with an observable result
+
+    path = tmp_path / "model.bin"
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("archive/data.pkl", _pickle.dumps({"a": Probe()}))
+        zf.writestr("archive/data/0", b"\x00" * 8)
+
+    notes: list[dict] = []
+    obj, how = load_weights(str(path), notes)
+    assert how == "zip:archive/data.pkl"
+    assert isinstance(obj["a"], str) and obj["a"], "the embedded pickle did not run"
+    assert notes == []
+
+
+def test_serialization_scaffolding_is_not_evidence_of_capability():
+    """Reading torch checkpoints made every legitimate model ask for these globals.
+
+    Counting them would have flagged every real model — which the third-party controls
+    caught. Only a global that is not scaffolding counts, and the dangerous builtins
+    still do.
+    """
+    from quarantine.events import capability_events
+    events = [
+        {"i": 1, "event": "pickle.find_class", "detail": "collections.OrderedDict"},
+        {"i": 2, "event": "pickle.find_class", "detail": "torch._utils._rebuild_tensor_v2"},
+        {"i": 3, "event": "pickle.find_class", "detail": "torch.LongStorage"},
+        {"i": 4, "event": "pickle.find_class", "detail": "ssl.get_server_certificate"},
+        {"i": 5, "event": "pickle.find_class", "detail": "builtins.eval"},
+        {"i": 6, "event": "socket.getaddrinfo", "detail": "x.invalid"},
+    ]
+    assert [e["i"] for e in capability_events(events)] == [4, 5, 6]
+
+
+def test_an_unresolvable_global_is_recorded_not_silently_stubbed():
+    import io
+    from quarantine.sandbox_runner import AuditUnpickler
+
+    notes: list[dict] = []
+    unpickler = AuditUnpickler(io.BytesIO(b""), notes)
+    try:
+        unpickler.find_class("a_module_that_does_not_exist", "f")
+        raise AssertionError("expected the unresolved global to raise")
+    except AssertionError:
+        raise
+    except Exception:
+        pass
+    assert notes and notes[0]["event"] == "unresolved"
+    assert notes[0]["global"] == "a_module_that_does_not_exist.f"
+
+
+def test_a_known_tensor_helper_is_stubbed_and_recorded():
+    import io
+    from quarantine.sandbox_runner import AuditUnpickler
+
+    notes: list[dict] = []
+    helper = AuditUnpickler(io.BytesIO(b""), notes).find_class("torch", "LongStorage")
+    assert callable(helper)
+    assert notes == [{"event": "stubbed", "global": "torch.LongStorage"}]
+
+
 # ------------------------------------------------------------------ agents
 
 def _case(**kw):

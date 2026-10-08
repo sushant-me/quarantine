@@ -34,10 +34,10 @@ The challenge's test: *delete the AI call — does the product still do its job?
 
 | | Quarantine | picklescan 1.0.5 | fickling 0.1.12 |
 |---|---|---|---|
-| detection, 8 undeclared artifacts | **8/8** | 1/8 | 1/8 |
+| detection, 9 undeclared artifacts | **9/9** | 2/9 | 2/9 |
 | false positives, 4 benign controls | **0** | 0 | 0 |
 | false positives, 4 **real published models** | **0 blocked** | 0 | **4/4** |
-| escalations (UNKNOWN, referred to a human) | 0 on the corpus · **3 of 4** real models | — | — |
+| real models escalated (UNKNOWN, referred to a human) | **0 of 4** | — | — |
 | repair produced and capability-clean | **7/7** attempted | — | — |
 | repair verified by output-equivalence | **6/7** (one honest refusal) | — | — |
 | sandbox escape, 10 primitives | **0 escaped** | — | — |

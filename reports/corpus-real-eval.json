@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-10-08T15:41:46+0545",
+  "generated_at": "2026-10-08T16:09:17+0545",
   "kind": "corpus-real",
   "n": 4,
   "benign": 4,
   "undeclared": 0,
-  "escalated": 3,
-  "allowed": 1,
+  "escalated": 0,
+  "allowed": 4,
   "quarantine": {
     "tp": 0,
     "fp": 0,
@@ -64,21 +64,43 @@
       "incumbents_flagged": true,
       "static_capabilities": {},
       "custom_code_files": [],
-      "trace_events": 1,
-      "sensitive_events": [],
-      "verdict": "UNKNOWN",
-      "escalated": true,
-      "escalation_reason": "nothing was observed: the weight file is not readable by this reader (UnpicklingError), so its contents were never examined",
-      "observed": false,
-      "grounded": false,
+      "trace_events": 7,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch.LongStorage"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
       "cited_ids": [],
-      "mechanism": "",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its behaviour. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
       "agents": [
         "observer",
+        "analyst",
         "supervisor"
       ],
-      "turns": 1,
-      "elapsed_s": 0.66,
+      "turns": 2,
+      "elapsed_s": 17.14,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -116,14 +138,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no suspicious operations were performed. The artifact did not perform any actions that its declaration forbids.",
+      "mechanism": "The artifact did not perform any operations that its declaration forbids, and there were no capability events or unresolved globals observed.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.18,
+      "elapsed_s": 15.48,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -153,21 +175,43 @@
       "incumbents_flagged": true,
       "static_capabilities": {},
       "custom_code_files": [],
-      "trace_events": 1,
-      "sensitive_events": [],
-      "verdict": "UNKNOWN",
-      "escalated": true,
-      "escalation_reason": "nothing was observed: the weight file is not readable by this reader (UnpicklingError), so its contents were never examined",
-      "observed": false,
-      "grounded": false,
+      "trace_events": 7,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch.LongStorage"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
       "cited_ids": [],
-      "mechanism": "",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
       "agents": [
         "observer",
+        "analyst",
         "supervisor"
       ],
-      "turns": 1,
-      "elapsed_s": 0.57,
+      "turns": 2,
+      "elapsed_s": 17.29,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -197,21 +241,43 @@
       "incumbents_flagged": true,
       "static_capabilities": {},
       "custom_code_files": [],
-      "trace_events": 1,
-      "sensitive_events": [],
-      "verdict": "UNKNOWN",
-      "escalated": true,
-      "escalation_reason": "nothing was observed: the weight file is not readable by this reader (UnpicklingError), so its contents were never examined",
-      "observed": false,
-      "grounded": false,
+      "trace_events": 7,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.ByteStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
       "cited_ids": [],
-      "mechanism": "",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its behaviour. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
       "agents": [
         "observer",
+        "analyst",
         "supervisor"
       ],
-      "turns": 1,
-      "elapsed_s": 0.52,
+      "turns": 2,
+      "elapsed_s": 22.07,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"

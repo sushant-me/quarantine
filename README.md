@@ -69,6 +69,23 @@ Exit codes make it usable as a gate: **0 ALLOW · 1 BLOCK · 2 UNKNOWN**. `2` is
 Signed by `src/quarantine/receipt.py` (Ed25519, DSSE-shaped envelope), verifiable by anyone with the public
 key. The receipt carries the whole agent transcript, so a reviewer sees which agent said what, in order.
 
+## What the reader can open
+
+A modern `pytorch_model.bin` is a **zip archive** holding `archive/data.pkl` plus tensor storage. The reader
+detects the zip magic, reads `data.pkl`, and unpickles it under the audit hook — which is what `torch.load`
+does, and where the code execution lives. Legacy plain pickles are read directly.
+
+Unpickling a real checkpoint needs torch's tensor-rebuild helpers, which are not installed, so a narrow
+structural rule stubs them: torch's `*Storage` types and `_rebuild*` family, numpy's array reconstruction, and
+the standard library's pickle scaffolding (`collections`, `copyreg`, `types`) — see
+`src/quarantine/sandbox_runner.py::is_serialization_helper`. **Nothing that can reach the network or the
+filesystem is ever stubbed**, and `builtins.eval/exec/open/__import__` are excluded explicitly.
+
+The same predicate runs a second time, host-side, in `src/quarantine/events.py::capability_events`: a
+`pickle.find_class` for scaffolding is not evidence of capability, or every legitimate model would look
+suspicious the moment we could read it. That second use was found by the third-party controls, not by a
+hand-written case.
+
 ## Why the box is the product
 
 ```

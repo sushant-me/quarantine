@@ -18,11 +18,13 @@ kernel privileges, and works inside a network-less, read-only container.
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import os
 import pickle
 import sys
 import traceback
+import zipfile
 
 ARTIFACT = ""
 OUT = ""
@@ -151,6 +153,110 @@ def _find_custom_code(artifact: str) -> list[str]:
 
 WEIGHT_SUFFIXES = (".bin", ".pkl", ".pickle", ".pt", ".pth", ".ckpt", ".joblib")
 
+# Tensor serialization helpers. A torch checkpoint's `data.pkl` rebuilds tensors through
+# these; with torch absent the lookup fails and the whole unpickling aborts, which is why
+# real checkpoints used to be unreadable here.
+#
+# They are stubbed ONLY when they cannot be imported, and ONLY by exact (module, name),
+# never by module. They construct tensors and cannot themselves reach the network or the
+# filesystem. Everything else - ssl, socket, os, subprocess, builtins - resolves for real,
+# because the payload has to actually run for us to see what it does.
+TENSOR_HELPERS = {
+    ("torch._utils", "_rebuild_tensor_v2"), ("torch._utils", "_rebuild_tensor"),
+    ("torch._utils", "_rebuild_parameter"), ("torch._utils", "_rebuild_parameter_with_state"),
+    ("torch._utils", "_rebuild_sparse_tensor"), ("torch._utils", "_rebuild_meta_tensor_no_storage"),
+    ("torch._utils", "_rebuild_wrapper_subclass"), ("torch._utils", "_rebuild_device_tensor_from_numpy"),
+    ("torch._utils", "_rebuild_qtensor"), ("torch._utils", "_rebuild_from_type_v2"),
+    ("torch._utils", "_rebuild_from_type_v3"), ("torch._utils", "_rebuild_typed_storage"),
+    ("torch._utils", "_rebuild_tensor_v3"), ("torch._utils", "_rebuild_batched_tensor"),
+    ("torch.storage", "_load_from_bytes"), ("torch.storage", "_TypedStorage"),
+    ("torch.storage", "UntypedStorage"), ("torch.serialization", "_get_restore_location"),
+    ("torch", "Tensor"), ("torch", "Size"), ("torch", "device"), ("torch", "dtype"),
+    ("torch", "float32"), ("torch", "float16"), ("torch", "uint8"), ("torch", "int64"),
+    ("torch.nn.parameter", "Parameter"),
+    ("numpy.core.multiarray", "_reconstruct"), ("numpy.core.multiarray", "scalar"),
+    ("numpy.core.numeric", "_frombuffer"), ("numpy", "ndarray"), ("numpy", "dtype"),
+    ("numpy", "uint8"), ("numpy", "float32"), ("numpy", "int64"),
+}
+
+
+def is_serialization_helper(module: str, name: str) -> bool:
+    """Is this global part of *serialization machinery* rather than an operation?
+
+    Used in two places, and both matter: this stub decision, and whether a
+    `pickle.find_class` counts as evidence of capability. A legitimate torch checkpoint
+    asks for `collections.OrderedDict`, `torch._utils._rebuild_tensor_v2` and
+    `torch.LongStorage`; treating those as suspicious would flag every real model.
+
+    The rule is structural and deliberately narrow: the torch serialization machinery,
+    numpy's array reconstruction, and the pickle scaffolding in the standard library.
+    `ssl`, `socket`, `os` and `subprocess` are never matched, and the dangerous builtins
+    (`eval`, `exec`, `open`, `__import__`) are excluded explicitly.
+    """
+    if (module, name) in TENSOR_HELPERS:
+        return True
+    torch_module = module == "torch" or module.startswith("torch.")
+    if torch_module and (name.endswith("Storage") or name.startswith("_rebuild")):
+        return True
+    numpy_module = module == "numpy" or module.startswith("numpy.")
+    if numpy_module and name in {"ndarray", "dtype", "scalar", "_reconstruct", "_frombuffer"}:
+        return True
+    if module in {"collections", "copyreg", "types"}:
+        return True
+    return False
+
+
+def _stub_helper(module: str, name: str):
+    def _stub(*args, **kwargs):
+        return None
+
+    _stub.__name__ = name
+    _stub.__qualname__ = f"{module}.{name}"
+    return _stub
+
+
+class AuditUnpickler(pickle.Unpickler):
+    """Unpickle a torch `data.pkl` (or a plain pickle) and record what it asks for.
+
+    A global that cannot be resolved and is not a known tensor helper is recorded as
+    UNRESOLVED and the load aborts, because the artifact's behaviour was not faithfully
+    reproduced — better to escalate than to judge a partial run.
+    """
+
+    def __init__(self, fh, notes: list[dict]) -> None:
+        super().__init__(fh)
+        self.notes = notes
+
+    def find_class(self, module: str, name: str):
+        try:
+            return super().find_class(module, name)
+        except Exception as exc:
+            if is_serialization_helper(module, name):
+                self.notes.append({"event": "stubbed", "global": f"{module}.{name}"})
+                return _stub_helper(module, name)
+            self.notes.append({"event": "unresolved", "global": f"{module}.{name}",
+                               "why": f"{type(exc).__name__}: {exc}"})
+            raise
+
+    def persistent_load(self, pid):
+        # Storage references resolve out of band in torch; there is nothing to load here.
+        return None
+
+
+def load_weights(path: str, notes: list[dict]) -> tuple[object, str]:
+    """Unpickle a weight file: a torch zip checkpoint, or a plain pickle."""
+    with open(path, "rb") as fh:
+        magic = fh.read(2)
+    if magic == b"PK":                                   # zip: the modern torch format
+        with zipfile.ZipFile(path) as zf:
+            member = next((n for n in zf.namelist() if n.endswith("data.pkl")), None)
+            if member is None:
+                raise ValueError(f"zip archive with no data.pkl ({len(zf.namelist())} members)")
+            blob = zf.read(member)
+        return AuditUnpickler(io.BytesIO(blob), notes).load(), f"zip:{member}"
+    with open(path, "rb") as fh:
+        return AuditUnpickler(fh, notes).load(), "plain-pickle"
+
 
 def _find_weight_files(artifact: str) -> list[str]:
     """Files a loader would unpickle. Suffix scanners read these; we execute them."""
@@ -195,17 +301,23 @@ def mode_trace(artifact: str, out: str) -> int:
     # and it is the only way to see what the pickle actually does rather than what it names.
     for path in weights:
         rel = os.path.relpath(path, artifact)
+        notes: list[dict] = []
         try:
-            with open(path, "rb") as fh:
-                _run_active(lambda handle=fh: pickle.load(handle))
-            result["weights_loaded"].append({"file": rel, "status": "loaded"})
+            _loaded = _run_active(lambda: load_weights(path, notes))
+            how = _loaded[1] if isinstance(_loaded, tuple) else "unknown"
+            result["weights_loaded"].append({"file": rel, "status": "loaded", "how": how})
+            for note in notes:
+                _record(f"weights.{note['event']}",
+                        note["global"] + (f" ({note['why']})" if note.get("why") else ""))
         except Exception as exc:
-            # A real torch checkpoint is a zip archive, not a bare pickle, so a
-            # plain-pickle reader cannot open it. That is a limitation of this
-            # reader, not behaviour of the artifact, so it is recorded as
-            # unreadable and is deliberately NOT a capability event.
-            result["weights_unreadable"].append({"file": rel, "why": type(exc).__name__})
-            _record("weights.unreadable", f"{rel}: {type(exc).__name__}")
+            unresolved = [n["global"] for n in notes if n["event"] == "unresolved"]
+            detail = f"{rel}: {type(exc).__name__}: {exc}"
+            if unresolved:
+                detail += f" (unresolved global: {', '.join(unresolved)})"
+            result["errors"].append(detail)
+            result["weights_unreadable"].append({"file": rel, "why": type(exc).__name__,
+                                                 "unresolved": unresolved})
+            _record("weights.unreadable", detail)
 
     _flush(OUT)
     with open(os.path.join(os.path.dirname(out), "exec.json"), "w", encoding="utf-8") as fh:

@@ -85,6 +85,8 @@ Consumed by:
 | a refutation must quote the declaration | `src/quarantine/agents/roles.py::_quote_supports_refutation` |
 | a repair must be output-equivalent **and** capability-free at runtime | `src/quarantine/proof/equivalence.py::compare` |
 | a model outage must never become an ALLOW | `src/quarantine/agents/supervisor.py::run_case` |
+| only serialization scaffolding is stubbed — **never** anything that can do I/O | `src/quarantine/sandbox_runner.py::is_serialization_helper` |
+| scaffolding globals are not evidence; `builtins.eval/open/__import__` still are | `src/quarantine/events.py::capability_events` |
 
 ---
 

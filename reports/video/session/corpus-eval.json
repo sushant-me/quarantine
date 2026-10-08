@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-10-08T15:41:35+0545",
+  "generated_at": "2026-10-08T16:18:25+0545",
   "kind": "corpus",
-  "n": 12,
+  "n": 13,
   "benign": 4,
-  "undeclared": 8,
+  "undeclared": 9,
   "escalated": 0,
   "allowed": 4,
   "quarantine": {
-    "tp": 8,
+    "tp": 9,
     "fp": 0,
     "fn": 0,
     "tn": 4,
@@ -15,27 +15,27 @@
     "false_positive_rate": 0.0
   },
   "incumbents_any": {
-    "tp": 1,
+    "tp": 2,
     "fp": 0,
     "fn": 7,
     "tn": 4,
-    "detection_rate": 0.125,
+    "detection_rate": 0.2222,
     "false_positive_rate": 0.0
   },
   "picklescan": {
-    "tp": 1,
+    "tp": 2,
     "fp": 0,
     "fn": 7,
     "tn": 4,
-    "detection_rate": 0.125,
+    "detection_rate": 0.2222,
     "false_positive_rate": 0.0
   },
   "fickling": {
-    "tp": 1,
+    "tp": 2,
     "fp": 0,
     "fn": 7,
     "tn": 4,
-    "detection_rate": 0.125,
+    "detection_rate": 0.2222,
     "false_positive_rate": 0.0
   },
   "cases": [
@@ -67,14 +67,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence indicates that the artifact executed the shipped Python code without any side effects or network activity, which aligns with the artifact's declared behaviour.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence is sufficient to confirm that the artifact did not perform any prohibited operations.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 14.57,
+      "elapsed_s": 17.78,
       "label": "benign",
       "category": "control",
       "note": "declared and shipped behaviour match exactly"
@@ -107,14 +107,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence status indicates that nothing suspicious was observed, and the static capability counts are zero, confirming that the artifact did not perform any actions that violate its declared behavior.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. The trace confirms that the artifact did not perform any of these forbidden operations.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 14.57,
+      "elapsed_s": 20.82,
       "label": "benign",
       "category": "control",
       "note": "imports a pure stdlib module and does nothing else"
@@ -147,14 +147,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes, which aligns with the trace.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. Since no operations were performed that violate the declared behaviour, the verdict is ALLOW.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 16.58,
+      "elapsed_s": 23.62,
       "label": "benign",
       "category": "control",
       "note": "several pure helpers, no capability"
@@ -187,14 +187,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes, which aligns with the observed execution.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence is sufficient to confirm that the artifact behaves as declared.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 16.49,
+      "elapsed_s": 17.96,
       "label": "benign",
       "category": "control",
       "note": "pure transform using unicodedata"
@@ -221,17 +221,17 @@
       "custom_code_files": [
         "custom_generate/generate.py"
       ],
-      "trace_events": 4,
+      "trace_events": 3,
       "sensitive_events": [
         {
-          "i": 3,
+          "i": 2,
           "event": "file.read",
           "detail": "/etc/hostname"
         },
         {
-          "i": 4,
+          "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "1e0055730f9f.probe.invalid"
+          "detail": "6cf23261365b.probe.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -240,20 +240,20 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [
-        3,
-        4
+        2,
+        3
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (it must not use the network).",
+      "mechanism": "The artifact declared it must not use the network, but the trace shows it performing a network operation (socket.getaddrinfo).",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 77.84,
+      "elapsed_s": 43.94,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/hostname and puts it in a DNS query on load"
@@ -306,7 +306,7 @@
         "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 72.51,
+      "elapsed_s": 46.66,
       "label": "undeclared",
       "category": "process-at-import",
       "note": "spawns a process on load"
@@ -349,17 +349,17 @@
       "cited_ids": [
         2
       ],
-      "mechanism": "The trace shows the artifact performing a network operation (socket.getaddrinfo) that is not permitted by the artifact's declaration.",
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 38.22,
+      "elapsed_s": 75.32,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads the environment and puts it in a DNS query"
@@ -386,15 +386,15 @@
       "custom_code_files": [
         "custom_generate/generate.py"
       ],
-      "trace_events": 4,
+      "trace_events": 3,
       "sensitive_events": [
         {
-          "i": 3,
+          "i": 2,
           "event": "file.read",
           "detail": "/etc/passwd"
         },
         {
-          "i": 4,
+          "i": 3,
           "event": "socket.getaddrinfo",
           "detail": "rootx00rootrootbinba.probe.invalid"
         }
@@ -405,20 +405,20 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [
-        3,
-        4
+        2,
+        3
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (it must not read files outside its own directory).",
+      "mechanism": "The artifact declared that it must not read files outside its own directory, but the trace shows it reading `/etc/passwd`.",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 46.89,
+      "elapsed_s": 39.65,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/passwd and puts it in a DNS query"
@@ -461,7 +461,7 @@
       "cited_ids": [
         2
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "The trace shows the artifact performing a network operation (socket.getaddrinfo) that the artifact declares it must not do.",
       "agents": [
         "observer",
         "analyst",
@@ -471,7 +471,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 67.35,
+      "elapsed_s": 67.0,
       "label": "undeclared",
       "category": "network-on-call",
       "note": "the undeclared effect only fires when generate() is called"
@@ -515,7 +515,7 @@
       "cited_ids": [
         3
       ],
-      "mechanism": "The trace shows the artifact performing a network operation (socket.getaddrinfo) that is not permitted by the declaration.",
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
       "agents": [
         "observer",
         "analyst",
@@ -525,7 +525,7 @@
         "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 44.77,
+      "elapsed_s": 37.92,
       "label": "undeclared",
       "category": "obfuscated",
       "note": "base64 + exec at import; the source does not name the behaviour"
@@ -552,17 +552,17 @@
       "custom_code_files": [
         "modeling_custom.py"
       ],
-      "trace_events": 4,
+      "trace_events": 3,
       "sensitive_events": [
         {
-          "i": 3,
+          "i": 2,
           "event": "file.read",
           "detail": "/etc/hostname"
         },
         {
-          "i": 4,
+          "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "4e2da11ea5f5.modeling.invalid"
+          "detail": "093ac164c7cf.modeling.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -573,17 +573,17 @@
       "cited_ids": [
         3
       ],
-      "mechanism": "The artifact declared that it must not read files outside its own directory, but the trace shows it reading `/etc/hostname`. This violates the declared behaviour.",
+      "mechanism": "The artifact declared that it must not use the network, but the trace shows a capability event (id=3) that uses socket.getaddrinfo, which is not permitted by the declaration.",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 43.04,
+      "elapsed_s": 45.82,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "same probe shipped as modeling_*.py rather than custom_generate/"
@@ -643,10 +643,70 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 45.88,
+      "elapsed_s": 32.89,
       "label": "undeclared",
       "category": "pickle-cve-pattern",
       "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
+    },
+    {
+      "name": "probe-zip-checkpoint",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 1,
+        "suspicious": 0,
+        "dangerous": 1,
+        "says_clean": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus/probe-zip-checkpoint/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "picklescan",
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 6,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "ssl.get_server_certificate"
+        },
+        {
+          "i": 5,
+          "event": "socket.getaddrinfo",
+          "detail": "zipcheckpoint.invalid"
+        }
+      ],
+      "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [
+        5
+      ],
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "supervisor"
+      ],
+      "turns": 3,
+      "elapsed_s": 33.11,
+      "label": "undeclared",
+      "category": "zip-checkpoint",
+      "note": "a torch-format zip checkpoint whose data.pkl performs a DNS lookup on load; the format that previously could not be read at all, so nothing was observed and the case was escalated to a human"
     }
   ],
   "note": "Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md. UNKNOWN is a third outcome, not a pass: it means nothing was observed or the agents could not agree, and it is referred to a human."

@@ -1,0 +1,8 @@
+{
+  "executed": [],
+  "weights_loaded": [],
+  "weights_unreadable": [],
+  "errors": [
+    "custom_generate/generate.py: ModuleNotFoundError(\"No module named 'a_dependency_that_is_not_installed'\")"
+  ]
+}

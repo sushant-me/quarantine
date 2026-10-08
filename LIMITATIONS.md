@@ -11,14 +11,14 @@ attached.
 
 | measurement | result |
 |---|---|
-| detection on 12 labeled artifacts (8 undeclared, 4 benign controls) | **8/8**, 0 false positives, 0 escalations |
-| the same corpus: picklescan 1.0.5 / fickling 0.1.12 | 1/8 each |
+| detection on 13 labeled artifacts (9 undeclared, 4 benign controls) | **9/9**, 0 false positives, 0 escalations |
+| the same corpus: picklescan 1.0.5 / fickling 0.1.12 | **2/9** each (22%) |
 | false positives on 4 **real published models** | Quarantine **0 blocked** · picklescan 0 · **fickling 4** |
-| real published models **escalated** (format unreadable) | **3 of 4** — see 12 below |
-| repair produced and capability-clean, across the corpus | **7/7** attempted |
+| real published models **escalated** | **0 of 4** — the reader now opens torch's zip checkpoint format |
+| repair produced and capability-clean, across the corpus | **7/7** attempted (2 of 9 ship only weights) |
 | repair **verified by output-equivalence** | **6/7** — the seventh is a refusal, see 10 below |
 | deliberate sandbox escape, ten primitives | **0 of 10** succeeded |
-| test suite | 45 passing, including the escalation and challenger-grounding rules |
+| test suite | 50 passing, including the escalation, challenger-grounding and reader rules |
 
 ## What is NOT established
 
@@ -61,11 +61,13 @@ attached.
     is for, and it is also why limitation 6 is the most important one on this page. Do not run it on
     artifacts you are not authorised to analyse.
 
-12. **Most real checkpoints cannot be read, so most real artifacts are escalated rather than decided.**
-    A torch `pytorch_model.bin` is a zip archive containing a pickle that `torch.load` would unpickle. This
-    reader cannot open it, so it reports `weights.unreadable` and **escalates to a human** rather than allowing
-    it — 3 of the 4 real published models tested. That is the honest answer, and it is also the single biggest
-    piece of engineering left: a tool that escalates the common format is not yet usable in a pipeline.
+12. **The reader now opens torch zip checkpoints, but it stubs the tensor machinery to do so.** It reads
+    `archive/data.pkl` and unpickles it, which is where the code execution lives — so the security question is
+    answered faithfully, and real models no longer escalate. But `torch._utils._rebuild_tensor_v2`, the
+    `*Storage` types and numpy's array reconstruction cannot be imported without torch, so they are stubbed and
+    the **tensor values are not reconstructed**. A payload that hid its behaviour inside a tensor rebuild helper
+    would not be reproduced. The line is drawn deliberately: **nothing that can reach the network or the
+    filesystem is stubbed**, and `builtins.eval/exec/open/__import__` are excluded explicitly.
 13. **`UNKNOWN` exists and is not a pass.** Exit code 2 covers *nothing was observed*, *the agents disagreed*,
     and *the model was unreachable*. A CI policy that treats 2 as success has defeated the point; the tool
     cannot enforce how you configure that, it can only refuse to call it ALLOW.

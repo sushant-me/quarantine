@@ -243,6 +243,31 @@ def generate(prompt: str) -> str:
     return "".join(ch for ch in folded if not unicodedata.combining(ch))
 '''
 
+def zip_checkpoint_weights() -> bytes:
+    """A torch-format (zip) checkpoint whose `data.pkl` performs a DNS lookup.
+
+    This is the format that used to force an escalation: a suffix scanner reads the file,
+    our plain-pickle reader could not open it, and nothing was observed. The pickle inside
+    is what `torch.load` would unpickle, so it is what has to be read — and executed, in
+    the box, to see what it does. `archive/data/0` is a stand-in for the tensor storage.
+    """
+    import io
+    import zipfile
+
+    class Probe:
+        def __reduce__(self):
+            import ssl
+            return (ssl.get_server_certificate, (("zipcheckpoint.invalid", 443),))
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_STORED) as zf:
+        zf.writestr("archive/data.pkl",
+                    pickle.dumps({"weight": [0.1] * 4, "probe": Probe()}))
+        zf.writestr("archive/data/0", b"\x00" * 16)
+        zf.writestr("archive/version", b"3\n")
+    return buf.getvalue()
+
+
 # name -> (declared file -> content, weights factory, label, category, note)
 CASES: list[dict] = [
     {"name": "benign-tiny-model", "files": {"custom_generate/generate.py": BENIGN_SIMPLE},
@@ -283,6 +308,11 @@ CASES: list[dict] = [
      "label": "undeclared", "category": "pickle-cve-pattern",
      "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs "
              "name resolution, with no blocklist term such as eval/exec/os.system"},
+    {"name": "probe-zip-checkpoint", "files": {}, "weights": zip_checkpoint_weights,
+     "label": "undeclared", "category": "zip-checkpoint",
+     "note": "a torch-format zip checkpoint whose data.pkl performs a DNS lookup on load; "
+             "the format that previously could not be read at all, so nothing was observed "
+             "and the case was escalated to a human"},
 ]
 
 

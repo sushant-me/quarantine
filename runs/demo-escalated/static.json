@@ -1,0 +1,82 @@
+{
+  "inventory": {
+    "files": [
+      {
+        "path": "README.md",
+        "size": 74,
+        "sha256": "4ef6ecfc56b0c49b53e80ffc071d2234d0ac1ad5b383ea373de9993df61a3a35"
+      },
+      {
+        "path": "custom_generate/generate.py",
+        "size": 104,
+        "sha256": "277005bce78a998d63bb6eb793643e2fb6ae44a84cc18b4ef98af96ebba4f600"
+      }
+    ],
+    "file_count": 2,
+    "tree_sha256": "cd383c97c92ad5c63589a7e30bb7ae72bb6808d7983ee769bf164d3a9bf1ac5b"
+  },
+  "capability_graph": {
+    "python_files": 1,
+    "imports_of_interest": {},
+    "capabilities": {
+      "network": 0,
+      "process": 0,
+      "dynamic_code": 0,
+      "filesystem": 0,
+      "obfuscation": 0,
+      "deserialization": 0,
+      "environment": 0
+    },
+    "findings": []
+  },
+  "incumbents": {
+    "picklescan": {
+      "cmd": "/home/logic/win/quarantine/.venv/bin/python -m picklescan --path /home/logic/win/quarantine/reports/video/session/missing-dep",
+      "returncode": 0,
+      "stdout": "----------- SCAN SUMMARY -----------\nScanned files: 0\nInfected files: 0\nSuspicious globals: 0\nDangerous globals: 0\n",
+      "stderr": ""
+    },
+    "fickling": [
+      {
+        "cmd": "fickling",
+        "returncode": null,
+        "stdout": "",
+        "stderr": "no pickle files found"
+      }
+    ],
+    "picklescan_parsed": {
+      "scanned_files": 0,
+      "infected": 0,
+      "suspicious": 0,
+      "dangerous": 0,
+      "says_clean": true
+    },
+    "fickling_parsed": {
+      "scanned_files": 0,
+      "flagged": [],
+      "says_clean": true
+    }
+  },
+  "incumbent_verdict": {
+    "picklescan": {
+      "scanned_files": 0,
+      "infected": 0,
+      "suspicious": 0,
+      "dangerous": 0,
+      "says_clean": true
+    },
+    "fickling": {
+      "scanned_files": 0,
+      "flagged": [],
+      "says_clean": true
+    },
+    "scanned_custom_python": false,
+    "shipped_python_files": [
+      "custom_generate/generate.py"
+    ],
+    "note": "Suffix-based scanners read pickle/weight files. Shipped Python (custom_generate/, modeling_*.py) is not in their input set at all, so an artifact can be 'clean' to every scanner and still execute arbitrary code on load."
+  },
+  "custom_code_files": [
+    "custom_generate/generate.py"
+  ]
+}

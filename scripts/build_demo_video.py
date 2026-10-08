@@ -194,17 +194,17 @@ def main() -> int:
             "  That is the most dangerous default a security gate can have.",
         ], 15.0, "step 3b — escalation, because UNKNOWN is not a pass"),
         ("06-numbers", metric_table(
-            "DETECTION — 12 artifacts, the same declared API in every one",
+            f"DETECTION — {corpus_eval['n']} artifacts, the same declared API in every one",
             corpus_eval, corpus_eval["undeclared"], corpus_eval["benign"]) + [
             "",
         ] + metric_table(
-            "FALSE POSITIVES — 4 real published models from the Hub",
+            f"FALSE POSITIVES — {real_eval['n']} real published models from the Hub",
             real_eval, 0, real_eval["n"]) + [
             "",
-            "  The incumbents' one catch is the only artifact whose payload is",
-            "  a pickle — the only one inside their input set. And on real",
-            "  models, one of them flags all four: a checkpoint is a zip",
-            "  archive it cannot parse.",
+            "  The incumbents' catches are the artifacts whose payload is a",
+            "  pickle — the only ones inside their input set. The seven code",
+            "  paths in custom_generate/ and modeling_*.py, neither scanner",
+            "  opens. And on real models, one of them flags all four.",
         ], 17.0, "step 4 — measured, with a control group"),
         ("06b-repair", [
             "  THE REPAIR, across all 8 undeclared artifacts",

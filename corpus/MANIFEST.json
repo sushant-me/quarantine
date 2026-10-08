@@ -1,9 +1,9 @@
 {
   "declared_api": "generate(prompt: str) -> str",
   "hostname_suffix": ".invalid (RFC 2606, can never resolve)",
-  "count": 12,
+  "count": 13,
   "benign": 4,
-  "undeclared": 8,
+  "undeclared": 9,
   "cases": [
     {
       "name": "benign-tiny-model",
@@ -76,6 +76,12 @@
       "label": "undeclared",
       "category": "pickle-cve-pattern",
       "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
+    },
+    {
+      "name": "probe-zip-checkpoint",
+      "label": "undeclared",
+      "category": "zip-checkpoint",
+      "note": "a torch-format zip checkpoint whose data.pkl performs a DNS lookup on load; the format that previously could not be read at all, so nothing was observed and the case was escalated to a human"
     }
   ]
 }

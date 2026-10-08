@@ -1,15 +1,16 @@
-[1/4] observer    4 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
-      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (must n
-[3/4] challenger  refuted=False grounded=True in 26.22s
-      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in the dec
-[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+[1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 16.1s
+      mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation (sock
+[3/4] challenger  refuted=False grounded=True in 32.66s
+      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifact's d
+[4/4] repairer    ok=True removed=['_sync'] in 9.79s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
   incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
-  behavioural trace 4 events, network=none, observed=True
+  behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
   agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
