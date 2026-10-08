@@ -1,9 +1,9 @@
-<img src="docs/assets/banner.svg" alt="Quarantine — the offline clean room for untrusted model artifacts" width="100%">
+<h1><img src="docs/assets/banner.svg" alt="Quarantine — the offline clean room for untrusted model artifacts" width="100%"></h1>
 
 [![ci](https://github.com/sushant-me/quarantine/actions/workflows/ci.yml/badge.svg)](https://github.com/sushant-me/quarantine/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-### A model you download is code you did not write
+## A model you download is code you did not write
 
 `pytorch_model.bin` is a pickle, and a pickle runs code when it is loaded. A repository with `auto_map` in
 its `config.json` ships `modeling_*.py` that the framework executes the moment you load the model — with
@@ -18,7 +18,7 @@ explain, repairs what it can — and signs a receipt anyone can check with `open
 
 ![Three steps: a scanner calls the artifact clean; Quarantine blocks it; the receipt verifies](docs/assets/demo.gif)
 
-### Three things worth knowing before you read further
+## Three things worth knowing before you read further
 
 - **`UNKNOWN` is a real outcome, not a failure.** Exit `0` allow · `1` block · `2` *"we could not look"*.
   The third one goes to a human and is never reported as "fine" — that distinction is the whole product.

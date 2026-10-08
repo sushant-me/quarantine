@@ -140,3 +140,15 @@ trace showing what it missed; everything else is evidence that the first two are
 ## Narration for the silent video
 
 If you are recording a voice over [`reports/video/quarantine-demo.mp4`](../reports/video/quarantine-demo.mp4), read [`presentation/quarantine-demo-narration.srt`](../presentation/quarantine-demo-narration.srt). It has one cue per scene, timed from the video's own scene manifest, and the video's duration is now exactly the sum of its scenes (182s), so the last cue ends with the picture.
+
+## Before you present
+
+```bash
+./scripts/check_deck_renders.sh    # every slide must draw
+```
+
+The deck is a hash-navigated page, and it once read `location.hash` only on load - deep
+links silently showed the wrong slide. Reading the HTML cannot tell you whether a slide
+draws; this renders all of them and fails on a blank. It is not in CI on purpose: it needs
+chromium, and a gate that breaks the build when an optional binary is absent is worse than
+the check it adds.

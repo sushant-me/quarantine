@@ -57,6 +57,7 @@ REQUIRED_FILES = [
     ("docs/assets/demo.gif", "the README shows the product running"),
     ("scripts/try_it.sh", "a first-time reader gets told what is missing, in words"),
     ("scripts/build_readme_gif.py", "the README animation is generated from real output"),
+    ("scripts/check_deck_renders.sh", "the deck can be proved to draw before a demo"),
     ("scripts/verify_published_receipts.py", "independent verification is runnable"),
     ("docs/RECEIPT-FORMAT.md", "the receipt format is a specification somebody else can build against"),
     ("docs/receipt-vector/valid-receipt.json", "the format has a signed test vector"),
