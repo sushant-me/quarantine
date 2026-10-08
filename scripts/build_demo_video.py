@@ -299,22 +299,25 @@ def main() -> int:
     ]
 
     print("rendering frames ...", flush=True)
-    manifest: list[str] = []
+    frames: list[tuple[Path, float]] = []
     for name, lines, duration, title in scenes:
-        png = frame(name, lines, title)
-        manifest.append(f"file '{png}'\nduration {duration}")
-    manifest.append(f"file '{FRAMES / (scenes[-1][0] + '.png')}'")
-    list_file = OUT / "concat.txt"
-    list_file.write_text("\n".join(manifest) + "\n", encoding="utf-8")
+        frames.append((frame(name, lines, title), duration))
 
     video = OUT / "quarantine-demo.mp4"
     print("encoding ...", flush=True)
-    subprocess.run([
-        "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-        "-f", "concat", "-safe", "0", "-i", str(list_file),
-        "-pix_fmt", "yuv420p", "-r", "30",
-        "-movflags", "+faststart", str(video),
-    ], check=True)
+    # The concat *filter*, one looping image input per scene, rather than the concat
+    # *demuxer* with `duration` directives. The demuxer does not honour those durations
+    # exactly: the finished video ran 193s for 182s of scenes, so every subtitle cue drifted
+    # and the narration script could not be trusted to stay in sync. With explicit `-t` per
+    # input the total is the sum of the parts, which is what a timed script needs.
+    cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error"]
+    for png, duration in frames:
+        cmd += ["-loop", "1", "-t", f"{duration}", "-i", str(png)]
+    streams = "".join(f"[{i}:v]" for i in range(len(frames)))
+    cmd += ["-filter_complex", f"{streams}concat=n={len(frames)}:v=1:a=0[out]",
+            "-map", "[out]", "-pix_fmt", "yuv420p", "-r", "30",
+            "-movflags", "+faststart", str(video)]
+    subprocess.run(cmd, check=True)
 
     transcript = OUT / "transcript.txt"
     with transcript.open("w", encoding="utf-8") as fh:

@@ -195,6 +195,17 @@ bug this tool can have.
 [v0.1.0](https://github.com/sushant-me/quarantine/releases/tag/v0.1.0) carries the project-idea PDF and the
 demo video as downloadables, with the measured table and the honest counterweight in the notes.
 
+## Demo video and narration
+
+[`reports/video/quarantine-demo.mp4`](reports/video/quarantine-demo.mp4) — 3:02, built from real captured
+command output rather than a screen recording. The video is silent on purpose: there is no English
+text-to-speech on the machine that built it, and a synthetic voice would be worse than none.
+
+[`presentation/quarantine-demo-narration.srt`](presentation/quarantine-demo-narration.srt) is a timed
+narration script, one cue per scene, generated from the same scene list the video is built from by
+`scripts/build_demo_narration.py` — so it stays in sync by construction rather than by hand. Read it
+aloud over the video and the demo is narrated.
+
 ## Demo Day deck
 
 [`presentation/quarantine-demo-day.html`](presentation/quarantine-demo-day.html) — 14 slides in one

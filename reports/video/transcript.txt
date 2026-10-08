@@ -39,26 +39,23 @@ Dangerous globals: 0
   $ quarantine inspect corpus/probe-custom-generate
 
 [1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 9.95s
-      mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
-[3/4] challenger  refuted=True grounded=True in 12.55s
-      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.get…
-      supervisor  the challenger objected but could not ground it in the declaration
-[4/4] repairer    ok=True removed=['_sync'] in 6.84s
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 11.04s
+      mechanism   The artifact performed an operation (reading a file outside its own directory) that its declaration forbi…
+[3/4] challenger  refuted=False grounded=True in 33.56s
+[4/4] repairer    ok=True removed=['_sync'] in 5.15s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+
+=== Quarantine verdict ===
 
 === 04b-trace  (9s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
 
 [1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 9.95s
-      mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
-[3/4] challenger  refuted=True grounded=True in 12.55s
-      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.get…
-      supervisor  the challenger objected but could not ground it in the declaration
-[4/4] repairer    ok=True removed=['_sync'] in 6.84s
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 11.04s
+      mechanism   The artifact performed an operation (reading a file outside its own directory) that its declaration forbi…
+[3/4] challenger  refuted=False grounded=True in 33.56s
+[4/4] repairer    ok=True removed=['_sync'] in 5.15s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
@@ -66,19 +63,19 @@ Dangerous globals: 0
   behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
+  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
+  receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
+  exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)
 
 === 04c-trace  (11s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
 
 [1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 9.95s
-      mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
-[3/4] challenger  refuted=True grounded=True in 12.55s
-      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.get…
-      supervisor  the challenger objected but could not ground it in the declaration
-[4/4] repairer    ok=True removed=['_sync'] in 6.84s
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 11.04s
+      mechanism   The artifact performed an operation (reading a file outside its own directory) that its declaration forbi…
+[3/4] challenger  refuted=False grounded=True in 33.56s
+[4/4] repairer    ok=True removed=['_sync'] in 5.15s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
@@ -86,19 +83,19 @@ Dangerous globals: 0
   behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
-  agents            observer, analyst, challenger, supervisor, repairer, verifier in 5 turns
+  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
   receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
   exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)
 
 === 05-verdict  (15s)  step 3 — an agent team, three of them using the model
   $ quarantine inspect corpus/probe-custom-generate
 
-[3/4] challenger  refuted=True grounded=True in 12.55s
-      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.get…
-      supervisor  the challenger objected but could not ground it in the declaration
-[4/4] repairer    ok=True removed=['_sync'] in 6.84s
+[1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 11.04s
+      mechanism   The artifact performed an operation (reading a file outside its own directory) that its declaration forbi…
+[3/4] challenger  refuted=False grounded=True in 33.56s
+[4/4] repairer    ok=True removed=['_sync'] in 5.15s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
@@ -106,7 +103,7 @@ Dangerous globals: 0
   behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
-  agents            observer, analyst, challenger, supervisor, repairer, verifier in 5 turns
+  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
   receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
   exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)
 
@@ -118,7 +115,6 @@ Dangerous globals: 0
 [1/4] observer    1 events, network=none; executed=none; observed=False
       supervisor  -> escalate (no behavioural observation is possible)
 [!]   ESCALATED   the artifact's shipped Python (custom_generate/generate.py) could not be executed (custom_generate/genera…
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          missing-dep

@@ -136,3 +136,7 @@ trace showing what it missed; everything else is evidence that the first two are
 ## Slides for Demo Day
 
 [`presentation/quarantine-demo-day.html`](../presentation/quarantine-demo-day.html) — 14 slides, self-contained, no external assets. Open it in a browser and use the arrow keys; `#s6` goes straight to the evidence slide, `#s8` to the receipt verification. It carries the same numbers as this script, including the one that argues against us.
+
+## Narration for the silent video
+
+If you are recording a voice over [`reports/video/quarantine-demo.mp4`](../reports/video/quarantine-demo.mp4), read [`presentation/quarantine-demo-narration.srt`](../presentation/quarantine-demo-narration.srt). It has one cue per scene, timed from the video's own scene manifest, and the video's duration is now exactly the sum of its scenes (182s), so the last cue ends with the picture.

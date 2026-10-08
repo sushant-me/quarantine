@@ -1,0 +1,59 @@
+1
+00:00:00,000 --> 00:00:06,000
+Every model you download is code you did not write. This is Quarantine — an offline clean room that runs it where it cannot hurt you.
+
+2
+00:00:06,000 --> 00:00:19,000
+First, the scanner everyone already runs. Picklescan reports zero infected files and zero suspicious globals. It is clean, and it is wrong.
+
+3
+00:00:19,000 --> 00:00:30,000
+That is the gap. Neither picklescan nor fickling ever opens a Python file, and seven of our nine malicious artifacts hide in exactly those files.
+
+4
+00:00:30,000 --> 00:00:39,000
+So we execute it inside Docker, with the network off, a read-only root, every capability dropped, and an audit hook recording every sensitive operation.
+
+5
+00:00:39,000 --> 00:00:48,000
+The artifact runs, and the trace shows what it did: a file read outside its own directory, and a DNS lookup to an address that cannot resolve.
+
+6
+00:00:48,000 --> 00:00:59,000
+This is behaviour, not a signature. The artifact cannot rename its way out of it, and the trace is the evidence everything downstream reasons over.
+
+7
+00:00:59,000 --> 00:01:14,000
+Then an agent team reads it. The analyst decides and cites trace ids. The challenger tries to refute it. The repairer rewrites the offending function, and a verifier proves it.
+
+8
+00:01:14,000 --> 00:01:29,000
+And when we cannot look, we escalate. This artifact could not be executed, so its code path was never observed: UNKNOWN, exit code two, a human decides.
+
+9
+00:01:29,000 --> 00:01:46,000
+We also ran picklescan's own malicious corpus — ninety-one samples, one per real advisory. They flag eighty-eight; we observe forty-three. They win there, and we say so. This is the other half of the pair, not a replacement.
+
+10
+00:01:46,000 --> 00:02:00,000
+Then we pointed it at Nepal: two hundred and sixty-eight repositories, forty-six shipping Python, fifteen requiring remote code. That search found a bug in our own tool.
+
+11
+00:02:00,000 --> 00:02:17,000
+The measured numbers. Nine of nine on our labeled corpus, against two of nine for each incumbent. Zero false positives on twenty real published models, where fickling flags eighteen.
+
+12
+00:02:17,000 --> 00:02:32,000
+The repair is proven, not asserted — identical outputs on twelve prompts and zero capability operations, measured from the trace. Six of seven verified, and the seventh is a refusal we state plainly.
+
+13
+00:02:32,000 --> 00:02:44,000
+We attacked our own box: ten breakout primitives, including host mounts and runtime sockets. Zero succeeded. That is a measurement, not a guarantee.
+
+14
+00:02:44,000 --> 00:02:55,000
+And here is what we do not claim. No scanner bypass, no proof the box cannot be broken, poisoned weights out of scope, and the corpus is ours.
+
+15
+00:02:55,000 --> 00:03:02,000
+Quarantine. Apache two. No API key, no egress, and receipts you can verify with openssl. Thank you.

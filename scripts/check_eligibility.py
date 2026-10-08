@@ -62,6 +62,8 @@ REQUIRED_FILES = [
     ("presentation/quarantine-demo-day.html", "the Demo Day deck is present"),
     ("presentation/quarantine-project-idea.html", "the project-idea document source"),
     ("presentation/Quarantine-Project-Idea.pdf", "the project-idea PDF all these documents explain"),
+    ("presentation/quarantine-demo-narration.srt", "the demo video has a narration script"),
+    ("scripts/build_demo_narration.py", "the narration is generated, not hand-timed"),
     ("runs/probe/keys/quarantine.pub.pem", "the public key is published so anyone can verify"),
     ("baselines/python_3.12-slim.jsonl", "the default image's noise floor is recorded"),
     ("docs/DEMO-SCRIPT.md", "demo script"),
