@@ -29,6 +29,11 @@ PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-ge
 PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
 
+# or verify it without trusting this codebase at all - stdlib only, and the Ed25519
+# signature is checked with openssl rather than the Python that produced it
+python tools/verify_receipt_standalone.py runs/probe/receipt.json \
+        --pub runs/probe/keys/quarantine.pub.pem
+
 PYTHONPATH=src .venv/bin/python -m pytest -q     # 66 tests
 ```
 

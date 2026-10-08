@@ -33,6 +33,8 @@ key dependencies"* must be easy to verify (so they are stated in the README and 
 intellectual-property position — accompanies this submission as a standalone document; it is deliberately not
 in the repository, because the event asks for a product and its evidence, not a plan.*
 
+*Running and verifying are both one command, and verification does not require this codebase: [`tools/verify_receipt_standalone.py`](tools/verify_receipt_standalone.py) is stdlib-only and checks the Ed25519 signature with `openssl`. The public keys are committed so a judge can verify a receipt without trusting us.*
+
 ## 2. Why the AI is load-bearing
 
 The challenge's test: *delete the AI call — does the product still do its job?*

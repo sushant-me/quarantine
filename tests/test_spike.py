@@ -834,3 +834,83 @@ def test_an_unmeasured_image_subtracts_nothing(tmp_path, monkeypatch):
     trace = [{"i": 1, "event": "ctypes.dlopen", "detail": "/usr/lib/libtorch.so"}]
     assert [e["i"] for e in ev.capability_events(trace)] == [1]
     ev._BASELINE_CACHE.clear()
+
+
+# ------------------------------------------- independent receipt verification
+
+def _root() -> Path:
+    return CORPUS.parent
+
+
+def _run_standalone(receipt, pub):
+    """Run the standalone verifier as a subprocess — it must not need our package.
+
+    The environment is deliberately stripped: no PYTHONPATH, so an accidental import of
+    `quarantine` would fail rather than silently succeed.
+    """
+    import os
+    import subprocess
+    import sys
+    return subprocess.run(
+        [sys.executable, str(_root() / "tools" / "verify_receipt_standalone.py"),
+         str(receipt), "--pub", str(pub)],
+        capture_output=True, text=True, timeout=120, cwd=str(_root()),
+        env={"PATH": os.environ.get("PATH", ""), "HOME": os.environ.get("HOME", "")})
+
+
+def test_a_receipt_verifies_without_importing_our_code_or_our_dependencies():
+    """Ed25519 checked by openssl: a different implementation than the one that signed it."""
+    receipt = _root() / "runs" / "probe" / "receipt.json"
+    pub = _root() / "runs" / "probe" / "keys" / "quarantine.pub.pem"
+    if not (receipt.exists() and pub.exists()):
+        pytest.skip("committed probe receipt not present")
+    if not __import__("shutil").which("openssl"):
+        pytest.skip("openssl not available")
+    done = _run_standalone(receipt, pub)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "VERIFIED" in done.stdout
+    assert "Signature Verified Successfully" in done.stdout
+
+
+def test_the_standalone_verifier_rejects_a_payload_with_the_verdict_flipped(tmp_path):
+    """The forgery that matters: BLOCK edited to ALLOW, signature left in place."""
+    import base64 as _b64
+    import json as _json
+    receipt = _root() / "runs" / "probe" / "receipt.json"
+    pub = _root() / "runs" / "probe" / "keys" / "quarantine.pub.pem"
+    if not (receipt.exists() and pub.exists()):
+        pytest.skip("committed probe receipt not present")
+    if not __import__("shutil").which("openssl"):
+        pytest.skip("openssl not available")
+    envelope = _json.loads(receipt.read_text(encoding="utf-8"))
+    payload = _json.loads(_b64.b64decode(envelope["payload"]))
+    assert payload["verdict"]["decided"] == "BLOCK"
+    payload["verdict"]["decided"] = "ALLOW"
+    forged = tmp_path / "forged.json"
+    forged.write_text(_json.dumps({
+        "payloadType": envelope["payloadType"],
+        "payload": _b64.b64encode(_json.dumps(
+            payload, sort_keys=True, separators=(",", ":")).encode()).decode(),
+        "signatures": envelope["signatures"],
+    }), encoding="utf-8")
+    done = _run_standalone(forged, pub)
+    assert done.returncode == 1
+    assert "NOT VERIFIED" in done.stdout
+
+
+def test_the_standalone_verifier_rejects_an_unrelated_key(tmp_path):
+    receipt = _root() / "runs" / "probe" / "receipt.json"
+    pub = _root() / "runs" / "probe" / "keys" / "quarantine.pub.pem"
+    if not (receipt.exists() and pub.exists()):
+        pytest.skip("committed probe receipt not present")
+    if not __import__("shutil").which("openssl"):
+        pytest.skip("openssl not available")
+    other = tmp_path / "other.pem"
+    key = tmp_path / "other.key"
+    __import__("subprocess").run(
+        ["openssl", "genpkey", "-algorithm", "ED25519", "-out", str(key)], capture_output=True)
+    __import__("subprocess").run(
+        ["openssl", "pkey", "-in", str(key), "-pubout", "-out", str(other)], capture_output=True)
+    done = _run_standalone(receipt, other)
+    assert done.returncode == 1
+    assert "does not match the public key" in done.stdout

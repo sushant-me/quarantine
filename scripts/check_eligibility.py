@@ -56,6 +56,8 @@ REQUIRED_FILES = [
     ("scripts/measure_image_baseline.py", "the noise floor is measurable"),
     ("scripts/eval_third_party.py", "the third-party corpus evaluation is reproducible"),
     ("reports/third-party-eval.md", "the third-party result is published"),
+    ("tools/verify_receipt_standalone.py", "receipts verify without this codebase"),
+    ("runs/probe/keys/quarantine.pub.pem", "the public key is published so anyone can verify"),
     ("baselines/python_3.12-slim.jsonl", "the default image's noise floor is recorded"),
     ("docs/DEMO-SCRIPT.md", "demo script"),
     ("reports/video/quarantine-demo.mp4", "demo video (required deliverable)"),

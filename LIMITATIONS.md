@@ -44,8 +44,14 @@ attached.
 6. **The escape attempt is ten primitives, not a fuzzing campaign.** A clean table means *those ten* failed.
    No kernel exploit, no container-runtime CVE, and no race was attempted. It is not a claim that the box
    cannot be broken.
-7. **No independent receipt verification.** The receipt is verified by our own verifier with our own key.
-   It uses standard primitives (Ed25519 over canonical JSON, DSSE-shaped envelope) and is **not audited**.
+7. **Receipt verification no longer needs our code, but the key is still ours.**
+   [`tools/verify_receipt_standalone.py`](tools/verify_receipt_standalone.py) imports nothing from this
+   package, checks the DSSE envelope and the canonical-JSON property, and verifies the Ed25519 signature
+   with **`openssl`** — a different implementation, in a different language, by different authors, than the
+   Python that signed it. It was observed rejecting both a payload with the verdict flipped from `BLOCK` to
+   `ALLOW` and a genuine receipt presented with an unrelated key. **What remains true:** the key is
+   self-signed, no external party has verified a receipt, and the primitives are unaudited. The public keys
+   are committed (`runs/*/keys/*.pub.pem`) precisely so a third party can check one.
 8. **Python only, and zip-format checkpoints are not executed.** A real `pytorch_model.bin` is a zip archive;
    the plain-pickle reader reports `weights.unreadable` and moves on — recorded honestly, and deliberately
    **not** treated as evidence of anything. `safetensors` is not attempted at all. ONNX custom ops, GGUF
