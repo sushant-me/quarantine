@@ -22,42 +22,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from quarantine.sandbox.execute import run_trace           # noqa: E402
-from quarantine.semantic.analyst import analyse_artifact    # noqa: E402
-from quarantine.static.scan import static_pass              # noqa: E402
+from quarantine.agents.supervisor import run_case               # noqa: E402
 
 CORPUS = ROOT / "corpus"
 REPORTS = ROOT / "reports"
 
 
-def declared(root: Path) -> str:
-    readme = root / "README.md"
-    return readme.read_text(encoding="utf-8") if readme.exists() else "(nothing declared)"
-
-
-def shipped_code(root: Path, custom_files: list[str]) -> str:
-    parts = []
-    for rel in custom_files:
-        p = root / rel
-        if p.exists():
-            parts.append(f"# ---- {rel} ----\n" + p.read_text(encoding="utf-8", errors="replace"))
-    return "\n\n".join(parts) or "(no shipped Python code)"
-
-
 def evaluate(name: str, workdir: Path, base: Path) -> dict:
+    """One artifact through the whole agent team; reported from the outcome."""
     root = base / name
     started = time.time()
-    static = static_pass(root)
-    trace = run_trace(root, workdir)
-    analysis = analyse_artifact(declared(root), shipped_code(root, static["custom_code_files"]),
-                                trace["events"], static)
-    verdict_obj = analysis.get("verdict") or {}
-    decided = verdict_obj.get("verdict", "UNKNOWN")
-    if decided == "BLOCK" and not analysis.get("grounded"):
-        decided = "UNKNOWN"
-
-    ps = static["incumbent_verdict"]["picklescan"]
-    fk = static["incumbent_verdict"]["fickling"]
+    outcome = run_case(root, workdir)
+    case = outcome.case
+    inc = case.static["incumbent_verdict"]
+    ps, fk = inc["picklescan"], inc["fickling"]
     flagged_by = [n for n, says_clean in (("picklescan", ps["says_clean"]),
                                           ("fickling", fk["says_clean"])) if says_clean is False]
     return {
@@ -66,16 +44,21 @@ def evaluate(name: str, workdir: Path, base: Path) -> dict:
         "fickling": fk,
         "incumbents_flagged_by": flagged_by,
         "incumbents_flagged": bool(flagged_by),
-        "static_capabilities": {k: v for k, v in static["capability_graph"]["capabilities"].items() if v},
-        "custom_code_files": static["custom_code_files"],
-        "trace_events": trace["event_count"],
-        "sensitive_events": [e for e in trace["events"]
+        "static_capabilities": {k: v for k, v in case.static["capability_graph"]["capabilities"].items() if v},
+        "custom_code_files": case.custom_files,
+        "trace_events": len(case.events),
+        "sensitive_events": [e for e in case.events
                              if e["event"] in {"socket.getaddrinfo", "file.read", "subprocess.Popen",
-                                               "pickle.find_class", "exec", "os.system"}],
-        "verdict": decided,
-        "grounded": analysis.get("grounded", False),
-        "cited_ids": analysis.get("cited_ids", []),
-        "mechanism": verdict_obj.get("mechanism", ""),
+                                               "pickle.find_class", "os.system"}],
+        "verdict": outcome.decided,
+        "escalated": outcome.escalated,
+        "escalation_reason": outcome.escalation_reason,
+        "observed": case.observed,
+        "grounded": (outcome.analysis or {}).get("grounded", False),
+        "cited_ids": (outcome.analysis or {}).get("cited_ids", []),
+        "mechanism": ((outcome.analysis or {}).get("verdict") or {}).get("mechanism", ""),
+        "agents": outcome.board.agents(),
+        "turns": outcome.turns,
         "elapsed_s": round(time.time() - started, 2),
     }
 
@@ -154,13 +137,17 @@ def main() -> int:
         "n": len(rows),
         "benign": sum(1 for r in rows if r["label"] == "benign"),
         "undeclared": sum(1 for r in rows if r["label"] == "undeclared"),
+        "escalated": sum(1 for r in rows if r.get("escalated")),
+        "allowed": sum(1 for r in rows if r["verdict"] == "ALLOW"),
         "quarantine": q,
         "incumbents_any": inc,
         "picklescan": pickle_only,
         "fickling": fick,
         "cases": rows,
         "note": ("Labels are authored by us, so this measures the auditors against a known "
-                 "ground truth, not against the real world. See SPIKE-RESULTS.md."),
+                 "ground truth, not against the real world. See SPIKE-RESULTS.md. UNKNOWN is a "
+                 "third outcome, not a pass: it means nothing was observed or the agents could "
+                 "not agree, and it is referred to a human."),
     }
     (REPORTS / f"{prefix}-eval.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
@@ -177,14 +164,18 @@ def main() -> int:
         f"| picklescan | {pickle_only['tp']} | {pct(pickle_only['detection_rate'])} | {pickle_only['fp']} | {pct(pickle_only['false_positive_rate'])} |",
         f"| fickling | {fick['tp']} | {pct(fick['detection_rate'])} | {fick['fp']} | {pct(fick['false_positive_rate'])} |",
         "",
+        f"Escalated to a human (UNKNOWN): **{report['escalated']} of {report['n']}** — "
+        f"nothing observed, or the agents could not agree. Allowed: {report['allowed']}.",
+        "",
         "## Per artifact", "",
-        "| artifact | truth | category | incumbents | Quarantine | grounded | trace |",
-        "|---|---|---|---|---|---|---|",
+        "| artifact | truth | category | incumbents | Quarantine | escalated | grounded | trace |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     for r in rows:
         who = ",".join(r["incumbents_flagged_by"]) or "clean"
         lines.append(f"| `{r['name']}` | {r['label']} | {r['category']} | {who} | "
-                     f"**{r['verdict']}** | {r['grounded']} | {r['trace_events']} |")
+                     f"**{r['verdict']}** | {r.get('escalated', False)} | {r['grounded']} | "
+                     f"{r['trace_events']} |")
     lines += ["", report["note"], ""]
     (REPORTS / f"{prefix}-eval.md").write_text("\n".join(lines), encoding="utf-8")
 

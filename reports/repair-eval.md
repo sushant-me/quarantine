@@ -13,13 +13,13 @@ All 8 artifacts with undeclared behaviour, run end to end. Every number is read 
 
 | artifact | category | custom code | verdict | repair ok | equivalent | prompts | caps orig → repaired |
 |---|---|---|---|---|---|---|---|
-| `probe-custom-generate` | network-at-import | no | BLOCK | True | True | 12 | 2 → 0 |
-| `probe-subprocess` | process-at-import | no | BLOCK | True | True | 12 | 1 → 0 |
-| `probe-env-exfil` | network-at-import | no | BLOCK | True | True | 12 | 1 → 0 |
-| `probe-file-read` | network-at-import | no | BLOCK | True | True | 12 | 2 → 0 |
-| `probe-lazy-trigger` | network-on-call | no | BLOCK | True | True | 12 | 1 → 0 |
-| `probe-obfuscated` | obfuscated | no | BLOCK | True | False | 12 | 1 → 0 |
-| `probe-modeling-file` | network-at-import | no | BLOCK | True | True | 12 | 2 → 0 |
+| `probe-custom-generate` | network-at-import | yes | BLOCK | True | True | 12 | 2 → 0 |
+| `probe-subprocess` | process-at-import | yes | BLOCK | True | True | 12 | 1 → 0 |
+| `probe-env-exfil` | network-at-import | yes | BLOCK | True | True | 12 | 1 → 0 |
+| `probe-file-read` | network-at-import | yes | BLOCK | True | True | 12 | 2 → 0 |
+| `probe-lazy-trigger` | network-on-call | yes | BLOCK | True | True | 12 | 1 → 0 |
+| `probe-obfuscated` | obfuscated | yes | BLOCK | True | False | 12 | 1 → 0 |
+| `probe-modeling-file` | network-at-import | yes | BLOCK | True | True | 12 | 2 → 0 |
 | `cve-2025-46417-pickle` | pickle-cve-pattern | no | BLOCK | False | False | None | 0 → 0 |
 
 Repair is only attempted when the verdict is a grounded BLOCK, and an artifact whose payload is a pickle ships no custom code to repair.

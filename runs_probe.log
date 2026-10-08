@@ -1,27 +1,18 @@
-[1/6] static pass           /home/logic/win/quarantine/corpus/probe-custom-generate
-      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
-      static capabilities: {'network': 1}
-[2/6] behavioural pass       executing, network off
-      container rc=0  events=4
-        id=  1 import: urllib
-        id=  2 import: socket
-        id=  3 file.read: /etc/hostname
-        id=  4 socket.getaddrinfo: 72e6f1f78ead.probe.invalid
-[3/6] semantic pass          local open-weight model
-      reachable=True grounded=True verdict=BLOCK in 12.01s
-      mechanism: The artifact declared that it must not spawn processes, but the trace shows a call to `socket.getaddrinfo`, wh
-[4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 10.33s
-[5/6] equivalence proof
-      equivalent=True over 12 prompts; capability ops original=2 repaired=0
-[6/6] sign receipt
-      new keypair -> /home/logic/win/quarantine/runs/probe/keys/quarantine.pub.pem
-      signed and verified: True  keyid=3a48b0e1e104132c
+[1/4] observer    4 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 14.91s
+      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (it mus
+[3/4] challenger  refuted=False grounded=True in 35.32s
+      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, but the declared behaviour expl
+[4/4] repairer    ok=True removed=['_sync'] in 6.72s
+      verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
   incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
-  behavioural trace 4 events, network=none
-  verdict           BLOCK  (grounded=True)
+  behavioural trace 4 events, network=none, observed=True
+  verdict           BLOCK
   repair            ok=True equivalent=True
+  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
   receipt           /home/logic/win/quarantine/runs/probe/receipt.json  verified=True
+  exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)

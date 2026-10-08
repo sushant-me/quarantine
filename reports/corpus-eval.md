@@ -8,21 +8,23 @@
 | picklescan | 1 | 12% | 0 | 0% |
 | fickling | 1 | 12% | 0 | 0% |
 
-## Per case
+Escalated to a human (UNKNOWN): **0 of 12** — nothing observed, or the agents could not agree. Allowed: 4.
 
-| artifact | truth | category | incumbents | Quarantine | grounded |
-|---|---|---|---|---|---|
-| `benign-tiny-model` | benign | control | clean | **ALLOW** | True |
-| `benign-typing-only` | benign | control | clean | **ALLOW** | True |
-| `benign-two-functions` | benign | control | clean | **ALLOW** | True |
-| `benign-unicode` | benign | control | clean | **ALLOW** | True |
-| `probe-custom-generate` | undeclared | network-at-import | clean | **BLOCK** | True |
-| `probe-subprocess` | undeclared | process-at-import | clean | **BLOCK** | True |
-| `probe-env-exfil` | undeclared | network-at-import | clean | **BLOCK** | True |
-| `probe-file-read` | undeclared | network-at-import | clean | **BLOCK** | True |
-| `probe-lazy-trigger` | undeclared | network-on-call | clean | **BLOCK** | True |
-| `probe-obfuscated` | undeclared | obfuscated | clean | **BLOCK** | True |
-| `probe-modeling-file` | undeclared | network-at-import | clean | **BLOCK** | True |
-| `cve-2025-46417-pickle` | undeclared | pickle-cve-pattern | picklescan,fickling | **BLOCK** | True |
+## Per artifact
 
-Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md.
+| artifact | truth | category | incumbents | Quarantine | escalated | grounded | trace |
+|---|---|---|---|---|---|---|---|
+| `benign-tiny-model` | benign | control | clean | **ALLOW** | False | True | 0 |
+| `benign-typing-only` | benign | control | clean | **ALLOW** | False | True | 0 |
+| `benign-two-functions` | benign | control | clean | **ALLOW** | False | True | 0 |
+| `benign-unicode` | benign | control | clean | **ALLOW** | False | True | 0 |
+| `probe-custom-generate` | undeclared | network-at-import | clean | **BLOCK** | False | True | 4 |
+| `probe-subprocess` | undeclared | process-at-import | clean | **BLOCK** | False | True | 2 |
+| `probe-env-exfil` | undeclared | network-at-import | clean | **BLOCK** | False | True | 2 |
+| `probe-file-read` | undeclared | network-at-import | clean | **BLOCK** | False | True | 4 |
+| `probe-lazy-trigger` | undeclared | network-on-call | clean | **BLOCK** | False | True | 2 |
+| `probe-obfuscated` | undeclared | obfuscated | clean | **BLOCK** | False | True | 4 |
+| `probe-modeling-file` | undeclared | network-at-import | clean | **BLOCK** | False | True | 4 |
+| `cve-2025-46417-pickle` | undeclared | pickle-cve-pattern | picklescan,fickling | **BLOCK** | False | True | 6 |
+
+Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md. UNKNOWN is a third outcome, not a pass: it means nothing was observed or the agents could not agree, and it is referred to a human.

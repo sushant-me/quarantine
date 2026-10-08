@@ -257,6 +257,110 @@ def test_parse_json_survives_prose_around_the_object():
     assert _parse_json("no json here") is None
 
 
+# ------------------------------------------------------------------ agents
+
+def _case(**kw):
+    from quarantine.agents.case import Case
+    defaults = {"name": "x", "root": Path("/tmp/x")}
+    defaults.update(kw)
+    return Case(**defaults)
+
+
+def test_a_case_with_nothing_observed_must_be_escalated():
+    case = _case(execution={"executed": [], "weights_loaded": [], "weights_unreadable": [], "errors": []})
+    assert case.observed is False
+    assert "nothing in the artifact was executable" in case.escalation_reason
+
+
+def test_an_unreadable_weight_format_is_not_an_observation():
+    """A torch checkpoint is a zip containing a pickle. Not reading it is not looking."""
+    case = _case(execution={"weights_unreadable": [{"file": "pytorch_model.bin",
+                                                    "why": "UnpicklingError"}]})
+    assert case.observed is False
+    assert "never examined" in case.escalation_reason
+
+
+def test_a_failed_execution_is_escalated_with_the_reason_kept():
+    case = _case(execution={"executed": [], "errors": ["ModuleNotFoundError: No module named 'torch'"]})
+    assert case.observed is False
+    assert "could not be executed" in case.escalation_reason
+    assert "torch" in case.escalation_reason
+
+
+def test_executing_shipped_python_or_loading_a_pickle_is_an_observation():
+    for execution in ({"executed": [{"file": "a.py"}], "errors": []},
+                      {"weights_loaded": [{"file": "w.bin"}], "errors": []}):
+        case = _case(execution=execution)
+        assert case.observed is True
+        assert case.escalation_reason is None
+
+
+def test_a_capability_seen_before_a_crash_still_counts_as_an_observation():
+    """An artifact that opens a socket and *then* dies has been observed doing it.
+
+    Over-escalating here threw away the best evidence in the case: two artifacts that
+    performed a DNS lookup and then raised were being sent to a human instead of blocked.
+    """
+    case = _case(execution={"executed": [], "errors": ["gaierror(-3, ...)"]},
+                 events=[{"i": 1, "event": "import", "detail": "socket"},
+                         {"i": 2, "event": "socket.getaddrinfo", "detail": "x.invalid"}])
+    assert case.observed is True
+    assert case.escalation_reason is None
+    assert case.capability_ids == [2]
+
+
+def test_exit_codes_are_a_policy_not_a_detail():
+    """The dangerous mapping is UNKNOWN -> 0. 'We could not look' must not be success."""
+    from quarantine.cli import EXIT_CODE
+    assert EXIT_CODE == {"ALLOW": 0, "BLOCK": 1, "UNKNOWN": 2}
+    assert EXIT_CODE["UNKNOWN"] != 0
+
+
+def test_a_refutation_must_quote_the_declaration_it_claims_permits_the_behaviour():
+    """The first version of the challenger overturned a correct BLOCK by asserting, with
+    real trace ids, that the declaration permitted a DNS lookup. It did not."""
+    from quarantine.agents.roles import _quote_supports_refutation
+    declared = ("This artifact must not use the network, must not read files outside its "
+                "own directory, and must not spawn processes.")
+    ok, why = _quote_supports_refutation("must not use the network, must not read files", declared)
+    assert ok is True and "declaration" in why
+    ok2, why2 = _quote_supports_refutation("the declaration permits network access", declared)
+    assert ok2 is False
+    ok3, _ = _quote_supports_refutation("too short", declared)
+    assert ok3 is False
+
+
+def test_blackboard_is_append_only_and_readable(tmp_path):
+    from quarantine.agents.blackboard import Blackboard
+    board = Blackboard(tmp_path / "board.jsonl")
+    board.post("observer", "observation", {"events": 3})
+    board.post("analyst", "verdict", {"verdict": "BLOCK"})
+    assert board.agents() == ["observer", "analyst"]
+    assert board.latest("verdict")["verdict"] == "BLOCK"
+    assert board.latest("missing") is None
+    assert len((tmp_path / "board.jsonl").read_text().strip().splitlines()) == 2
+
+
+@pytest.mark.integration
+def test_an_unrunnable_artifact_is_escalated_without_consulting_the_model(tmp_path):
+    """There is nothing to judge from behaviour, so no model should be asked to judge it."""
+    art = tmp_path / "missing-dep"
+    (art / "custom_generate").mkdir(parents=True)
+    (art / "README.md").write_text("Declares a pure transform. No network, no file access.",
+                                   encoding="utf-8")
+    (art / "custom_generate" / "generate.py").write_text(
+        "import a_dependency_that_is_not_installed\n\n\n"
+        "def generate(prompt: str) -> str:\n    return prompt.upper()\n", encoding="utf-8")
+
+    from quarantine.agents.supervisor import run_case
+    outcome = run_case(art, tmp_path / "out")
+    assert outcome.decided == "UNKNOWN"
+    assert outcome.escalated is True
+    assert "could not be executed" in outcome.escalation_reason
+    assert "analyst" not in outcome.board.agents(), "the model was consulted with nothing to judge"
+    assert (tmp_path / "out" / "receipt.json").exists() is False  # receipts are the CLI's job
+
+
 @pytest.mark.integration
 def test_real_published_models_produce_no_capability_events(tmp_path):
     """Third-party negative controls: if these trip the detector, the detector is wrong.

@@ -38,6 +38,7 @@ What is not:
 | the local model reads it and blocks | yes |
 | repair + output-equivalence proof | yes |
 | repair measured across the corpus, with the refusal stated | yes |
+| the third outcome: an unrunnable artifact escalated, exit code 2 | yes |
 | measured numbers with a control group | yes (two tables) |
 | containment, attacked on purpose | yes |
 | the limits, said out loud | yes |

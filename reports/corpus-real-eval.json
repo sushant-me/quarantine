@@ -1,9 +1,11 @@
 {
-  "generated_at": "2026-10-08T14:53:14+0545",
+  "generated_at": "2026-10-08T15:41:46+0545",
   "kind": "corpus-real",
   "n": 4,
   "benign": 4,
   "undeclared": 0,
+  "escalated": 3,
+  "allowed": 1,
   "quarantine": {
     "tp": 0,
     "fp": 0,
@@ -64,11 +66,19 @@
       "custom_code_files": [],
       "trace_events": 1,
       "sensitive_events": [],
-      "verdict": "ALLOW",
-      "grounded": true,
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "escalation_reason": "nothing was observed: the weight file is not readable by this reader (UnpicklingError), so its contents were never examined",
+      "observed": false,
+      "grounded": false,
       "cited_ids": [],
-      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact did not declare any specific behavior, so the decision is ALLOW.",
-      "elapsed_s": 11.27,
+      "mechanism": "",
+      "agents": [
+        "observer",
+        "supervisor"
+      ],
+      "turns": 1,
+      "elapsed_s": 0.66,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -101,10 +111,19 @@
       "trace_events": 0,
       "sensitive_events": [],
       "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The declared behaviour is empty, so there's nothing to block.",
-      "elapsed_s": 9.57,
+      "mechanism": "The trace shows no capability events, which means no suspicious operations were performed. The artifact did not perform any actions that its declaration forbids.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 9.18,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -136,11 +155,19 @@
       "custom_code_files": [],
       "trace_events": 1,
       "sensitive_events": [],
-      "verdict": "ALLOW",
-      "grounded": true,
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "escalation_reason": "nothing was observed: the weight file is not readable by this reader (UnpicklingError), so its contents were never examined",
+      "observed": false,
+      "grounded": false,
       "cited_ids": [],
-      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact did not declare any specific behavior, so the absence of capability events aligns with the ALLOW verdict.",
-      "elapsed_s": 8.23,
+      "mechanism": "",
+      "agents": [
+        "observer",
+        "supervisor"
+      ],
+      "turns": 1,
+      "elapsed_s": 0.57,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -172,15 +199,23 @@
       "custom_code_files": [],
       "trace_events": 1,
       "sensitive_events": [],
-      "verdict": "ALLOW",
-      "grounded": true,
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "escalation_reason": "nothing was observed: the weight file is not readable by this reader (UnpicklingError), so its contents were never examined",
+      "observed": false,
+      "grounded": false,
       "cited_ids": [],
-      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact did not declare any specific behavior, so the absence of capability events aligns with the ALLOW verdict.",
-      "elapsed_s": 8.08,
+      "mechanism": "",
+      "agents": [
+        "observer",
+        "supervisor"
+      ],
+      "turns": 1,
+      "elapsed_s": 0.52,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
     }
   ],
-  "note": "Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md."
+  "note": "Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md. UNKNOWN is a third outcome, not a pass: it means nothing was observed or the agents could not agree, and it is referred to a human."
 }

@@ -42,8 +42,10 @@ def inspect(name: str) -> dict:
         row.update({
             "has_receipt": True,
             "verdict": payload["verdict"]["decided"],
+            "escalated": payload["verdict"].get("escalated", False),
             "grounded": payload["verdict"]["grounded"],
             "custom_code": payload["static"].get("shipped_python_files") or [],
+            "agents": (payload.get("agents") or {}).get("team", []),
             "repair_attempted": payload["repair"]["attempted"],
             "repair_ok": payload["repair"]["ok"],
             "equivalent": eq.get("equivalent"),

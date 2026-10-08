@@ -36,10 +36,16 @@ The challenge's test: *delete the AI call — does the product still do its job?
 |---|---|---|---|
 | detection, 8 undeclared artifacts | **8/8** | 1/8 | 1/8 |
 | false positives, 4 benign controls | **0** | 0 | 0 |
-| false positives, 4 **real published models** | **0** | 0 | **4/4** |
+| false positives, 4 **real published models** | **0 blocked** | 0 | **4/4** |
+| escalations (UNKNOWN, referred to a human) | 0 on the corpus · **3 of 4** real models | — | — |
 | repair produced and capability-clean | **7/7** attempted | — | — |
 | repair verified by output-equivalence | **6/7** (one honest refusal) | — | — |
 | sandbox escape, 10 primitives | **0 escaped** | — | — |
+
+**Three outcomes, and `UNKNOWN` is not a pass.** Exit codes make it a gate: **0 ALLOW · 1 BLOCK · 2 UNKNOWN**.
+Escalation is reserved for cases a human must decide — nothing was observed, the agents disagreed, or the model
+was unreachable. Before that outcome existed, an artifact whose dependency was missing was reported ALLOW:
+*"we could not run it, so we saw nothing, so it is fine"*.
 
 The incumbents' single catch on the labeled corpus is the only artifact whose payload is a **pickle** — the
 only one inside their input set. The other seven payloads live in files neither scanner opens. That is a
@@ -53,9 +59,9 @@ Copied from [`LIMITATIONS.md`](LIMITATIONS.md) so it is not buried: the maliciou
 ours; the third-party controls are tiny models; **no live CVE bypass is claimed** (current picklescan catches
 our pickle pattern); one model size; equivalence is 12 prompts plus a capability check rather than a proof of
 behavioural equivalence; the escape attempt is ten primitives rather than a fuzzing campaign; the receipt has
-not been independently verified; Python only, and zip-format checkpoints are recorded as unreadable rather
-than executed; and the repair is verified on 6 of 7 attempts, with the seventh a refusal and weight-only
-payloads skipped rather than repaired.
+not been independently verified; **3 of the 4 real models are escalated because their checkpoint format cannot
+be read**, which is honest but not coverage; and the repair is verified on 6 of 7 attempts, with the seventh a
+refusal and weight-only payloads skipped rather than repaired.
 
 ## 5. Run it
 
@@ -67,7 +73,7 @@ uv pip install --python .venv/bin/python cryptography picklescan fickling jsonsc
 .venv/bin/python scripts/make_corpus.py
 PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py       # detection vs the incumbents
 PYTHONPATH=src .venv/bin/python scripts/escape_attempt.py    # ten breakout primitives
-PYTHONPATH=src .venv/bin/python -m pytest -q                 # 36 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q                 # 45 tests
 
 # one artifact, the whole loop, offline
 PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-generate --out runs/probe

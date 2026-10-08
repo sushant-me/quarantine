@@ -112,6 +112,31 @@ nothing of the kind *happened*. On the reference artifact the original performed
    established, so the receipt says `"the ORIGINAL artifact could not be executed, so equivalence is NOT
    established"`. Claiming a pass there would have been the dishonest move.
 
+### 1.5 The agent team, and the third outcome
+
+Six roles: **observer** (deterministic), **analyst** / **challenger** / **repairer** (the local model), and
+**verifier** / **scribe** (deterministic). They never call each other — each posts to an append-only case file
+(`board.jsonl`) and the supervisor routes from what is on it. The whole transcript travels inside the receipt.
+
+`UNKNOWN` is a real outcome, and it is **not a pass**:
+
+| artifact class | verdict | exit | why |
+|---|---|---|---|
+| artifact hiding a DNS call on load | **BLOCK** | 1 | capability observed and not permitted by the declaration |
+| benign control | **ALLOW** | 0 | looked, saw nothing capability-like |
+| realistic custom code whose dependency is missing | **UNKNOWN** | 2 | *could not be executed* → escalated to a human |
+| a real published checkpoint | **UNKNOWN** | 2 | *format not readable by this reader* → never examined → escalated |
+
+Two of those branches exist because of measured failures, and both are documented below as defects 12 and 14.
+The one that matters most: **before this outcome existed, the artifact whose dependency was missing was
+reported `ALLOW`.** *"We could not run it, so we saw nothing, so it is fine"* is the most dangerous possible
+default for a security gate.
+
+On the 12-artifact corpus the agent team reaches **8/8 with zero escalations and zero false positives** — the
+adversarial check and the escalation path cost nothing on decidable cases. On the four real published models,
+**3 of 4 are escalated** because their checkpoint is a zip archive this reader cannot open: that is a coverage
+gap stated plainly rather than an ALLOW we did not earn.
+
 ---
 
 ## 2. The corpus
@@ -141,7 +166,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 3. Eleven defects found by running it
+## 3. Fourteen defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -162,6 +187,18 @@ Each of these was invisible to reading. Numbering continues from the first spike
 **#10 and #11 are the argument for this whole section.** Both were in code that already "worked" on the one
 case anyone had looked at. One was hidden by a criterion too weak to notice it; the other by a corpus too
 small to contain the case. Neither would have appeared in a demo.
+
+### The defects found while turning the pipeline into an agent team
+
+| # | What broke | Root cause | Fix |
+|---|---|---|---|
+| 12 | a realistic artifact — custom code whose dependency is not installed — was reported **ALLOW** | nothing was executed, the trace was empty of capability, and an empty trace was treated as a clean bill of health | `Case.escalation_reason`: **nothing observed ⇒ no verdict, escalated**. `UNKNOWN` (exit 2) is now distinct from success |
+| 13 | the challenger **overturned a correct BLOCK**, citing real trace ids | a refutation was accepted if it *cited* evidence; nothing checked whether the claim was true | a refutation must now **quote, verbatim, the sentence in the declaration that permits the behaviour** (`_quote_supports_refutation`). A plausible objection that cannot be grounded changes nothing |
+| 14 | then the challenger's fix over-corrected: two artifacts were escalated even though a capability had been **observed** before the crash | escalation triggered on *any* execution error, discarding the best evidence in the case | observed now includes *a recorded capability operation*; an artifact that opens a socket and then dies is judged on the socket |
+
+**Three defects in one afternoon, all in code that had passed its tests.** #12 is the same failure mode as a
+bug found in a sibling codebase — a path that exists but holds nothing scannable walked nothing, found nothing,
+and exited 0 — and it is the reason the third outcome exists here.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked
 everything, and neither would have been visible in a demo — a demo shows the case you chose. They were
@@ -197,6 +234,12 @@ found only because there was a control group and a rate to compute. That is the 
    capability rather than proving absence: a capability that neither the AST nor the trace reveals would pass.
    Repair is also **not attempted for weight-only payloads**, which is a real gap in coverage rather than a
    passing case.
+10. **3 of the 4 real published models cannot be read at all.** Their checkpoint is a zip archive this reader
+    cannot open, so they are **escalated** rather than allowed — honest, but not coverage. A tool that escalates
+    the common format is not yet usable in a pipeline; this is the biggest piece of engineering left.
+11. **The agent team costs three model calls per blocked artifact** (analyst, challenger, repairer) — roughly
+    35 s wall-clock on a 3B model. Escalation short-circuits before any model call, which is why the unknown
+    path is also the fast path.
 
 ---
 

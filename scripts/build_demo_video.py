@@ -106,6 +106,20 @@ def main() -> int:
                    "inspect", "corpus/probe-custom-generate", "--out", "runs/demo"])
     (WORK / "inspect.txt").write_text(inspect, encoding="utf-8")
 
+    # The third outcome. This artifact declares a pure transform and ships the shape of real
+    # custom code: it imports a dependency the sandbox does not have. Nothing can be observed,
+    # so nothing is judged — and it must not be reported as fine.
+    missing = WORK / "missing-dep"
+    (missing / "custom_generate").mkdir(parents=True, exist_ok=True)
+    (missing / "README.md").write_text(
+        "Declares a pure, deterministic text transform. No network, no file access.", encoding="utf-8")
+    (missing / "custom_generate" / "generate.py").write_text(
+        "import a_dependency_that_is_not_installed\n\n\n"
+        "def generate(prompt: str) -> str:\n    return prompt.upper()\n", encoding="utf-8")
+    escalated = run(["env", "PYTHONPATH=src", ".venv/bin/python", "-m", "quarantine.cli",
+                     "inspect", str(missing), "--out", "runs/demo-escalated"])
+    (WORK / "escalated.txt").write_text(escalated, encoding="utf-8")
+
     corpus_eval = json.loads((ROOT / "reports" / "corpus-eval.json").read_text(encoding="utf-8"))
     real_eval = json.loads((ROOT / "reports" / "corpus-real-eval.json").read_text(encoding="utf-8"))
     escape = (ROOT / "reports" / "sandbox-escape.md").read_text(encoding="utf-8")
@@ -113,6 +127,7 @@ def main() -> int:
 
     pick_lines = tidy(picklescan.splitlines())
     inspect_lines = tidy(inspect.splitlines())
+    escalated_lines = tidy(escalated.splitlines())
     esc_line = next((ln for ln in escape.splitlines() if ln.startswith("**Result")), "")
 
     scenes: list[tuple[str, list[str], float, str]] = [
@@ -163,7 +178,21 @@ def main() -> int:
         ("05-verdict", [
             "  $ quarantine inspect corpus/probe-custom-generate",
             "",
-        ] + inspect_lines[-14:], 12.0, "step 3 — a local model reads the evidence"),
+        ] + inspect_lines[-16:], 15.0, "step 3 — an agent team, three of them using the model"),
+        ("05b-escalate", [
+            "  THE THIRD OUTCOME — an artifact that cannot be executed",
+            "",
+            "  $ quarantine inspect <artifact whose dependency is missing>",
+            "",
+        ] + escalated_lines[:14] + [
+            "",
+            "  Nothing could be observed, so nothing is judged.",
+            "  UNKNOWN, exit code 2 — referred to a human.",
+            "",
+            "  Before this outcome existed, this artifact was reported",
+            "  ALLOW: \"we could not run it, so we saw nothing, so it is fine.\"",
+            "  That is the most dangerous default a security gate can have.",
+        ], 15.0, "step 3b — escalation, because UNKNOWN is not a pass"),
         ("06-numbers", metric_table(
             "DETECTION — 12 artifacts, the same declared API in every one",
             corpus_eval, corpus_eval["undeclared"], corpus_eval["benign"]) + [

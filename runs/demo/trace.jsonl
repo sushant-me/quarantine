@@ -1,4 +1,0 @@
-{"i": 1, "event": "import", "detail": "urllib"}
-{"i": 2, "event": "import", "detail": "socket"}
-{"i": 3, "event": "file.read", "detail": "/etc/hostname"}
-{"i": 4, "event": "socket.getaddrinfo", "detail": "652cdc00c26a.probe.invalid"}

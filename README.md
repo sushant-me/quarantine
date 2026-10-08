@@ -29,20 +29,45 @@ PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-ge
 PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
 
-PYTHONPATH=src .venv/bin/python -m pytest -q     # 36 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q     # 45 tests
 ```
 
-## The five passes
+## The agent team
 
-| Pass | File | What it does |
-|---|---|---|
-| 1 Static | `src/quarantine/static/scan.py` | file inventory + hashes, the incumbent scanners, and an AST capability graph |
-| 2 Behavioural | `src/quarantine/sandbox/execute.py` + `sandbox_runner.py` | executes the shipped code in Docker with `--network none`, read-only root, all capabilities dropped, and a CPython audit hook (PEP 578) recording every sensitive operation |
-| 3 Semantic | `src/quarantine/semantic/analyst.py::analyse_artifact()` | the local model reads declared vs actual and returns a schema-constrained verdict whose evidence it cites by trace id |
-| 4 Repair | `src/quarantine/repair/loader.py::synthesize_loader()` | the local model writes a sanitized loader; it is rejected if any forbidden capability remains |
-| 5 Proof | `src/quarantine/proof/equivalence.py::compare()` | original and sanitized loaders run against the same prompts in the same box; identical outputs or the repair is rejected |
+Six roles. **Three use the local model; three are deterministic code** — a model decides what evidence
+*means*, code decides what was *observed* and whether a claim is admissible. They never call each other: each
+posts to an append-only case file and the supervisor routes from what is on it.
 
-Signed by `src/quarantine/receipt.py` (Ed25519, DSSE-shaped envelope), verifiable by anyone with the public key.
+| Agent | Kind | File | Job |
+|---|---|---|---|
+| observer | deterministic | `sandbox/execute.py`, `static/scan.py` | execute it contained, network off, and record the trace |
+| **analyst** | AI | `agents/roles.py::analyst` | ALLOW / BLOCK / UNKNOWN, with evidence cited by trace id |
+| **challenger** | AI | `agents/roles.py::challenger` | try to **refute** the analyst — and only by quoting the declaration |
+| **repairer** | AI | `agents/roles.py::repairer` | write the replacement function bodies |
+| verifier | deterministic | `proof/equivalence.py::compare` | identical outputs **and** zero capability operations |
+| scribe | deterministic | `receipt.py` | sign the receipt, transcript included |
+
+Routing lives in `agents/supervisor.py::run_case` and is a policy, not a prompt. Three branches exist purely to
+avoid the worst outcome for a security gate — saying "fine" when we did not look:
+
+- **nothing observed** → escalated. Before this rule existed, an artifact whose dependency was missing was
+  reported ALLOW. That was a false negative in the most dangerous direction.
+- **the agents disagree** and the challenger *grounded* its objection → escalated; the supervisor does not
+  pick a winner.
+- **the model was unreachable** → escalated; an outage must never become an approval.
+
+Exit codes make it usable as a gate: **0 ALLOW · 1 BLOCK · 2 UNKNOWN**. `2` is not `0`.
+
+```
+   observer ──trace──▶ analyst ──BLOCK──▶ challenger ──refuted?──▶ supervisor
+                         │                    │                        │
+                         │ ALLOW              │ no admissible          │ escalate to a human
+                         ▼                    ▼ refutation             ▼  (UNKNOWN, exit 2)
+                      receipt             repairer ──▶ verifier ──▶ receipt (exit 0/1)
+```
+
+Signed by `src/quarantine/receipt.py` (Ed25519, DSSE-shaped envelope), verifiable by anyone with the public
+key. The receipt carries the whole agent transcript, so a reviewer sees which agent said what, in order.
 
 ## Why the box is the product
 

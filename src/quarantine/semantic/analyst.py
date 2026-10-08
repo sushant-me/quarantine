@@ -49,7 +49,8 @@ URL = os.environ.get("QUARANTINE_MODEL_URL", "http://127.0.0.1:8081/v1/chat/comp
 MODEL = os.environ.get("QUARANTINE_MODEL_NAME", "qwen2.5-1.5b-instruct-q4_k_m")
 
 
-def _prompt(declared: str, code: str, events: list[dict], static: dict) -> str:
+def _prompt(declared: str, code: str, events: list[dict], static: dict,
+            execution: dict | None = None) -> str:
     trace_lines = "\n".join(
         f"  id={e['i']:>3} {e['event']}: {e['detail']}" for e in events
     ) or "  (no events captured)"
@@ -60,15 +61,29 @@ def _prompt(declared: str, code: str, events: list[dict], static: dict) -> str:
     find_lines = "\n".join(
         f"  {f['file']}:{f['line']} {f['capability']} -> {f['call']}" for f in findings
     ) or "  (none)"
+    ex = execution or {}
+    executed = [e.get("file") for e in (ex.get("executed") or [])]
+    loaded = [e.get("file") for e in (ex.get("weights_loaded") or [])]
+    unreadable = [e.get("file") for e in (ex.get("weights_unreadable") or [])]
+    errors = ex.get("errors") or []
+    observed = bool(executed or loaded)
     return (
-        f"=== DECLARED BEHAVIOUR (what the artifact claims) ===\n{declared.strip()[:1200]}\n\n"
-        f"=== SHIPPED CODE (executed on load) ===\n{code.strip()[:2500]}\n\n"
-        f"=== BEHAVIOURAL TRACE (captured, network off) ===\n{trace_lines[:2500]}\n\n"
+        f"=== DECLARED BEHAVIOUR (what the artifact claims) ===\n{declared.strip()[:1000]}\n\n"
+        f"=== SHIPPED CODE (executed on load) ===\n{code.strip()[:2200]}\n\n"
+        f"=== BEHAVIOURAL TRACE (captured, network off) ===\n{trace_lines[:2000]}\n\n"
+        f"=== OBSERVATION STATUS (computed by the harness, not by you) ===\n"
+        f"  shipped Python executed: {executed or 'none'}\n"
+        f"  plain pickles loaded:    {loaded or 'none'}\n"
+        f"  weight files unreadable: {unreadable or 'none'}\n"
+        f"  execution errors:        {errors or 'none'}\n"
+        f"  ANYTHING OBSERVED:       {observed}\n\n"
         f"=== CAPABILITY EVENT COUNT (computed by the harness, not by you) ===\n"
         f"  {len(cap_ids)} of {len(events)} trace events are capability events. ids={cap_ids}\n\n"
         f"=== STATIC CAPABILITY COUNTS ===\n{cap_lines}\n\n"
         f"=== STATIC FINDINGS ===\n{find_lines}\n\n"
         "=== DECISION PROCEDURE ===\n"
+        f"  Step 0: if ANYTHING OBSERVED is false, nothing was run and the verdict is UNKNOWN. "
+        "You cannot judge behaviour you did not observe.\n"
         f"  Step 1: the harness says there are {len(cap_ids)} capability events.\n"
         "  Step 2: if that number is 0, nothing suspicious happened and the verdict is ALLOW "
         "with declared_matches_behaviour=true and evidence_ids=[] .\n"
@@ -100,13 +115,14 @@ def _parse_json(text: str) -> dict | None:
     return None
 
 
-def analyse_artifact(declared: str, code: str, events: list[dict], static: dict) -> dict:
+def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
+                     execution: dict | None = None) -> dict:
     """Return {verdict, grounded, raw, model, elapsed_s, reachable}."""
     started = time.time()
     valid_ids = {e["i"] for e in events}
     messages = [
         {"role": "system", "content": SYSTEM},
-        {"role": "user", "content": _prompt(declared, code, events, static)},
+        {"role": "user", "content": _prompt(declared, code, events, static, execution)},
     ]
     out: dict = {"model": MODEL, "reachable": False, "grounded": False, "raw": None}
 

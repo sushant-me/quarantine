@@ -1,18 +1,29 @@
 {
-  "generated_at": "2026-10-08T15:14:08+0545",
+  "generated_at": "2026-10-08T15:48:41+0545",
   "n": 8,
-  "with_custom_code": 0,
+  "with_custom_code": 7,
   "blocked": 8,
   "repair_attempted": 7,
   "repair_ok": 7,
   "repair_verified": 6,
   "rows": [
     {
-      "cli_rc": 0,
+      "cli_rc": 1,
       "has_receipt": true,
       "verdict": "BLOCK",
+      "escalated": false,
       "grounded": true,
-      "custom_code": [],
+      "custom_code": [
+        "custom_generate/generate.py"
+      ],
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "supervisor",
+        "repairer",
+        "verifier"
+      ],
       "repair_attempted": true,
       "repair_ok": true,
       "equivalent": true,
@@ -21,14 +32,25 @@
       "sanitized_capability_ops": 0,
       "name": "probe-custom-generate",
       "category": "network-at-import",
-      "elapsed_s": 24.9
+      "elapsed_s": 70.5
     },
     {
-      "cli_rc": 0,
+      "cli_rc": 1,
       "has_receipt": true,
       "verdict": "BLOCK",
+      "escalated": false,
       "grounded": true,
-      "custom_code": [],
+      "custom_code": [
+        "custom_generate/generate.py"
+      ],
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
       "repair_attempted": true,
       "repair_ok": true,
       "equivalent": true,
@@ -37,14 +59,25 @@
       "sanitized_capability_ops": 0,
       "name": "probe-subprocess",
       "category": "process-at-import",
-      "elapsed_s": 19.9
+      "elapsed_s": 39.2
     },
     {
-      "cli_rc": 0,
+      "cli_rc": 1,
       "has_receipt": true,
       "verdict": "BLOCK",
+      "escalated": false,
       "grounded": true,
-      "custom_code": [],
+      "custom_code": [
+        "custom_generate/generate.py"
+      ],
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "supervisor",
+        "repairer",
+        "verifier"
+      ],
       "repair_attempted": true,
       "repair_ok": true,
       "equivalent": true,
@@ -53,14 +86,25 @@
       "sanitized_capability_ops": 0,
       "name": "probe-env-exfil",
       "category": "network-at-import",
-      "elapsed_s": 21.8
+      "elapsed_s": 45.3
     },
     {
-      "cli_rc": 0,
+      "cli_rc": 1,
       "has_receipt": true,
       "verdict": "BLOCK",
+      "escalated": false,
       "grounded": true,
-      "custom_code": [],
+      "custom_code": [
+        "custom_generate/generate.py"
+      ],
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "supervisor",
+        "repairer",
+        "verifier"
+      ],
       "repair_attempted": true,
       "repair_ok": true,
       "equivalent": true,
@@ -69,14 +113,25 @@
       "sanitized_capability_ops": 0,
       "name": "probe-file-read",
       "category": "network-at-import",
-      "elapsed_s": 21.0
+      "elapsed_s": 60.0
     },
     {
-      "cli_rc": 0,
+      "cli_rc": 1,
       "has_receipt": true,
       "verdict": "BLOCK",
+      "escalated": false,
       "grounded": true,
-      "custom_code": [],
+      "custom_code": [
+        "custom_generate/generate.py"
+      ],
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "supervisor",
+        "repairer",
+        "verifier"
+      ],
       "repair_attempted": true,
       "repair_ok": true,
       "equivalent": true,
@@ -85,14 +140,25 @@
       "sanitized_capability_ops": 0,
       "name": "probe-lazy-trigger",
       "category": "network-on-call",
-      "elapsed_s": 23.3
+      "elapsed_s": 62.7
     },
     {
-      "cli_rc": 0,
+      "cli_rc": 1,
       "has_receipt": true,
       "verdict": "BLOCK",
+      "escalated": false,
       "grounded": true,
-      "custom_code": [],
+      "custom_code": [
+        "custom_generate/generate.py"
+      ],
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
       "repair_attempted": true,
       "repair_ok": true,
       "equivalent": false,
@@ -101,14 +167,25 @@
       "sanitized_capability_ops": 0,
       "name": "probe-obfuscated",
       "category": "obfuscated",
-      "elapsed_s": 21.1
+      "elapsed_s": 48.1
     },
     {
-      "cli_rc": 0,
+      "cli_rc": 1,
       "has_receipt": true,
       "verdict": "BLOCK",
+      "escalated": false,
       "grounded": true,
-      "custom_code": [],
+      "custom_code": [
+        "modeling_custom.py"
+      ],
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
       "repair_attempted": true,
       "repair_ok": true,
       "equivalent": true,
@@ -117,14 +194,21 @@
       "sanitized_capability_ops": 0,
       "name": "probe-modeling-file",
       "category": "network-at-import",
-      "elapsed_s": 26.1
+      "elapsed_s": 48.5
     },
     {
-      "cli_rc": 0,
+      "cli_rc": 1,
       "has_receipt": true,
       "verdict": "BLOCK",
+      "escalated": false,
       "grounded": true,
       "custom_code": [],
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "supervisor"
+      ],
       "repair_attempted": false,
       "repair_ok": false,
       "equivalent": false,
@@ -133,7 +217,7 @@
       "sanitized_capability_ops": 0,
       "name": "cve-2025-46417-pickle",
       "category": "pickle-cve-pattern",
-      "elapsed_s": 11.5
+      "elapsed_s": 41.5
     }
   ],
   "note": "Repair is only attempted when the verdict is a grounded BLOCK, and an artifact whose payload is a pickle ships no custom code to repair."

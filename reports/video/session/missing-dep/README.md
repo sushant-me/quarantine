@@ -1,0 +1,1 @@
+Declares a pure, deterministic text transform. No network, no file access.

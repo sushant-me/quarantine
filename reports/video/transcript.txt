@@ -38,82 +38,102 @@ Dangerous globals: 0
 === 04a-trace  (9s)  step 2 — execute it where it cannot hurt you
   $ quarantine inspect corpus/probe-custom-generate
 
-[1/6] static pass           /home/logic/win/quarantine/corpus/probe-custom-generate
-      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
-      static capabilities: {'network': 1}
-[2/6] behavioural pass       executing, network off
-      container rc=0  events=4
-        id=  1 import: urllib
-        id=  2 import: socket
-        id=  3 file.read: /etc/hostname
+[1/4] observer    4 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
+      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (m…
+[3/4] challenger  refuted=False grounded=True in 26.22s
+      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in th…
+[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+      verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+
 
 === 04b-trace  (9s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
 
-[1/6] static pass           /home/logic/win/quarantine/corpus/probe-custom-generate
-      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
-      static capabilities: {'network': 1}
-[2/6] behavioural pass       executing, network off
-      container rc=0  events=4
-        id=  1 import: urllib
-        id=  2 import: socket
-        id=  3 file.read: /etc/hostname
-        id=  4 socket.getaddrinfo: 652cdc00c26a.probe.invalid
-[3/6] semantic pass          local open-weight model
-      reachable=True grounded=True verdict=BLOCK in 13.56s
-      mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that…
-[4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 7.37s
-[5/6] equivalence proof
-      equivalent=True over 12 prompts; capability ops original=2 repaired=0
+[1/4] observer    4 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
+      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (m…
+[3/4] challenger  refuted=False grounded=True in 26.22s
+      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in th…
+[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+      verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+
+=== Quarantine verdict ===
+  artifact          probe-custom-generate
+  incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
+  behavioural trace 4 events, network=none, observed=True
+  verdict           BLOCK
+  repair            ok=True equivalent=True
+  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
+  receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
 
 === 04c-trace  (11s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
 
-[1/6] static pass           /home/logic/win/quarantine/corpus/probe-custom-generate
-      picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
-      static capabilities: {'network': 1}
-[2/6] behavioural pass       executing, network off
-      container rc=0  events=4
-        id=  1 import: urllib
-        id=  2 import: socket
-        id=  3 file.read: /etc/hostname
-        id=  4 socket.getaddrinfo: 652cdc00c26a.probe.invalid
-[3/6] semantic pass          local open-weight model
-      reachable=True grounded=True verdict=BLOCK in 13.56s
-      mechanism: The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that…
-[4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 7.37s
-[5/6] equivalence proof
-      equivalent=True over 12 prompts; capability ops original=2 repaired=0
-[6/6] sign receipt
-      signed and verified: True  keyid=98ef87ea5ba8a04e
+[1/4] observer    4 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
+      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (m…
+[3/4] challenger  refuted=False grounded=True in 26.22s
+      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in th…
+[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+      verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
   incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
-  behavioural trace 4 events, network=none
-  verdict           BLOCK  (grounded=True)
+  behavioural trace 4 events, network=none, observed=True
+  verdict           BLOCK
   repair            ok=True equivalent=True
+  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
   receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
+  exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)
 
-=== 05-verdict  (12s)  step 3 — a local model reads the evidence
+=== 05-verdict  (15s)  step 3 — an agent team, three of them using the model
   $ quarantine inspect corpus/probe-custom-generate
 
-[4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 7.37s
-[5/6] equivalence proof
-      equivalent=True over 12 prompts; capability ops original=2 repaired=0
-[6/6] sign receipt
-      signed and verified: True  keyid=98ef87ea5ba8a04e
+[2/4] analyst     BLOCK grounded=True cited=[3, 4] in 15.48s
+      mechanism   The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (m…
+[3/4] challenger  refuted=False grounded=True in 26.22s
+      objection   The analyst's verdict cites the operation `socket.getaddrinfo` from the trace, which is not present in th…
+[4/4] repairer    ok=True removed=['_sync'] in 8.71s
+      verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
   incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
-  behavioural trace 4 events, network=none
-  verdict           BLOCK  (grounded=True)
+  behavioural trace 4 events, network=none, observed=True
+  verdict           BLOCK
   repair            ok=True equivalent=True
+  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
   receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
+  exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)
+
+=== 05b-escalate  (15s)  step 3b — escalation, because UNKNOWN is not a pass
+  THE THIRD OUTCOME — an artifact that cannot be executed
+
+  $ quarantine inspect <artifact whose dependency is missing>
+
+[1/4] observer    1 events, network=none; executed=none; observed=False
+      supervisor  -> escalate (no behavioural observation is possible)
+[!]   ESCALATED   the artifact could not be executed (custom_generate/generate.py: ModuleNotFoundError("No module named 'a_…
+      keypair     -> quarantine.pub.pem
+
+=== Quarantine verdict ===
+  artifact          missing-dep
+  incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
+  behavioural trace 1 events, network=none, observed=False
+  verdict           UNKNOWN  (ESCALATED: the artifact could not be executed (custom_generate/generate.py: ModuleNotFoundE)
+  repair            ok=False equivalent=False
+  agents            observer, supervisor in 1 turns
+  receipt           /home/logic/win/quarantine/runs/demo-escalated/receipt.json  verified=True
+  exit code         2 (UNKNOWN — 0 allow, 1 block, 2 unknown)
+
+  Nothing could be observed, so nothing is judged.
+  UNKNOWN, exit code 2 — referred to a human.
+
+  Before this outcome existed, this artifact was reported
+  ALLOW: "we could not run it, so we saw nothing, so it is fine."
+  That is the most dangerous default a security gate can have.
 
 === 06-numbers  (17s)  step 4 — measured, with a control group
   DETECTION — 12 artifacts, the same declared API in every one

@@ -1,8 +1,11 @@
 {
-  "generated_at": "2026-10-08T14:50:11+0545",
+  "generated_at": "2026-10-08T15:41:35+0545",
+  "kind": "corpus",
   "n": 12,
   "benign": 4,
   "undeclared": 8,
+  "escalated": 0,
+  "allowed": 4,
   "quarantine": {
     "tp": 8,
     "fp": 0,
@@ -59,10 +62,19 @@
       "trace_events": 0,
       "sensitive_events": [],
       "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact's declared behaviour does not allow any network, file reading, or process spawning, so the trace does not contradict the declaration.",
-      "elapsed_s": 12.23,
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence indicates that the artifact executed the shipped Python code without any side effects or network activity, which aligns with the artifact's declared behaviour.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 14.57,
       "label": "benign",
       "category": "control",
       "note": "declared and shipped behaviour match exactly"
@@ -90,10 +102,19 @@
       "trace_events": 0,
       "sensitive_events": [],
       "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. Since the trace shows no such operations, the verdict is ALLOW.",
-      "elapsed_s": 13.36,
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence status indicates that nothing suspicious was observed, and the static capability counts are zero, confirming that the artifact did not perform any actions that violate its declared behavior.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 14.57,
       "label": "benign",
       "category": "control",
       "note": "imports a pure stdlib module and does nothing else"
@@ -121,10 +142,19 @@
       "trace_events": 0,
       "sensitive_events": [],
       "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact's declared behaviour does not allow any network, file reading, or process spawning operations, so the trace does not contradict the declaration.",
-      "elapsed_s": 12.7,
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes, which aligns with the trace.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 16.58,
       "label": "benign",
       "category": "control",
       "note": "several pure helpers, no capability"
@@ -152,10 +182,19 @@
       "trace_events": 0,
       "sensitive_events": [],
       "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The harness reported 0 capability events, which means no suspicious operations were performed. The artifact's declared behaviour does not allow any network, file reading, or process spawning, so the trace does not contradict the declaration.",
-      "elapsed_s": 11.95,
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes, which aligns with the observed execution.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 16.49,
       "label": "benign",
       "category": "control",
       "note": "pure transform using unicodedata"
@@ -192,16 +231,29 @@
         {
           "i": 4,
           "event": "socket.getaddrinfo",
-          "detail": "ea6b0ec9e145.probe.invalid"
+          "detail": "1e0055730f9f.probe.invalid"
         }
       ],
       "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [
+        3,
         4
       ],
-      "mechanism": "The artifact declared that it must not spawn processes, but the trace shows it spawning a process (socket.getaddrinfo).",
-      "elapsed_s": 10.65,
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (it must not use the network).",
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
+      "turns": 5,
+      "elapsed_s": 77.84,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/hostname and puts it in a DNS query on load"
@@ -237,12 +289,24 @@
         }
       ],
       "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [
         2
       ],
-      "mechanism": "The trace shows a capability event (id=2) that corresponds to the execution of `subprocess.run([",
-      "elapsed_s": 11.29,
+      "mechanism": "The trace shows the artifact performing an operation (subprocess.run) that its declaration forbids.",
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
+      "turns": 5,
+      "elapsed_s": 72.51,
       "label": "undeclared",
       "category": "process-at-import",
       "note": "spawns a process on load"
@@ -278,12 +342,24 @@
         }
       ],
       "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [
         2
       ],
-      "mechanism": "The artifact declared that it must not use the network, but the trace shows a capability event (socket.getaddrinfo) that uses the network.",
-      "elapsed_s": 10.75,
+      "mechanism": "The trace shows the artifact performing a network operation (socket.getaddrinfo) that is not permitted by the artifact's declaration.",
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
+      "turns": 5,
+      "elapsed_s": 38.22,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads the environment and puts it in a DNS query"
@@ -324,12 +400,25 @@
         }
       ],
       "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [
-        3
+        3,
+        4
       ],
-      "mechanism": "The artifact declared that it must not read files outside its own directory, but the trace shows it reading `/etc/passwd`, which is outside its own directory.",
-      "elapsed_s": 11.21,
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (it must not read files outside its own directory).",
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
+      "turns": 5,
+      "elapsed_s": 46.89,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/passwd and puts it in a DNS query"
@@ -365,12 +454,24 @@
         }
       ],
       "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [
         2
       ],
-      "mechanism": "The trace shows a capability event (id=2) that is not permitted by the artifact's declared behaviour. The artifact is declared to not use the network, but it performs a network operation (socket.getaddrinfo) in the shipped code.",
-      "elapsed_s": 14.23,
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "supervisor",
+        "repairer",
+        "verifier"
+      ],
+      "turns": 5,
+      "elapsed_s": 67.35,
       "label": "undeclared",
       "category": "network-on-call",
       "note": "the undeclared effect only fires when generate() is called"
@@ -407,12 +508,24 @@
         }
       ],
       "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [
         3
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
-      "elapsed_s": 11.2,
+      "mechanism": "The trace shows the artifact performing a network operation (socket.getaddrinfo) that is not permitted by the declaration.",
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
+      "turns": 5,
+      "elapsed_s": 44.77,
       "label": "undeclared",
       "category": "obfuscated",
       "note": "base64 + exec at import; the source does not name the behaviour"
@@ -449,16 +562,28 @@
         {
           "i": 4,
           "event": "socket.getaddrinfo",
-          "detail": "16f6685c15bd.modeling.invalid"
+          "detail": "4e2da11ea5f5.modeling.invalid"
         }
       ],
       "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [
-        4
+        3
       ],
-      "mechanism": "The artifact declared that it must not use the network, but the trace shows a capability event (id=4) that involves socket.getaddrinfo, which is a network operation.",
-      "elapsed_s": 11.9,
+      "mechanism": "The artifact declared that it must not read files outside its own directory, but the trace shows it reading `/etc/hostname`. This violates the declared behaviour.",
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "repairer",
+        "verifier",
+        "supervisor"
+      ],
+      "turns": 5,
+      "elapsed_s": 43.04,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "same probe shipped as modeling_*.py rather than custom_generate/"
@@ -503,16 +628,26 @@
         }
       ],
       "verdict": "BLOCK",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
       "grounded": true,
       "cited_ids": [
         5
       ],
       "mechanism": "The trace shows the artifact performing the operation 'socket.getaddrinfo: probe.invalid', which is not permitted by the artifact's declaration. The evidence_ids are [5].",
-      "elapsed_s": 15.4,
+      "agents": [
+        "observer",
+        "analyst",
+        "challenger",
+        "supervisor"
+      ],
+      "turns": 3,
+      "elapsed_s": 45.88,
       "label": "undeclared",
       "category": "pickle-cve-pattern",
       "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
     }
   ],
-  "note": "Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md."
+  "note": "Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md. UNKNOWN is a third outcome, not a pass: it means nothing was observed or the agents could not agree, and it is referred to a human."
 }

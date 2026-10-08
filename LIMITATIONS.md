@@ -11,13 +11,14 @@ attached.
 
 | measurement | result |
 |---|---|
-| detection on 12 labeled artifacts (8 undeclared, 4 benign controls) | **8/8**, 0 false positives |
+| detection on 12 labeled artifacts (8 undeclared, 4 benign controls) | **8/8**, 0 false positives, 0 escalations |
 | the same corpus: picklescan 1.0.5 / fickling 0.1.12 | 1/8 each |
-| false positives on 4 **real published models** | Quarantine **0** · picklescan 0 · **fickling 4** |
+| false positives on 4 **real published models** | Quarantine **0 blocked** · picklescan 0 · **fickling 4** |
+| real published models **escalated** (format unreadable) | **3 of 4** — see 12 below |
 | repair produced and capability-clean, across the corpus | **7/7** attempted |
 | repair **verified by output-equivalence** | **6/7** — the seventh is a refusal, see 10 below |
 | deliberate sandbox escape, ten primitives | **0 of 10** succeeded |
-| test suite | 36 passing |
+| test suite | 45 passing, including the escalation and challenger-grounding rules |
 
 ## What is NOT established
 
@@ -59,6 +60,15 @@ attached.
 11. **Legal and ethical boundary.** The tool exists to execute untrusted artifacts. That is what containment
     is for, and it is also why limitation 6 is the most important one on this page. Do not run it on
     artifacts you are not authorised to analyse.
+
+12. **Most real checkpoints cannot be read, so most real artifacts are escalated rather than decided.**
+    A torch `pytorch_model.bin` is a zip archive containing a pickle that `torch.load` would unpickle. This
+    reader cannot open it, so it reports `weights.unreadable` and **escalates to a human** rather than allowing
+    it — 3 of the 4 real published models tested. That is the honest answer, and it is also the single biggest
+    piece of engineering left: a tool that escalates the common format is not yet usable in a pipeline.
+13. **`UNKNOWN` exists and is not a pass.** Exit code 2 covers *nothing was observed*, *the agents disagreed*,
+    and *the model was unreachable*. A CI policy that treats 2 as success has defeated the point; the tool
+    cannot enforce how you configure that, it can only refuse to call it ALLOW.
 
 ## Future improvements, in the order they matter
 
