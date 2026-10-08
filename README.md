@@ -31,60 +31,74 @@ explain, repairs what it can — and signs a receipt anyone can check with `open
   for a pickle scanner — it is the other half of the pair**, the half that opens the `.py` files and
   repairs what it blocks.
 
-## The 30-second version
+## Verify our evidence first — nothing to install
+
+You do not have to trust us, run our code, or install anything. The repository ships a receipt recording
+that a verdict was reached on a named artifact, signed with a key whose public half is right here:
 
 ```bash
 git clone https://github.com/sushant-me/quarantine && cd quarantine
+python3 tools/verify_receipt_standalone.py runs/probe/receipt.json \
+        --pub runs/probe/keys/quarantine.pub.pem
+```
+
+That needs **stdlib Python and `openssl`** — no pip, no virtualenv, no Docker, no model. The verifier imports
+nothing from this project and checks the Ed25519 signature with `openssl` rather than the library that
+produced it. Change a single word of the payload and it answers **NOT VERIFIED**
+([the format is specified](docs/RECEIPT-FORMAT.md), with a signed test vector, so you can write your own
+verifier instead of using ours).
+
+## Run the whole loop — two minutes
+
+```bash
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -e ".[dev]"
 ./scripts/serve_model.sh &                      # local open-weight model: no API key, no egress
 
 .venv/bin/quarantine inspect corpus/probe-custom-generate --out runs/probe
 #   exit 1 -> BLOCK. The scanner said clean.
-
-python tools/verify_receipt_standalone.py runs/probe/receipt.json \
-        --pub runs/probe/keys/quarantine.pub.pem     # stdlib + openssl, imports nothing from us
 ```
 
-Nothing above needs a paid account, an API key, or a network connection at analysis time. If something is
-missing, `scripts/try_it.sh` says what in one line and how to fix it.
+`./scripts/try_it.sh` does the same thing but checks first, and tells you in one line what is missing —
+Docker not running, no model on the port — instead of failing with a traceback.
 
----
-
-## Run it
-
-```bash
-git clone https://github.com/sushant-me/quarantine && cd quarantine
-uv venv --python 3.12 .venv
-uv pip install --python .venv/bin/python -e ".[dev]"   # the package, plus measurement tooling
-.venv/bin/quarantine --help
-
-./scripts/serve_model.sh &            # local open-weight model, no API key, no egress
-
-# the numbers in this README
-.venv/bin/python scripts/make_corpus.py        # rebuild the 13 labeled artifacts
-.venv/bin/python scripts/eval_corpus.py        # detection vs the incumbents
-.venv/bin/python scripts/fetch_real_models.py  # 20 real published models (network, first time)
-.venv/bin/python scripts/eval_corpus.py --dir corpus-real --label benign
-.venv/bin/python scripts/eval_repair.py        # repair + output-equivalence, whole corpus
-.venv/bin/python scripts/escape_attempt.py     # ten breakout primitives
-.venv/bin/python scripts/measure_delete_the_ai.py   # the organisers' Core Test
-```
-
-One artifact through the whole agent team — exit **0 allow**, **1 block**, **2 escalate**:
+One artifact, the whole agent team, exit **0 allow · 1 block · 2 escalate**:
 
 ```bash
 .venv/bin/quarantine inspect corpus/probe-custom-generate --out runs/probe
 .venv/bin/quarantine verify  runs/probe/receipt.json --pub runs/probe/keys/quarantine.pub.pem
-
-# or verify it without trusting this codebase at all — stdlib only, and the Ed25519
-# signature is checked with openssl rather than the Python that produced it
-python tools/verify_receipt_standalone.py runs/probe/receipt.json \
-        --pub runs/probe/keys/quarantine.pub.pem
 ```
 
-Contributing without installing? `PYTHONPATH=src .venv/bin/python -m quarantine.cli …` works too;
-the scripts put `src/` on the path themselves. `scripts/check_eligibility.py` must pass either way.
+Nothing above needs a paid account, an API key, or a network connection at analysis time.
+
+### Reproduce every number in this README
+
+```bash
+.venv/bin/python scripts/make_corpus.py              # rebuild the 13 labeled artifacts
+.venv/bin/python scripts/eval_corpus.py              # detection vs the incumbents
+.venv/bin/python scripts/fetch_real_models.py        # 20 real published models (network, first time)
+.venv/bin/python scripts/eval_corpus.py --dir corpus-real --label benign
+.venv/bin/python scripts/eval_repair.py              # repair + output-equivalence, whole corpus
+.venv/bin/python scripts/escape_attempt.py           # ten breakout primitives
+.venv/bin/python scripts/measure_delete_the_ai.py    # the organisers' Core Test, with the AI deleted
+.venv/bin/python scripts/verify_published_receipts.py  # both receipts, plus a tamper attempt
+```
+
+Contributing without installing? `PYTHONPATH=src .venv/bin/python -m quarantine.cli …` works too; the
+scripts put `src/` on the path themselves. `scripts/check_eligibility.py` must pass either way.
+
+## Where to look
+
+| if you want | read |
+|---|---|
+| the product and how it behaves | this file: [the agent team](#the-agent-team) · [why the box is the product](#why-the-box-is-the-product) |
+| what was measured, including what argues against us | [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) · [`reports/`](reports) |
+| what it does **not** do | [`LIMITATIONS.md`](LIMITATIONS.md) — 19 items, in plain language |
+| the exact place AI output is consumed | [`docs/AI-USAGE.md`](docs/AI-USAGE.md) |
+| the receipt format, to implement your own verifier | [`docs/RECEIPT-FORMAT.md`](docs/RECEIPT-FORMAT.md) · [`docs/receipt-vector/`](docs/receipt-vector) |
+| the commercial case | [`docs/BUSINESS.md`](docs/BUSINESS.md) |
+| the Nepal work | [`docs/NEPAL.md`](docs/NEPAL.md) |
+| how to contribute | [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`SECURITY.md`](SECURITY.md) |
 
 ## Why it could be a business
 

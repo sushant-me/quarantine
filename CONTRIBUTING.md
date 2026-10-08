@@ -10,10 +10,26 @@ should come with the measurement that shows it.
 python -m venv .venv && . .venv/bin/activate
 uv pip install --python .venv/bin/python -e ".[dev]"   # the package + test tooling
 # or, if you prefer pinned versions: -r requirements-dev.txt
-./scripts/serve_model.sh            # local llama.cpp, three open-weight models supported
+./scripts/serve_model.sh            # local llama.cpp; defaults to qwen2.5-coder-3b,
+                                   # which measured better than the 7B for this task
+                                   # (SPIKE-RESULTS.md §3c); MODEL=... for another GGUF
 ./scripts/check_eligibility.py      # must pass
 .venv/bin/python -m pytest -q
 ```
+
+## The two reports that are worth the most here
+
+The corpus grows from artefacts, not opinions, so two issue templates are the front door:
+
+- **[False positive](.github/ISSUE_TEMPLATE/false-positive.md)** — a benign artifact we blocked or escalated.
+  This is the most valuable report the project can receive: the 20 English controls and the 5 Nepali/Indic
+  models are in the repository because someone pointed at a real model and said "this is fine".
+- **[Missed detection](.github/ISSUE_TEMPLATE/missed-detection.md)** — a malicious artifact we allowed.
+  Describe the capability rather than attaching live malware; a benign replica that reproduces the behaviour
+  is what goes into the corpus.
+
+A pull request template asks the same questions of a change: **which artifact proves it, and which
+measurement shows it.**
 
 ## What a good change looks like
 
