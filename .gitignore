@@ -18,7 +18,14 @@ reports/escape-run/
 reports/video/frames/
 
 # NEVER commit key material. A leaked signing key makes every receipt worthless.
+# Curated evidence is tracked (runs/probe, runs/benign - the README verifies against
+# runs/probe). Everything the tooling regenerates is scratch, including the video build's
+# own captures, so a rebuild cannot silently rewrite committed evidence.
 runs/**/keys/
+runs/demo/
+runs/demo-escalated/
+runs/it2/
+
 **/*.pem
 
 safety_results.json
