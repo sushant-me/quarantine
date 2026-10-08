@@ -8,7 +8,9 @@ Two rules keep this honest:
 
 1. The model never decides alone. It reasons over a trace it did not produce.
 2. The verdict is only accepted if it is *grounded*: every evidence id it cites
-   must exist in the trace. An ungrounded verdict is recorded as such and the
+   must exist in the trace, **and a BLOCK must cite at least one capability event**.
+   An execution error is not evidence of capability — it means we could not look.
+   An ungrounded verdict is recorded as such and the
    caller degrades it to UNKNOWN. Nothing is coerced.
 """
 
@@ -127,6 +129,29 @@ def _parse_json(text: str) -> dict | None:
     return None
 
 
+def verdict_is_grounded(verdict_name: str | None, cited: list, valid_ids: set,
+                        cap_ids: set) -> bool:
+    """Is this verdict admissible, given what the harness independently observed?
+
+    The three rules, all of them deterministic and none of them the model's to make:
+
+    * **BLOCK** must cite at least one *capability event*. Citing an id that merely exists is
+      not enough — an execution error is not evidence of capability, and treating it as such
+      blocked a benign real published model whose custom code raised `ModuleNotFoundError`.
+    * **ALLOW** is admissible only when the harness counted **zero** capability events.
+    * **UNKNOWN** needs no evidence; it is the honest abstention.
+
+    A cited id that does not exist makes any verdict ungrounded.
+    """
+    if not all(isinstance(i, int) and i in valid_ids for i in cited):
+        return False
+    if verdict_name == "BLOCK":
+        return bool(cited) and any(i in cap_ids for i in cited)
+    if verdict_name == "ALLOW":
+        return not cap_ids
+    return True
+
+
 def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
                      execution: dict | None = None) -> dict:
     """Return {verdict, grounded, raw, model, elapsed_s, reachable}."""
@@ -169,17 +194,10 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
             break
 
         cited = parsed.get("evidence_ids") or []
-        ids_ok = all(isinstance(i, int) and i in valid_ids for i in cited)
         verdict_name = parsed.get("verdict")
         caps = capability_events(events)
-        if verdict_name == "BLOCK":
-            # a block must point at real evidence
-            grounded = bool(cited) and ids_ok
-        elif verdict_name == "ALLOW":
-            # an allow is only admissible when the harness independently saw no capability
-            grounded = ids_ok and not caps
-        else:
-            grounded = ids_ok
+        cap_ids = {e["i"] for e in caps}
+        grounded = verdict_is_grounded(verdict_name, cited, valid_ids, cap_ids)
 
         out.update({"verdict": parsed, "cited_ids": cited, "grounded": grounded,
                     "valid_ids": sorted(valid_ids), "rounds": round_no + 1,

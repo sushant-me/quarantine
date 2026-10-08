@@ -63,8 +63,25 @@ class Case:
         return bool(self.executed or self.weights_loaded or self.capability_events)
 
     @property
+    def code_path_unrun(self) -> bool:
+        """Shipped Python exists, none of it ran, and we saw no capability from it.
+
+        This is the partial-observation case, and it is dangerous in both directions. A real
+        published model — `prajdabre/rotary-indictrans2-en-indic-dist-200M`, a custom
+        architecture whose `modeling_*.py` imports torch — produced exactly this: the
+        weights loaded, so the case looked "observed", while the code path that could carry
+        a payload had never run. Not escalating let the analyst treat the resulting
+        `ModuleNotFoundError` as evidence and **block a benign model**.
+        """
+        return bool(self.custom_files) and not self.executed and not self.capability_events
+
+    @property
     def escalation_reason(self) -> str | None:
         """Why this case cannot be decided from behaviour, if it cannot."""
+        if self.code_path_unrun:
+            why = "; ".join(self.errors)[:200] if self.errors else "it did not run"
+            return (f"the artifact's shipped Python ({', '.join(self.custom_files[:3])}) could not "
+                    f"be executed ({why}), so the code path was never observed")
         if self.observed:
             return None
         if self.errors:

@@ -94,6 +94,13 @@ attached.
     we can state what we ran on 2026-10-08, not what the whole Nepali ecosystem contains. We also did not find
     a Nepali model shipping custom `modeling_*.py`, which would be the highest-risk case.
 
+17. **Custom model code that needs a modelling framework cannot be executed, so it escalates.** Two real
+    published models (`ujjwal5454/nepali-voice-engine-v4`, `prajdabre/rotary-indictrans2-en-indic-dist-200M`)
+    ship `modeling_*.py` that imports `torch`, which is not in the analysis image. We read the code statically
+    and refuse to judge it dynamically — an escalation, not a verdict. **Shipping an image with the common
+    modelling dependencies is the highest-value next step**, and it is what would turn these two escalations
+    into decisions.
+
 ## Future improvements, in the order they matter
 
 1. Reproduce a **still-live** published bypass rather than a fixed one, and publish the case either way.

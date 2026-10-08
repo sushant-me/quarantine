@@ -198,8 +198,8 @@ def main() -> int:
             f"THE NEPALI COMMUNITY - {nepali_eval['n']} real published Nepali models",
             nepali_eval, 0, nepali_eval["n"]) + [
             "",
-            "  NepaliBERT (703 downloads) . a Nepali MiniLM embedder (500) .",
-            "  a Nepali-tuned Qwen shipped as GGUF (368).",
+            "  268 Nepali/Indic repos searched: 46 ship .py, 15 declare auto_map",
+            "  (trust_remote_code=True). Neither incumbent opens a .py file at all.",
             "",
             "  FIRST RUN: the GGUF model was ESCALATED - 'no weight files found'.",
             "  GGUF quantisation is how most Nepali models reach users, and the",

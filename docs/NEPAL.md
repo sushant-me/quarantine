@@ -18,6 +18,48 @@ Three real, published Nepali-language repositories, fetched by [`scripts/fetch_n
 Result after the fix below: **0 blocked, 0 escalated, 3 allowed**. Full numbers in
 [`reports/nepali-eval.md`](../reports/nepali-eval.md).
 
+## The case that matters most: models that force `trust_remote_code=True`
+
+Searching 268 Nepali/Indic repositories ([`scripts/find_remote_code_models.py`](../scripts/find_remote_code_models.py))
+found **46 that ship `.py` files and 15 that declare `auto_map`** — repositories where using the model
+*means running the author's Python on your machine*, by design. Two were added to the control set:
+
+| repository | downloads | what it is | incumbents | Quarantine |
+|---|---|---|---|---|
+| [`ujjwal5454/nepali-voice-engine-v4`](https://huggingface.co/ujjwal5454/nepali-voice-engine-v4) | 740 | **Nepali** voice engine, custom architecture `NepaliVoiceEngine`, `auto_map` → `modeling_nepali_voice.py` | picklescan clean, fickling clean | **UNKNOWN — escalated** |
+| [`prajdabre/rotary-indictrans2-en-indic-dist-200M`](https://huggingface.co/prajdabre/rotary-indictrans2-en-indic-dist-200M) | 1240 | IndicTrans2 (covers Nepali), custom architecture, **and** an 847 MB pickle checkpoint | picklescan clean | **UNKNOWN — escalated** |
+
+**Neither picklescan nor fickling opens a `.py` file.** The code that would run on your machine is not in
+their input set at all — this is the coverage hole, now demonstrated on real Nepali and Indic artifacts rather
+than on our own corpus.
+
+**And the honest part: we escalate both, because we cannot execute them.** Their custom code imports `torch`,
+which is not in the analysis image, so the code path never runs — and a case where the code path never ran is
+not one to approve *or* to block. The escalation says exactly that:
+
+> `the artifact's shipped Python (modeling_nepali_voice.py) could not be executed (ModuleNotFoundError: No
+> module named 'torch'), so the code path was never observed`
+
+**That is the single highest-value next step**: ship an analysis image with `torch` (and the common modelling
+dependencies) so custom architectures can be *executed and judged* rather than referred to a human. Two real
+published models now motivate it, which is more than a roadmap bullet usually has.
+
+### Two defects these two models found in our own tool
+
+Running them exposed bugs that no fixture had:
+
+1. **Partial observation was not escalated.** `rotary-indictrans2`'s weights loaded fine while its code path
+   failed — so the case looked "observed", the supervisor did not escalate, and the analyst was left to
+   interpret a `ModuleNotFoundError`. Fixed: if shipped Python exists and did not run, and no capability was
+   observed, the case is escalated regardless of what else loaded.
+2. **A `BLOCK` could be grounded by citing an *error*.** Every cited id existed, so the grounding check passed
+   — and a benign published model was blocked on the strength of "this failed to import". Fixed: **a `BLOCK`
+   must cite at least one capability event.** An error means we could not look; it is not an observed
+   capability. The rule now lives in `semantic/analyst.py::verdict_is_grounded` and has its own tests.
+
+After both fixes: **0 false positives** across the five Nepali/Indic models, and detection on the labeled
+corpus unchanged at 9/9.
+
 ## What pointing the tool at Nepal actually found
 
 The first run **escalated the GGUF model** — the tool reported *"no custom code and no weight files found"* and

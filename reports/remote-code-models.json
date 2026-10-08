@@ -1,0 +1,1019 @@
+{
+  "queries": [
+    "nepali",
+    "nepal",
+    "devanagari",
+    "nepali-llm",
+    "nepberta",
+    "indic",
+    "himalayan"
+  ],
+  "repositories_checked": 268,
+  "with_python_files": 46,
+  "with_auto_map": 15,
+  "with_code": [
+    {
+      "model": "ai4bharat/indic-conformer-600m-multilingual",
+      "downloads": 566552,
+      "py_files": [
+        "model_onnx.py",
+        "model_onnx_1b_batched_rnnt.py",
+        "model_ts.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "ai4bharat/indictrans2-en-indic-dist-200M",
+      "downloads": 243547,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "ai4bharat/indictrans2-en-indic-1B",
+      "downloads": 66434,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "ai4bharat/IndicF5",
+      "downloads": 30792,
+      "py_files": [
+        "f5_tts/api.py",
+        "f5_tts/eval/ecapa_tdnn.py",
+        "f5_tts/eval/eval_infer_batch.py",
+        "f5_tts/eval/eval_librispeech_test_clean.py",
+        "f5_tts/eval/eval_seedtts_testset.py",
+        "f5_tts/eval/utils_eval.py",
+        "f5_tts/infer/infer_batch_parallel.py",
+        "f5_tts/infer/infer_cli.py",
+        "f5_tts/infer/infer_cli_batch.py",
+        "f5_tts/infer/infer_gradio.py",
+        "f5_tts/infer/infer_gradio_orig.py",
+        "f5_tts/infer/speech_edit.py",
+        "f5_tts/infer/utils_infer.py",
+        "f5_tts/model/__init__.py",
+        "f5_tts/model/backbones/dit.py",
+        "f5_tts/model/backbones/mmdit.py",
+        "f5_tts/model/backbones/unett.py",
+        "f5_tts/model/cfm.py",
+        "f5_tts/model/dataset.py",
+        "f5_tts/model/modules.py",
+        "f5_tts/model/trainer.py",
+        "f5_tts/model/utils.py",
+        "f5_tts/scripts/count_max_epoch.py",
+        "f5_tts/scripts/count_params_gflops.py",
+        "f5_tts/socket_server.py",
+        "f5_tts/train/datasets/prepare_csv_wavs.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v2.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v3.py",
+        "f5_tts/train/datasets/prepare_emilia.py",
+        "f5_tts/train/datasets/prepare_in22_en_10k.py",
+        "f5_tts/train/datasets/prepare_libritts.py",
+        "f5_tts/train/datasets/prepare_ljspeech.py",
+        "f5_tts/train/datasets/prepare_optimized.py",
+        "f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+        "f5_tts/train/finetune_cli.py",
+        "f5_tts/train/finetune_gradio.py",
+        "f5_tts/train/train.py",
+        "model.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "ai4bharat/indictrans2-indic-en-dist-200M",
+      "downloads": 24933,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "ai4bharat/indictrans2-indic-en-1B",
+      "downloads": 9358,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "prajdabre/rotary-indictrans2-en-indic-1B",
+      "downloads": 7149,
+      "py_files": [
+        "configuration_rotary_indictrans.py",
+        "modeling_rotary_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "RotaryIndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "ai4bharat/indictrans2-indic-indic-dist-320M",
+      "downloads": 6824,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "bodhan-ai/indic-transcribe-flex",
+      "downloads": 4711,
+      "py_files": [
+        "configuration_indic_canary.py",
+        "feature_extraction_indic_canary.py",
+        "indic_transcribe.py",
+        "inference.py",
+        "lid.py",
+        "long_form.py",
+        "modeling_indic_canary.py",
+        "nemo/canary_multilingual_tokenizer.py",
+        "nemo/inference_nemo.py",
+        "nemo/load_nemo.py",
+        "nemo/long_form_nemo.py",
+        "nemo/test_nemo.py",
+        "tokenization_indic_canary.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "ai4bharat/indictrans2-indic-indic-1B",
+      "downloads": 3617,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "bodhan-ai/indic-transcribe-core",
+      "downloads": 3114,
+      "py_files": [
+        "configuration_indic_canary.py",
+        "feature_extraction_indic_canary.py",
+        "indic_transcribe.py",
+        "inference.py",
+        "lid.py",
+        "long_form.py",
+        "modeling_indic_canary.py",
+        "nemo/canary_multilingual_tokenizer.py",
+        "nemo/inference_nemo.py",
+        "nemo/load_nemo.py",
+        "nemo/long_form_nemo.py",
+        "nemo/test_nemo.py",
+        "tokenization_indic_canary.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "bodhan-ai/indic-translate",
+      "downloads": 2310,
+      "py_files": [
+        "scripts/benchmark_serving.py",
+        "scripts/indic_translate_prompt.py",
+        "scripts/inference_transformers.py",
+        "scripts/inference_vllm.py",
+        "scripts/prompt_contract.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "bodhan-ai/indic-speak",
+      "downloads": 1995,
+      "py_files": [
+        "inference.py",
+        "vocos/__init__.py",
+        "vocos/load.py",
+        "vocos/model.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "Bindkushal/IndicVoice-82M",
+      "downloads": 1789,
+      "py_files": [
+        "examples/device_examples.py",
+        "examples/export.py",
+        "examples/make_triton_compatible.py",
+        "examples/phoneme_example.py",
+        "indicvoice/__init__.py",
+        "indicvoice/__main__.py",
+        "indicvoice/custom_stft.py",
+        "indicvoice/istftnet.py",
+        "indicvoice/model.py",
+        "indicvoice/modules.py",
+        "indicvoice/pipeline.py",
+        "scripts/generate_voice_tensors.py",
+        "tests/test_custom_stft.py"
+      ],
+      "has_auto_map": false,
+      "architectures": null
+    },
+    {
+      "model": "bodhan-ai/indic-ocr",
+      "downloads": 1461,
+      "py_files": [
+        "idp_blocks.py",
+        "idp_contract.py",
+        "idp_crops.py",
+        "idp_layout.py",
+        "idp_model_infer.py",
+        "idp_model_labels.py",
+        "idp_model_order_loss.py",
+        "idp_model_ppdoc.py",
+        "idp_offline.py",
+        "idp_recognizer.py",
+        "idp_reconstruct.py",
+        "idp_types.py",
+        "indic_ocr.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "prajdabre/rotary-indictrans2-en-indic-dist-200M",
+      "downloads": 1240,
+      "py_files": [
+        "configuration_rotary_indictrans.py",
+        "modeling_rotary_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "RotaryIndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "naklitechie/indictrans2-en-indic-dist-200M",
+      "downloads": 765,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "prajdabre/rotary-indictrans2-indic-en-1B",
+      "downloads": 747,
+      "py_files": [
+        "configuration_rotary_indictrans.py",
+        "modeling_rotary_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "RotaryIndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "ujjwal5454/nepali-voice-engine-v4",
+      "downloads": 740,
+      "py_files": [
+        "configuration_nepali_voice.py",
+        "modeling_nepali_voice.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "NepaliVoiceEngine"
+      ]
+    },
+    {
+      "model": "Aditya02/IndicF5",
+      "downloads": 705,
+      "py_files": [
+        "f5_tts/api.py",
+        "f5_tts/eval/ecapa_tdnn.py",
+        "f5_tts/eval/eval_infer_batch.py",
+        "f5_tts/eval/eval_librispeech_test_clean.py",
+        "f5_tts/eval/eval_seedtts_testset.py",
+        "f5_tts/eval/utils_eval.py",
+        "f5_tts/infer/infer_batch_parallel.py",
+        "f5_tts/infer/infer_cli.py",
+        "f5_tts/infer/infer_cli_batch.py",
+        "f5_tts/infer/infer_gradio.py",
+        "f5_tts/infer/infer_gradio_orig.py",
+        "f5_tts/infer/speech_edit.py",
+        "f5_tts/infer/utils_infer.py",
+        "f5_tts/model/__init__.py",
+        "f5_tts/model/backbones/dit.py",
+        "f5_tts/model/backbones/mmdit.py",
+        "f5_tts/model/backbones/unett.py",
+        "f5_tts/model/cfm.py",
+        "f5_tts/model/dataset.py",
+        "f5_tts/model/modules.py",
+        "f5_tts/model/trainer.py",
+        "f5_tts/model/utils.py",
+        "f5_tts/scripts/count_max_epoch.py",
+        "f5_tts/scripts/count_params_gflops.py",
+        "f5_tts/socket_server.py",
+        "f5_tts/train/datasets/prepare_csv_wavs.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v2.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v3.py",
+        "f5_tts/train/datasets/prepare_emilia.py",
+        "f5_tts/train/datasets/prepare_in22_en_10k.py",
+        "f5_tts/train/datasets/prepare_libritts.py",
+        "f5_tts/train/datasets/prepare_ljspeech.py",
+        "f5_tts/train/datasets/prepare_optimized.py",
+        "f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+        "f5_tts/train/finetune_cli.py",
+        "f5_tts/train/finetune_gradio.py",
+        "f5_tts/train/train.py",
+        "model.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "INF5Model"
+      ]
+    },
+    {
+      "model": "snorbyte/snorTTS-Indic-v0",
+      "downloads": 669,
+      "py_files": [
+        "modal/snorTTS_Indic_v0_server.py",
+        "modal/snorTTS_Indic_v0_vllm.py",
+        "train_llama.py",
+        "train_orpheus.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "LlamaForCausalLM"
+      ]
+    },
+    {
+      "model": "ai4bharat/IndicBERT-v3-270M",
+      "downloads": 635,
+      "py_files": [
+        "bidirection_gemma3.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "6Morpheus6/IndicF5",
+      "downloads": 628,
+      "py_files": [
+        "f5_tts/api.py",
+        "f5_tts/eval/ecapa_tdnn.py",
+        "f5_tts/eval/eval_infer_batch.py",
+        "f5_tts/eval/eval_librispeech_test_clean.py",
+        "f5_tts/eval/eval_seedtts_testset.py",
+        "f5_tts/eval/utils_eval.py",
+        "f5_tts/infer/infer_batch_parallel.py",
+        "f5_tts/infer/infer_cli.py",
+        "f5_tts/infer/infer_cli_batch.py",
+        "f5_tts/infer/infer_gradio.py",
+        "f5_tts/infer/infer_gradio_orig.py",
+        "f5_tts/infer/speech_edit.py",
+        "f5_tts/infer/utils_infer.py",
+        "f5_tts/model/__init__.py",
+        "f5_tts/model/backbones/dit.py",
+        "f5_tts/model/backbones/mmdit.py",
+        "f5_tts/model/backbones/unett.py",
+        "f5_tts/model/cfm.py",
+        "f5_tts/model/dataset.py",
+        "f5_tts/model/modules.py",
+        "f5_tts/model/trainer.py",
+        "f5_tts/model/utils.py",
+        "f5_tts/scripts/count_max_epoch.py",
+        "f5_tts/scripts/count_params_gflops.py",
+        "f5_tts/socket_server.py",
+        "f5_tts/train/datasets/prepare_csv_wavs.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v2.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v3.py",
+        "f5_tts/train/datasets/prepare_emilia.py",
+        "f5_tts/train/datasets/prepare_in22_en_10k.py",
+        "f5_tts/train/datasets/prepare_libritts.py",
+        "f5_tts/train/datasets/prepare_ljspeech.py",
+        "f5_tts/train/datasets/prepare_optimized.py",
+        "f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+        "f5_tts/train/finetune_cli.py",
+        "f5_tts/train/finetune_gradio.py",
+        "f5_tts/train/train.py",
+        "model.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "INF5Model"
+      ]
+    },
+    {
+      "model": "prajdabre/rotary-indictrans2-indic-en-dist-200M",
+      "downloads": 506,
+      "py_files": [
+        "configuration_rotary_indictrans.py",
+        "modeling_rotary_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "RotaryIndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "Raghavan/indictrans2-en-indic-dist-200M",
+      "downloads": 494,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "hari31416/indictrans2-indic-en-dist-200M-ONNX-int8",
+      "downloads": 491,
+      "py_files": [
+        "tokenization_indictrans.py",
+        "translate.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "l3cube-pune/IndicGuard",
+      "downloads": 402,
+      "py_files": [
+        "Inference_script.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "Raghavan/indictrans2-indic-en-dist-200M",
+      "downloads": 382,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "vaibhav006/indic-ner-muril-naamapadam",
+      "downloads": 371,
+      "py_files": [
+        "app.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "BertForTokenClassification"
+      ]
+    },
+    {
+      "model": "Anshul1212/indicconformer-hi-hybrid-rnnt-large-hf",
+      "downloads": 343,
+      "py_files": [
+        "configuration_indicconformer.py",
+        "feature_extraction_indicconformer.py",
+        "modeling_indicconformer.py",
+        "pipeline_indicconformer.py",
+        "processing_indicconformer.py",
+        "tokenization_indicconformer.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicConformerForCTC"
+      ]
+    },
+    {
+      "model": "ai4bharat/IndicTrans3-beta",
+      "downloads": 339,
+      "py_files": [
+        "vllm-inference.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "Anurag9817/nepali-llama-590m-1.75b-tokens",
+      "downloads": 337,
+      "py_files": [
+        "tokenizer_helper.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "LlamaForCausalLM"
+      ]
+    },
+    {
+      "model": "rsolanki1822/IndicF5-mirror",
+      "downloads": 330,
+      "py_files": [
+        "f5_tts/api.py",
+        "f5_tts/eval/ecapa_tdnn.py",
+        "f5_tts/eval/eval_infer_batch.py",
+        "f5_tts/eval/eval_librispeech_test_clean.py",
+        "f5_tts/eval/eval_seedtts_testset.py",
+        "f5_tts/eval/utils_eval.py",
+        "f5_tts/infer/infer_batch_parallel.py",
+        "f5_tts/infer/infer_cli.py",
+        "f5_tts/infer/infer_cli_batch.py",
+        "f5_tts/infer/infer_gradio.py",
+        "f5_tts/infer/infer_gradio_orig.py",
+        "f5_tts/infer/speech_edit.py",
+        "f5_tts/infer/utils_infer.py",
+        "f5_tts/model/__init__.py",
+        "f5_tts/model/backbones/dit.py",
+        "f5_tts/model/backbones/mmdit.py",
+        "f5_tts/model/backbones/unett.py",
+        "f5_tts/model/cfm.py",
+        "f5_tts/model/dataset.py",
+        "f5_tts/model/modules.py",
+        "f5_tts/model/trainer.py",
+        "f5_tts/model/utils.py",
+        "f5_tts/scripts/count_max_epoch.py",
+        "f5_tts/scripts/count_params_gflops.py",
+        "f5_tts/socket_server.py",
+        "f5_tts/train/datasets/prepare_csv_wavs.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v2.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v3.py",
+        "f5_tts/train/datasets/prepare_emilia.py",
+        "f5_tts/train/datasets/prepare_in22_en_10k.py",
+        "f5_tts/train/datasets/prepare_libritts.py",
+        "f5_tts/train/datasets/prepare_ljspeech.py",
+        "f5_tts/train/datasets/prepare_optimized.py",
+        "f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+        "f5_tts/train/finetune_cli.py",
+        "f5_tts/train/finetune_gradio.py",
+        "f5_tts/train/train.py",
+        "model.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "INF5Model"
+      ]
+    },
+    {
+      "model": "krpraveen/indictrans2-sanskrit-en-finetuned",
+      "downloads": 328,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "sunilmahendrakar/indic-conformer-600m-multilingual",
+      "downloads": 321,
+      "py_files": [
+        "model_onnx.py",
+        "model_onnx_1b_batched_rnnt.py",
+        "model_ts.py"
+      ],
+      "has_auto_map": true,
+      "architectures": null
+    },
+    {
+      "model": "Sanat-agrwl/indic-whisper-ctc-timestamps",
+      "downloads": 295,
+      "py_files": [
+        "word_timestamps.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "WhisperForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "Atharva31/indicslm-from-scratch",
+      "downloads": 254,
+      "py_files": [
+        "inference/generate.py",
+        "model/attention.py",
+        "model/config.py",
+        "model/kv_cache.py",
+        "model/model.py",
+        "model/rmsnorm.py",
+        "model/rope.py",
+        "model/swiglu.py",
+        "model/transformer.py",
+        "stages.py",
+        "tokenizer/bpe_tokenizer.py",
+        "tokenizer/pretokenizer.py"
+      ],
+      "has_auto_map": false,
+      "architectures": null
+    },
+    {
+      "model": "Anurag9817/nepali-llama-590m-1.30b-tokens",
+      "downloads": 216,
+      "py_files": [
+        "tokenizer_helper.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "LlamaForCausalLM"
+      ]
+    },
+    {
+      "model": "elitexp/nepali-call-center-cosyvoice-experimental",
+      "downloads": 193,
+      "py_files": [
+        "generate.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "Supernova11c/Supernova-NepaliTextEncoder-V1",
+      "downloads": 125,
+      "py_files": [
+        "inference.py",
+        "model.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "SupernovaNepaliEncoder"
+      ]
+    },
+    {
+      "model": "prajin/wav2vec2-large-xlsr-300m-nepali",
+      "downloads": 113,
+      "py_files": [
+        "eval.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "Wav2Vec2ForCTC"
+      ]
+    },
+    {
+      "model": "Anurag9817/nepali-llama-590m-1.05b-tokens",
+      "downloads": 70,
+      "py_files": [
+        "training/train_cpt.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "LlamaForCausalLM"
+      ]
+    },
+    {
+      "model": "Anurag9817/nepali-llama-590m-1.50b-tokens",
+      "downloads": 47,
+      "py_files": [
+        "tokenizer_helper.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "LlamaForCausalLM"
+      ]
+    },
+    {
+      "model": "Shushant/NepaliLLM",
+      "downloads": 45,
+      "py_files": [
+        "upload_data.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "GPT2LMHeadModel"
+      ]
+    },
+    {
+      "model": "manishw10/devgen-trocr-devanagari-lora",
+      "downloads": 16,
+      "py_files": [
+        "app.py",
+        "cnn_model.py",
+        "preprocessing.py"
+      ],
+      "has_auto_map": false
+    },
+    {
+      "model": "UdayAgrawal29/handwritten-devanagari-text-recognition",
+      "downloads": 9,
+      "py_files": [
+        "app.py"
+      ],
+      "has_auto_map": false,
+      "architectures": [
+        "VisionEncoderDecoderModel"
+      ]
+    }
+  ],
+  "auto_map": [
+    {
+      "model": "prajdabre/rotary-indictrans2-en-indic-1B",
+      "downloads": 7149,
+      "py_files": [
+        "configuration_rotary_indictrans.py",
+        "modeling_rotary_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "RotaryIndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "prajdabre/rotary-indictrans2-en-indic-dist-200M",
+      "downloads": 1240,
+      "py_files": [
+        "configuration_rotary_indictrans.py",
+        "modeling_rotary_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "RotaryIndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "naklitechie/indictrans2-en-indic-dist-200M",
+      "downloads": 765,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "prajdabre/rotary-indictrans2-indic-en-1B",
+      "downloads": 747,
+      "py_files": [
+        "configuration_rotary_indictrans.py",
+        "modeling_rotary_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "RotaryIndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "ujjwal5454/nepali-voice-engine-v4",
+      "downloads": 740,
+      "py_files": [
+        "configuration_nepali_voice.py",
+        "modeling_nepali_voice.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "NepaliVoiceEngine"
+      ]
+    },
+    {
+      "model": "Aditya02/IndicF5",
+      "downloads": 705,
+      "py_files": [
+        "f5_tts/api.py",
+        "f5_tts/eval/ecapa_tdnn.py",
+        "f5_tts/eval/eval_infer_batch.py",
+        "f5_tts/eval/eval_librispeech_test_clean.py",
+        "f5_tts/eval/eval_seedtts_testset.py",
+        "f5_tts/eval/utils_eval.py",
+        "f5_tts/infer/infer_batch_parallel.py",
+        "f5_tts/infer/infer_cli.py",
+        "f5_tts/infer/infer_cli_batch.py",
+        "f5_tts/infer/infer_gradio.py",
+        "f5_tts/infer/infer_gradio_orig.py",
+        "f5_tts/infer/speech_edit.py",
+        "f5_tts/infer/utils_infer.py",
+        "f5_tts/model/__init__.py",
+        "f5_tts/model/backbones/dit.py",
+        "f5_tts/model/backbones/mmdit.py",
+        "f5_tts/model/backbones/unett.py",
+        "f5_tts/model/cfm.py",
+        "f5_tts/model/dataset.py",
+        "f5_tts/model/modules.py",
+        "f5_tts/model/trainer.py",
+        "f5_tts/model/utils.py",
+        "f5_tts/scripts/count_max_epoch.py",
+        "f5_tts/scripts/count_params_gflops.py",
+        "f5_tts/socket_server.py",
+        "f5_tts/train/datasets/prepare_csv_wavs.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v2.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v3.py",
+        "f5_tts/train/datasets/prepare_emilia.py",
+        "f5_tts/train/datasets/prepare_in22_en_10k.py",
+        "f5_tts/train/datasets/prepare_libritts.py",
+        "f5_tts/train/datasets/prepare_ljspeech.py",
+        "f5_tts/train/datasets/prepare_optimized.py",
+        "f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+        "f5_tts/train/finetune_cli.py",
+        "f5_tts/train/finetune_gradio.py",
+        "f5_tts/train/train.py",
+        "model.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "INF5Model"
+      ]
+    },
+    {
+      "model": "6Morpheus6/IndicF5",
+      "downloads": 628,
+      "py_files": [
+        "f5_tts/api.py",
+        "f5_tts/eval/ecapa_tdnn.py",
+        "f5_tts/eval/eval_infer_batch.py",
+        "f5_tts/eval/eval_librispeech_test_clean.py",
+        "f5_tts/eval/eval_seedtts_testset.py",
+        "f5_tts/eval/utils_eval.py",
+        "f5_tts/infer/infer_batch_parallel.py",
+        "f5_tts/infer/infer_cli.py",
+        "f5_tts/infer/infer_cli_batch.py",
+        "f5_tts/infer/infer_gradio.py",
+        "f5_tts/infer/infer_gradio_orig.py",
+        "f5_tts/infer/speech_edit.py",
+        "f5_tts/infer/utils_infer.py",
+        "f5_tts/model/__init__.py",
+        "f5_tts/model/backbones/dit.py",
+        "f5_tts/model/backbones/mmdit.py",
+        "f5_tts/model/backbones/unett.py",
+        "f5_tts/model/cfm.py",
+        "f5_tts/model/dataset.py",
+        "f5_tts/model/modules.py",
+        "f5_tts/model/trainer.py",
+        "f5_tts/model/utils.py",
+        "f5_tts/scripts/count_max_epoch.py",
+        "f5_tts/scripts/count_params_gflops.py",
+        "f5_tts/socket_server.py",
+        "f5_tts/train/datasets/prepare_csv_wavs.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v2.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v3.py",
+        "f5_tts/train/datasets/prepare_emilia.py",
+        "f5_tts/train/datasets/prepare_in22_en_10k.py",
+        "f5_tts/train/datasets/prepare_libritts.py",
+        "f5_tts/train/datasets/prepare_ljspeech.py",
+        "f5_tts/train/datasets/prepare_optimized.py",
+        "f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+        "f5_tts/train/finetune_cli.py",
+        "f5_tts/train/finetune_gradio.py",
+        "f5_tts/train/train.py",
+        "model.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "INF5Model"
+      ]
+    },
+    {
+      "model": "prajdabre/rotary-indictrans2-indic-en-dist-200M",
+      "downloads": 506,
+      "py_files": [
+        "configuration_rotary_indictrans.py",
+        "modeling_rotary_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "RotaryIndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "Raghavan/indictrans2-en-indic-dist-200M",
+      "downloads": 494,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "hari31416/indictrans2-indic-en-dist-200M-ONNX-int8",
+      "downloads": 491,
+      "py_files": [
+        "tokenization_indictrans.py",
+        "translate.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "Raghavan/indictrans2-indic-en-dist-200M",
+      "downloads": 382,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "Anshul1212/indicconformer-hi-hybrid-rnnt-large-hf",
+      "downloads": 343,
+      "py_files": [
+        "configuration_indicconformer.py",
+        "feature_extraction_indicconformer.py",
+        "modeling_indicconformer.py",
+        "pipeline_indicconformer.py",
+        "processing_indicconformer.py",
+        "tokenization_indicconformer.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicConformerForCTC"
+      ]
+    },
+    {
+      "model": "rsolanki1822/IndicF5-mirror",
+      "downloads": 330,
+      "py_files": [
+        "f5_tts/api.py",
+        "f5_tts/eval/ecapa_tdnn.py",
+        "f5_tts/eval/eval_infer_batch.py",
+        "f5_tts/eval/eval_librispeech_test_clean.py",
+        "f5_tts/eval/eval_seedtts_testset.py",
+        "f5_tts/eval/utils_eval.py",
+        "f5_tts/infer/infer_batch_parallel.py",
+        "f5_tts/infer/infer_cli.py",
+        "f5_tts/infer/infer_cli_batch.py",
+        "f5_tts/infer/infer_gradio.py",
+        "f5_tts/infer/infer_gradio_orig.py",
+        "f5_tts/infer/speech_edit.py",
+        "f5_tts/infer/utils_infer.py",
+        "f5_tts/model/__init__.py",
+        "f5_tts/model/backbones/dit.py",
+        "f5_tts/model/backbones/mmdit.py",
+        "f5_tts/model/backbones/unett.py",
+        "f5_tts/model/cfm.py",
+        "f5_tts/model/dataset.py",
+        "f5_tts/model/modules.py",
+        "f5_tts/model/trainer.py",
+        "f5_tts/model/utils.py",
+        "f5_tts/scripts/count_max_epoch.py",
+        "f5_tts/scripts/count_params_gflops.py",
+        "f5_tts/socket_server.py",
+        "f5_tts/train/datasets/prepare_csv_wavs.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v2.py",
+        "f5_tts/train/datasets/prepare_csvs_wavs_v3.py",
+        "f5_tts/train/datasets/prepare_emilia.py",
+        "f5_tts/train/datasets/prepare_in22_en_10k.py",
+        "f5_tts/train/datasets/prepare_libritts.py",
+        "f5_tts/train/datasets/prepare_ljspeech.py",
+        "f5_tts/train/datasets/prepare_optimized.py",
+        "f5_tts/train/datasets/prepare_wenetspeech4tts.py",
+        "f5_tts/train/finetune_cli.py",
+        "f5_tts/train/finetune_gradio.py",
+        "f5_tts/train/train.py",
+        "model.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "INF5Model"
+      ]
+    },
+    {
+      "model": "krpraveen/indictrans2-sanskrit-en-finetuned",
+      "downloads": 328,
+      "py_files": [
+        "configuration_indictrans.py",
+        "modeling_indictrans.py",
+        "tokenization_indictrans.py"
+      ],
+      "has_auto_map": true,
+      "architectures": [
+        "IndicTransForConditionalGeneration"
+      ]
+    },
+    {
+      "model": "sunilmahendrakar/indic-conformer-600m-multilingual",
+      "downloads": 321,
+      "py_files": [
+        "model_onnx.py",
+        "model_onnx_1b_batched_rnnt.py",
+        "model_ts.py"
+      ],
+      "has_auto_map": true,
+      "architectures": null
+    }
+  ],
+  "note": "A repository with `auto_map` requires `trust_remote_code=True`: the user runs the author's Python on their own machine by design. Neither picklescan nor fickling opens a .py file, which is the coverage hole this project targets."
+}

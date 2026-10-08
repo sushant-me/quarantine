@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T19:12:19+0545",
+  "generated_at": "2026-10-08T19:35:00+0545",
   "kind": "corpus-real",
   "n": 20,
   "benign": 20,
@@ -95,14 +95,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its behaviour. The trace shows only serialization helper stubbing, which cannot perform I/O, and does not make the observation partial.",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 7.97,
+      "elapsed_s": 7.96,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -149,7 +149,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.49,
+      "elapsed_s": 11.63,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -196,7 +196,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.16,
+      "elapsed_s": 9.2,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -243,7 +243,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.29,
+      "elapsed_s": 9.19,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -306,7 +306,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 7.59,
+      "elapsed_s": 7.6,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -442,7 +442,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 10.88,
+      "elapsed_s": 10.82,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -505,7 +505,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 10.48,
+      "elapsed_s": 10.43,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -573,7 +573,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 10.93,
+      "elapsed_s": 10.88,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -641,7 +641,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.68,
+      "elapsed_s": 7.64,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -709,7 +709,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.32,
+      "elapsed_s": 7.83,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -749,7 +749,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 10.95,
+      "elapsed_s": 10.92,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -812,7 +812,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 10.37,
+      "elapsed_s": 10.44,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -875,7 +875,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.6,
+      "elapsed_s": 11.68,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -915,7 +915,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.12,
+      "elapsed_s": 9.16,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -983,7 +983,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.26,
+      "elapsed_s": 11.31,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1046,7 +1046,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 7.62,
+      "elapsed_s": 7.63,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1109,7 +1109,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 7.63,
+      "elapsed_s": 7.62,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1165,14 +1165,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows that the artifact loaded plain/zip pickles and weight files, but did not perform any operations that would block the declared behaviour.",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.79,
+      "elapsed_s": 7.97,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1235,7 +1235,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.0,
+      "elapsed_s": 7.67,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"

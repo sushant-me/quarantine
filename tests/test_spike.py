@@ -751,3 +751,45 @@ def test_a_pickle_renamed_gguf_is_rejected_rather_than_trusted(tmp_path):
     path.write_bytes(_pickle.dumps({"x": Probe()}))
     with pytest.raises(Exception):
         load_weights(str(path), [])
+
+
+# -------------------------------------- partial observation and block grounding
+
+def test_custom_code_that_cannot_run_is_escalated_even_when_weights_loaded():
+    """The real published case: rotary-indictrans2.
+
+    Its `modeling_*.py` imports torch, so the code path never ran — while its pickle weights
+    loaded fine, which made the case look "observed". Not escalating let the analyst treat
+    the ModuleNotFoundError as evidence and BLOCK a benign model.
+    """
+    case = _case(static={"custom_code_files": ["modeling_rotary_indictrans.py"]},
+                 execution={"weights_loaded": [{"file": "pytorch_model.bin"}],
+                            "errors": ["modeling_rotary_indictrans.py: ModuleNotFoundError: torch"]})
+    assert case.observed is True          # the weights did load
+    assert case.code_path_unrun is True   # the code path did not
+    assert case.escalation_reason is not None
+    assert "code path was never observed" in case.escalation_reason
+
+
+def test_shipped_code_that_acted_before_dying_is_still_judged():
+    """`probe-obfuscated` performs its DNS call and *then* dies. That is evidence, not noise."""
+    case = _case(static={"custom_code_files": ["custom_generate/generate.py"]},
+                 execution={"errors": ["gaierror(-3, ...)"]},
+                 events=[{"i": 1, "event": "socket.getaddrinfo", "detail": "x.invalid"}])
+    assert case.code_path_unrun is False
+    assert case.escalation_reason is None
+    assert case.capability_ids == [1]
+
+
+def test_a_block_must_cite_a_capability_event_not_an_error():
+    """An error means we could not look; it is not an observed capability."""
+    from quarantine.semantic.analyst import verdict_is_grounded
+    valid, caps = {1, 2, 3}, {3}
+    assert verdict_is_grounded("BLOCK", [3], valid, caps) is True     # cites the capability
+    assert verdict_is_grounded("BLOCK", [1], valid, caps) is False    # cites an error only
+    assert verdict_is_grounded("BLOCK", [1, 3], valid, caps) is True  # cites both
+    assert verdict_is_grounded("BLOCK", [], valid, caps) is False     # cites nothing
+    assert verdict_is_grounded("BLOCK", [99], valid, caps) is False   # cites a phantom id
+    assert verdict_is_grounded("ALLOW", [], valid, set()) is True     # no capability observed
+    assert verdict_is_grounded("ALLOW", [], valid, caps) is False     # capability observed
+    assert verdict_is_grounded("UNKNOWN", [], valid, caps) is True    # abstention is always admissible

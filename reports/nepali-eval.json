@@ -1,44 +1,110 @@
 {
-  "generated_at": "2026-10-08T19:09:08+0545",
+  "generated_at": "2026-10-08T19:31:55+0545",
   "kind": "nepali",
-  "n": 3,
-  "benign": 3,
+  "n": 5,
+  "benign": 5,
   "undeclared": 0,
-  "escalated": 0,
+  "escalated": 2,
   "allowed": 3,
   "quarantine": {
     "tp": 0,
     "fp": 0,
     "fn": 0,
-    "tn": 3,
+    "tn": 5,
     "detection_rate": null,
     "false_positive_rate": 0.0
   },
   "incumbents_any": {
     "tp": 0,
-    "fp": 1,
+    "fp": 2,
     "fn": 0,
-    "tn": 2,
+    "tn": 3,
     "detection_rate": null,
-    "false_positive_rate": 0.3333
+    "false_positive_rate": 0.4
   },
   "picklescan": {
     "tp": 0,
     "fp": 0,
     "fn": 0,
-    "tn": 3,
+    "tn": 5,
     "detection_rate": null,
     "false_positive_rate": 0.0
   },
   "fickling": {
     "tp": 0,
-    "fp": 1,
+    "fp": 2,
     "fn": 0,
-    "tn": 2,
+    "tn": 3,
     "detection_rate": null,
-    "false_positive_rate": 0.3333
+    "false_positive_rate": 0.4
   },
   "cases": [
+    {
+      "name": "indic-trans2-rotary",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-nepali/indic-trans2-rotary/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {
+        "filesystem": 3
+      },
+      "custom_code_files": [
+        "modeling_rotary_indictrans.py"
+      ],
+      "trace_events": 6,
+      "sensitive_events": [
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        }
+      ],
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "escalation_reason": "the artifact's shipped Python (modeling_rotary_indictrans.py) could not be executed (modeling_rotary_indictrans.py: ModuleNotFoundError(\"No module named 'torch'\")), so the code path was never observed",
+      "observed": true,
+      "grounded": false,
+      "cited_ids": [],
+      "mechanism": "",
+      "agents": [
+        "observer",
+        "supervisor"
+      ],
+      "turns": 1,
+      "elapsed_s": 1.25,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
     {
       "name": "nepali-bert",
       "picklescan": {
@@ -95,14 +161,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
+      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows only the loading of pickles, which is consistent with the artifact's declared behavior of loading model weights.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.81,
+      "elapsed_s": 8.67,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -142,7 +208,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 7.67,
+      "elapsed_s": 7.69,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -175,14 +241,57 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared, and there were no unresolved globals. The observation status indicates that nothing suspicious happened.",
+      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows no capability events, indicating that no operations were performed. The evidence is sufficient to conclude that the artifact did not perform any suspicious actions.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.92,
+      "elapsed_s": 8.41,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "nepali-voice-engine",
+      "picklescan": {
+        "scanned_files": 0,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 0,
+        "flagged": [],
+        "says_clean": true
+      },
+      "incumbents_flagged_by": [],
+      "incumbents_flagged": false,
+      "static_capabilities": {
+        "dynamic_code": 1
+      },
+      "custom_code_files": [
+        "modeling_nepali_voice.py"
+      ],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "UNKNOWN",
+      "escalated": true,
+      "escalation_reason": "the artifact's shipped Python (modeling_nepali_voice.py) could not be executed (modeling_nepali_voice.py: ModuleNotFoundError(\"No module named 'torch'\")), so the code path was never observed",
+      "observed": false,
+      "grounded": false,
+      "cited_ids": [],
+      "mechanism": "",
+      "agents": [
+        "observer",
+        "supervisor"
+      ],
+      "turns": 1,
+      "elapsed_s": 0.46,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"

@@ -29,6 +29,10 @@ key dependencies"* must be easy to verify (so they are stated in the README and 
 | 4 | Demo video | [`reports/video/quarantine-demo.mp4`](reports/video/quarantine-demo.mp4) — script in [`docs/DEMO-SCRIPT.md`](docs/DEMO-SCRIPT.md), transcript in [`reports/video/transcript.txt`](reports/video/transcript.txt), and an honest note on what the video is in [`reports/video/README.md`](reports/video/README.md) |
 | 5 | AI usage disclosure naming `file::function` | [`docs/AI-USAGE.md`](docs/AI-USAGE.md) — machine-checked by `scripts/check_eligibility.py` |
 
+*A separate business proposal — market, pricing, unit economics, regional go-to-market and an honest
+intellectual-property position — accompanies this submission as a standalone document; it is deliberately not
+in the repository, because the event asks for a product and its evidence, not a plan.*
+
 ## 2. Why the AI is load-bearing
 
 The challenge's test: *delete the AI call — does the product still do its job?*

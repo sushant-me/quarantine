@@ -35,6 +35,18 @@ REPOS = [
      ["Qwen-0.6b-nepali-instruct.Q2_K.gguf", "*.json", "*.txt"],
      "a Nepali-tuned Qwen quantised to GGUF — the format this community actually ships. "
      "Only the smallest quantisation is fetched, deliberately"),
+    # --- the case that matters most: repositories that FORCE trust_remote_code=True.
+    # Found by scripts/find_remote_code_models.py: 46 of 268 Nepali/Indic repositories ship
+    # .py files and 15 declare auto_map. Neither picklescan nor fickling opens a .py file.
+    ("ujjwal5454/nepali-voice-engine-v4", "nepali-voice-engine",
+     ["*.py", "config.json", "tokenizer.json", "*.txt"],
+     "a NEPALI model with a custom architecture (NepaliVoiceEngine): auto_map points AutoModel at "
+     "modeling_nepali_voice.py, so using it means running the author's Python on your machine. "
+     "The 3.7 GB weights and the dataset zips are excluded — the question here is the code path"),
+    ("prajdabre/rotary-indictrans2-en-indic-dist-200M", "indic-trans2-rotary",
+     ["*.py", "*.json", "*.bin", "*.SRC", "*.TGT", "*.model", "*.txt"],
+     "an Indic translation model (IndicTrans2 covers Nepali) with a custom architecture AND a real "
+     "847 MB pickle checkpoint, so it exercises both the code path and the deserialisation path"),
 ]
 
 
