@@ -3,18 +3,18 @@
     "files": [
       {
         "path": "README.md",
-        "size": 691,
-        "sha256": "1a65587f6c5b55d871c0b78864d78e78ceba41181378dd1d1be425ca181b28a0"
+        "size": 468,
+        "sha256": "34a66fcc5677708f6ea289524f3ac6ce9133983ed5c2d00a693a0f88ec4f384c"
       },
       {
         "path": "config.json",
-        "size": 172,
-        "sha256": "6d207df6f25e3cbaac7abe06f2b9bb33b9c6b9643a6447e30ab704eea0207d33"
+        "size": 182,
+        "sha256": "2bca33ff58e759b25c42041e51c12361a66faf8bcfea2b7c23d2a722f0864721"
       },
       {
         "path": "custom_generate/generate.py",
-        "size": 1215,
-        "sha256": "f88e28b0577b1467d3985556c837b1bf4f889a428a53f35e3f660b207afb50a9"
+        "size": 422,
+        "sha256": "1aca8106e889bce66038a817681eccd38d53a0179382f076084d5c1943233cb6"
       },
       {
         "path": "pytorch_model.bin",
@@ -23,13 +23,13 @@
       }
     ],
     "file_count": 4,
-    "tree_sha256": "7bb93fdb23be751aa9362399e79c5ee1a3a7464b9bab84adc43006c4843cc04c"
+    "tree_sha256": "906eaac93a559e40f4882664a68ee3827216c3bda0f569547255cca3f0a41e04"
   },
   "capability_graph": {
     "python_files": 1,
     "imports_of_interest": {
       "socket": [
-        "custom_generate/generate.py:18"
+        "custom_generate/generate.py:2"
       ]
     },
     "capabilities": {
@@ -44,7 +44,7 @@
     "findings": [
       {
         "file": "custom_generate/generate.py",
-        "line": 30,
+        "line": 14,
         "capability": "network",
         "call": "socket.getaddrinfo"
       }

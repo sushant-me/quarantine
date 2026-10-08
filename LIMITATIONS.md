@@ -14,8 +14,10 @@ attached.
 | detection on 12 labeled artifacts (8 undeclared, 4 benign controls) | **8/8**, 0 false positives |
 | the same corpus: picklescan 1.0.5 / fickling 0.1.12 | 1/8 each |
 | false positives on 4 **real published models** | Quarantine **0** · picklescan 0 · **fickling 4** |
+| repair produced and capability-clean, across the corpus | **7/7** attempted |
+| repair **verified by output-equivalence** | **6/7** — the seventh is a refusal, see 10 below |
 | deliberate sandbox escape, ten primitives | **0 of 10** succeeded |
-| test suite | 27 passing |
+| test suite | 36 passing |
 
 ## What is NOT established
 
@@ -31,9 +33,12 @@ attached.
    `modeling_*.py`), not a pickle bypass.
 4. **One model size.** Only `qwen2.5-coder-3b-instruct-q4_k_m`. A 1.5B general model failed the repair task;
    7B and larger are untried.
-5. **Equivalence is a three-prompt smoke test.** `compare()` runs
-   `["hello world", "Quarantine probe 123", "a"]`. That is not a proof of behavioural equivalence, and it
-   cannot cover side effects that produce no output.
+5. **Equivalence is 12 prompts plus a capability check, not a proof.** `compare()` runs twelve inputs —
+   case, punctuation, unicode, empty, whitespace, a tab, digits, a newline, a 300-character string — and
+   additionally requires that the repaired loader performed **no capability operation** in the trace. That is
+   far stronger than the three-prompt smoke test it replaced, but it is still not a proof of behavioural
+   equivalence: side effects that produce no output are invisible to it, and twelve prompts are not a
+   specification.
 6. **The escape attempt is ten primitives, not a fuzzing campaign.** A clean table means *those ten* failed.
    No kernel exploit, no container-runtime CVE, and no race was attempted. It is not a claim that the box
    cannot be broken.
@@ -45,8 +50,12 @@ attached.
    metadata and C/Rust extensions are untouched.
 9. **The repair removes capability; it does not prove absence.** `forbidden_in_source` is an AST check. An
    obfuscated capability it cannot see would pass. It raises the floor.
-10. **The repair path was exercised on one artifact.** The end-to-end repair + equivalence proof runs on
-    `probe-custom-generate`; it is not yet part of the corpus-wide evaluation.
+10. **The repair is verified on 6 of 7 attempts, and it is not attempted for weight-only payloads.**
+    Across the eight undeclared artifacts: 8/8 blocked, 7 repairs attempted, 7 produced and capability-clean,
+    6 verified by output-equivalence. The one refusal is honest — that artifact's original cannot be executed
+    at all, so equivalence with it cannot be established. The artifact that ships only a pickle is **skipped**,
+    because repairing it means re-serialising weights rather than rewriting a loader; that is a coverage gap,
+    not a pass.
 11. **Legal and ethical boundary.** The tool exists to execute untrusted artifacts. That is what containment
     is for, and it is also why limitation 6 is the most important one on this page. Do not run it on
     artifacts you are not authorised to analyse.

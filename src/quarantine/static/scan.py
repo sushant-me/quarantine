@@ -12,6 +12,7 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 # capability -> dotted call names that imply it
@@ -139,9 +140,9 @@ def capability_graph(root: Path) -> dict:
     }
 
 
-def _run(cmd: list[str], timeout: int = 300) -> dict:
+def _run(cmd: list[str], timeout: int = 300, cwd: str | None = None) -> dict:
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=cwd)
         return {"cmd": " ".join(cmd), "returncode": proc.returncode,
                 "stdout": proc.stdout[-4000:], "stderr": proc.stderr[-2000:]}
     except FileNotFoundError as exc:
@@ -158,7 +159,10 @@ def run_incumbents(root: Path) -> dict:
     fickling_runs = []
     for p in sorted(root.rglob("*")):
         if p.is_file() and p.suffix.lower() in PICKLE_SUFFIXES:
-            fickling_runs.append(_run([sys.executable, "-m", "fickling", "--check-safety", str(p)]))
+            # fickling drops a `safety_results.json` in the current directory as a side
+            # effect; run it from a scratch directory so it does not litter the repo.
+            fickling_runs.append(_run([sys.executable, "-m", "fickling", "--check-safety", str(p)],
+                                      cwd=tempfile.gettempdir()))
     out["fickling"] = fickling_runs or [{"cmd": "fickling", "returncode": None,
                                          "stdout": "", "stderr": "no pickle files found"}]
     return out

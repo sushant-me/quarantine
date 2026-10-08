@@ -302,6 +302,88 @@ def test_the_pickle_path_is_executed_not_just_hashed(tmp_path):
     assert any(e["event"] == "socket.getaddrinfo" for e in result["events"])
 
 
+def test_prompt_set_is_wide_enough_to_mean_something():
+    from quarantine.proof.equivalence import DEFAULT_PROMPTS
+    assert len(DEFAULT_PROMPTS) >= 10
+    assert "" in DEFAULT_PROMPTS                    # empty input
+    assert any(not p.isascii() for p in DEFAULT_PROMPTS)   # unicode
+    assert any(len(p) > 100 for p in DEFAULT_PROMPTS)      # length
+    assert len(set(DEFAULT_PROMPTS)) == len(DEFAULT_PROMPTS)
+
+
+@pytest.mark.integration
+def test_a_clean_repair_of_an_unrunnable_original_is_still_not_claimed_as_proven(tmp_path):
+    """If the original cannot be executed, equivalence is NOT established.
+
+    An artifact whose undeclared behaviour kills its own process is a real category.
+    The honest answer is "we could not prove it", not a pass — and the repaired loader
+    should still be observed as capability-clean.
+    """
+    from quarantine.proof.equivalence import compare
+
+    original = tmp_path / "original.py"
+    original.write_text("raise RuntimeError('the payload kills the process')\n\n\n"
+                        "def generate(prompt: str) -> str:\n"
+                        "    return prompt.upper()\n", encoding="utf-8")
+    sanitized = tmp_path / "sanitized.py"
+    sanitized.write_text("def generate(prompt: str) -> str:\n"
+                         "    return prompt.upper()\n", encoding="utf-8")
+
+    result = compare(original, sanitized, tmp_path / "run")
+    assert result["original_ran"] is False
+    assert result["equivalent"] is False
+    assert "NOT established" in result["note"]
+    assert result["sanitized_capability_events"] == []
+
+
+def test_static_pass_leaves_no_stray_files_in_the_repository():
+    """fickling writes safety_results.json into the current directory as a side effect."""
+    from quarantine.static.scan import static_pass
+    stray = Path.cwd() / "safety_results.json"
+    if stray.exists():
+        stray.unlink()
+    static_pass(PROBE)
+    assert not stray.exists(), "running the static pass littered the working directory"
+
+
+@pytest.mark.integration
+def test_equivalence_rejects_a_repair_that_still_has_capability(tmp_path):
+    """The criterion is BOTH halves: same outputs, and no capability at all.
+
+    Outputs alone would accept a "repair" that behaves correctly and still reads files.
+    """
+    from quarantine.proof.equivalence import compare
+
+    def loader(path, body):
+        path.write_text(body, encoding="utf-8")
+        return path
+
+    original = loader(tmp_path / "original.py",
+                      "import pathlib\n\n\n"
+                      "def generate(prompt: str) -> str:\n"
+                      "    pathlib.Path('/etc/hostname').read_text()\n"
+                      "    return prompt.upper()\n")
+    sneaky = loader(tmp_path / "sneaky.py",
+                    "import pathlib\n\n\n"
+                    "def generate(prompt: str) -> str:\n"
+                    "    pathlib.Path('/etc/hostname').read_text()\n"
+                    "    return prompt.upper()\n")
+    clean = loader(tmp_path / "clean.py",
+                   "def generate(prompt: str) -> str:\n"
+                   "    return prompt.upper()\n")
+
+    bad = compare(original, sneaky, tmp_path / "run_bad")
+    assert bad["outputs_identical"] is True, bad["note"]
+    assert bad["sanitized_capability_events"], "the sneaky repair must be seen doing I/O"
+    assert bad["equivalent"] is False
+
+    good = compare(original, clean, tmp_path / "run_good")
+    assert good["outputs_identical"] is True, good["note"]
+    assert good["sanitized_capability_events"] == []
+    assert good["original_capability_events"], "the original must be seen doing I/O"
+    assert good["equivalent"] is True
+
+
 @pytest.mark.integration
 def test_contained_execution_records_the_exfiltration_attempt(tmp_path):
     from quarantine.sandbox.execute import run_trace

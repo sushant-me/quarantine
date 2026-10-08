@@ -3,18 +3,18 @@
     "files": [
       {
         "path": "README.md",
-        "size": 336,
-        "sha256": "f8d53731d2d2ba046c5bc760607ec5ca5872628d495970f452338e330b61defe"
+        "size": 464,
+        "sha256": "758a548297bce4c408899b6512b17a7cce0c6776e23a59ddd69429b3691733ce"
       },
       {
         "path": "config.json",
-        "size": 174,
-        "sha256": "667fade19b4f22cf4432466f9d2332d34bf9ada832723b43c6c7d7af93fa5873"
+        "size": 182,
+        "sha256": "2bca33ff58e759b25c42041e51c12361a66faf8bcfea2b7c23d2a722f0864721"
       },
       {
         "path": "custom_generate/generate.py",
-        "size": 291,
-        "sha256": "2cccf7ec0e3e583d21e5212dcac6e43324343011374f762d374cf01132f4b504"
+        "size": 133,
+        "sha256": "9ddfbf61c99bc61748bd6a47734f6b8dca446041f5d3d7f78b8d124254a8105e"
       },
       {
         "path": "pytorch_model.bin",
@@ -23,7 +23,7 @@
       }
     ],
     "file_count": 4,
-    "tree_sha256": "002a3b18b7e16e39ff1b322469540b59022386ccd8d7592c00bf8c7573465dff"
+    "tree_sha256": "bed0ca43fe1a0fda7fd1d712f985767fd6d925439fae9bf17c2dfd6cba9f9ff2"
   },
   "capability_graph": {
     "python_files": 1,

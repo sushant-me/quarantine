@@ -21,6 +21,7 @@ uv pip install --python .venv/bin/python cryptography picklescan fickling jsonsc
 PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py      # detection vs the incumbents
 PYTHONPATH=src .venv/bin/python scripts/fetch_real_models.py            # 4 real published models
 PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py --dir corpus-real --label benign
+PYTHONPATH=src .venv/bin/python scripts/eval_repair.py      # repair + equivalence, whole corpus
 PYTHONPATH=src .venv/bin/python scripts/escape_attempt.py   # ten breakout primitives
 
 # one artifact, the whole loop
@@ -28,7 +29,7 @@ PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-ge
 PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
 
-PYTHONPATH=src .venv/bin/python -m pytest -q     # 32 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q     # 36 tests
 ```
 
 ## The five passes

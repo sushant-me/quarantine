@@ -80,6 +80,38 @@ grounded, on a genuinely benign artifact.
 scanner reads, they miss 7 of 8 undeclared artifacts; on the format they cannot parse, one of them blocks
 everything. Behaviour is the only common ground.
 
+### 1.4 The repair path, evaluated across the whole corpus
+
+The repair was previously exercised on one artifact. It is now run end to end on all eight undeclared
+artifacts, with every number read back from the **signed receipt** (`scripts/eval_repair.py`) so this measures
+what the product emits rather than a parallel code path.
+
+| measure | result |
+|---|---|
+| blocked by the local model (grounded) | **8/8** |
+| repair attempted (needs a grounded BLOCK) | 7/8 |
+| repair produced and passed the capability gate | **7/7** |
+| repair **verified by output-equivalence** | **6/7** |
+
+**The criterion is now two things, not one.** A repair is accepted only if it produces identical outputs on
+**12 prompts** (case, punctuation, unicode, empty string, whitespace, a tab, digits, a newline, and a 300-character
+input) **and** performs **zero capability operations** while doing so. The second half is measured from the
+audit trace, not from the source: the AST check in `repair/loader.py` proves the code *looks* clean; this proves
+nothing of the kind *happened*. On the reference artifact the original performed **2** capability operations
+(`file.read /etc/hostname`, `socket.getaddrinfo`) and the repair performed **0**.
+
+**The two non-passes are both honest and both worth saying out loud:**
+
+1. **1 of 8 was not attempted** — `cve-2025-46417-pickle` ships no Python. An artifact whose payload is a
+   weight file has nothing to rewrite as a loader; repairing it means re-serialising the weights
+   (`safetensors`), a different operation. The receipt records
+   `skipped_reason: "no shipped Python to repair (payload is a weight file)"`.
+2. **1 of 7 was refused, not failed** — `probe-obfuscated` cannot be proven equivalent because **the original
+   cannot be executed at all**: its payload raises `gaierror` during import and kills the process. The repaired
+   loader is capability-clean and correct, but equivalence with something that will not run cannot be
+   established, so the receipt says `"the ORIGINAL artifact could not be executed, so equivalence is NOT
+   established"`. Claiming a pass there would have been the dishonest move.
+
 ---
 
 ## 2. The corpus
@@ -109,7 +141,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 3. Nine defects found by running it
+## 3. Eleven defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -124,6 +156,12 @@ Each of these was invisible to reading. Numbering continues from the first spike
 | 7 | **100% false positives on the controls** | `compile`/`exec` audit events fire for every ordinary module body, so a benign file looked like dynamic-code execution | record only while the artifact is actually running, and drop interpreter-internal events |
 | 8 | **still 100% false positives** | my own harness event `weights.load` appeared in the trace as if the artifact had done it | stop recording harness bookkeeping as evidence |
 | 9 | benign artifacts returned UNKNOWN/BLOCK on an **empty** trace | the decision rules were buried in prose and the model over-triggered | harness now computes the capability-event count and states it; the prompt is a numbered procedure; an ALLOW is admissible only when the harness independently saw zero capability events |
+| 10 | both loaders silently failed to run inside the equivalence proof | `mode_call` called the trace-flush helper, which wrote to a global that only `mode_trace` sets — so the proof reported "outputs differ" instead of a pass | `_flush()` now takes the path as an argument. **Found by tightening the criterion**, which turned what would have been a silent false negative into a hard failure |
+| 11 | the pickle-only artifact crashed the CLI with `IndexError` | the repair path indexed `custom_code_files[0]` without checking that any shipped Python exists | skip the repair with a stated reason when there is nothing to rewrite. **Found by running the repair across the whole corpus** rather than one artifact |
+
+**#10 and #11 are the argument for this whole section.** Both were in code that already "worked" on the one
+case anyone had looked at. One was hidden by a criterion too weak to notice it; the other by a corpus too
+small to contain the case. Neither would have appeared in a demo.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked
 everything, and neither would have been visible in a demo — a demo shows the case you chose. They were
@@ -145,15 +183,20 @@ found only because there was a control group and a rate to compute. That is the 
    live exploit. Crucially, **current picklescan catches it** — so this corpus does *not* show Quarantine
    beating picklescan on pickles. It shows that pickles are only one of the two code paths.
 4. **One model size.** Only Qwen2.5-Coder-3B. The 1.5B general model failed at repair; 7B+ untried.
-5. **Equivalence is still 3 prompts.** A smoke test, not a proof of behavioural equivalence.
+5. **Equivalence is 12 prompts, not a proof.** It now checks 12 inputs *and* that the repaired loader
+   performed no capability operation — much stronger than the 3-prompt smoke test it replaced, but still not
+   a proof of behavioural equivalence: it cannot see side effects that produce no output, and 12 prompts are
+   not a specification.
 6. **The escape attempt is ten primitives, not a fuzzing campaign.** A clean table means *these ten*
    failed. It is not a claim that the box cannot be broken, and no kernel exploit was attempted.
 7. **No independent receipt verification.** Our own verifier, our own key. Standard primitives, unaudited.
 8. **Python only, and zip-format checkpoints are not executed.** ONNX custom ops, GGUF metadata, and
    torch zip archives (the common real format) are read as *unreadable*, not inspected. `safetensors` is
    not even attempted — though it is the format that removes pickle execution by design.
-9. **The repair path was exercised on one case**, and it removes capability rather than proving absence —
-   an obfuscated capability the AST cannot see would pass.
+9. **The repair is verified on 6 of 7 attempts, and the seventh is a refusal, not a failure.** It removes
+   capability rather than proving absence: a capability that neither the AST nor the trace reveals would pass.
+   Repair is also **not attempted for weight-only payloads**, which is a real gap in coverage rather than a
+   passing case.
 
 ---
 

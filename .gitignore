@@ -7,8 +7,9 @@ __pycache__/
 # Fetched third-party data (27 MB) — reproduce with scripts/fetch_real_models.py
 corpus-real/
 
-# Per-artifact scratch from the evaluation; the summaries are committed
+# Per-artifact scratch from the evaluations; the summaries are committed
 reports/eval-runs*/
+reports/repair-runs/
 reports/escape-run/
 
 # Video frame intermediates; the encoded video and transcript are committed

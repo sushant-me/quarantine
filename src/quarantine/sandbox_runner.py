@@ -120,10 +120,19 @@ def _run_active(fn):
         _active = False
 
 
-def _flush() -> None:
+def _flush(path: str | None = None) -> None:
+    """Stop recording, and optionally write the trace.
+
+    The path argument exists because `mode_call` keeps its events in memory and returns
+    them inside its own result file. Before this took an argument, `mode_call` called it
+    with an unset global and both loaders silently failed to run — caught immediately by
+    the stricter equivalence criterion, which reported "a run failed" instead of a pass.
+    """
     global _suspend
     _suspend = True
-    with open(OUT, "w", encoding="utf-8") as fh:
+    if not path:
+        return
+    with open(path, "w", encoding="utf-8") as fh:
         for item in _events:
             fh.write(json.dumps(item) + "\n")
 
@@ -198,7 +207,7 @@ def mode_trace(artifact: str, out: str) -> int:
             result["weights_unreadable"].append({"file": rel, "why": type(exc).__name__})
             _record("weights.unreadable", f"{rel}: {type(exc).__name__}")
 
-    _flush()
+    _flush(OUT)
     with open(os.path.join(os.path.dirname(out), "exec.json"), "w", encoding="utf-8") as fh:
         json.dump(result, fh, indent=2)
     return 0
@@ -301,6 +310,17 @@ def mode_escape(out: str) -> int:
 
 
 def mode_call(loader: str, prompts_path: str, out: str) -> int:
+    """Import one loader and call generate() on fixed prompts — under the audit hook.
+
+    Outputs alone would only prove the repair *behaves* the same. Recording the trace
+    here proves something stronger: that the repaired loader performed **no capability
+    operation at all** while producing those identical outputs, which is the difference
+    between "it still works" and "it is safe".
+    """
+    global ARTIFACT
+    ARTIFACT = os.path.dirname(os.path.abspath(loader))
+    sys.addaudithook(_hook)
+
     with open(prompts_path, encoding="utf-8") as fh:
         prompts = json.load(fh)
     outputs, error = [], None
@@ -308,13 +328,14 @@ def mode_call(loader: str, prompts_path: str, out: str) -> int:
         spec = importlib.util.spec_from_file_location("loader_under_test", loader)
         mod = importlib.util.module_from_spec(spec)
         sys.modules["loader_under_test"] = mod
-        spec.loader.exec_module(mod)
-        for p in prompts:
-            outputs.append(mod.generate(p))
+        _run_active(lambda: spec.loader.exec_module(mod))
+        for prompt in prompts:
+            outputs.append(_run_active(lambda p=prompt: mod.generate(p)))
     except Exception:
         error = traceback.format_exc(limit=3)
+    _flush()
     with open(out, "w", encoding="utf-8") as fh:
-        json.dump({"outputs": outputs, "error": error}, fh, indent=2)
+        json.dump({"outputs": outputs, "error": error, "events": _events}, fh, indent=2)
     return 0
 
 

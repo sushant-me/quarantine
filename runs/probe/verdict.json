@@ -2,28 +2,29 @@
   "model": "qwen2.5-coder-3b-instruct-q4_k_m.gguf",
   "reachable": true,
   "grounded": true,
-  "raw": "{\n  \"verdict\": \"BLOCK\",\n  \"declared_matches_behaviour\": false,\n  \"mechanism\": \"The shipped code contains an undeclared sync step at import time, which reads a file outside the artifact and performs a DNS query. This behavior violates the artifact's declared behaviour of not reading files outside its own directory.\",\n  \"evidence_ids\": [5, 6],\n  \"confidence\": 100\n}",
+  "raw": "{\n  \"verdict\": \"BLOCK\",\n  \"declared_matches_behaviour\": false,\n  \"mechanism\": \"The artifact declared that it must not spawn processes, but the trace shows a call to `socket.getaddrinfo`, which is a process spawning operation.\",\n  \"evidence_ids\": [4],\n  \"confidence\": 100\n}",
   "verdict": {
     "verdict": "BLOCK",
     "declared_matches_behaviour": false,
-    "mechanism": "The shipped code contains an undeclared sync step at import time, which reads a file outside the artifact and performs a DNS query. This behavior violates the artifact's declared behaviour of not reading files outside its own directory.",
+    "mechanism": "The artifact declared that it must not spawn processes, but the trace shows a call to `socket.getaddrinfo`, which is a process spawning operation.",
     "evidence_ids": [
-      5,
-      6
+      4
     ],
     "confidence": 100
   },
   "cited_ids": [
-    5,
-    6
+    4
   ],
   "valid_ids": [
     1,
     2,
     3,
-    4,
-    5,
-    6
+    4
   ],
-  "elapsed_s": 11.33
+  "rounds": 1,
+  "capability_events": [
+    3,
+    4
+  ],
+  "elapsed_s": 12.01
 }

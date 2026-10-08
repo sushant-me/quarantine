@@ -2,28 +2,26 @@
       picklescan: scanned=1 clean=True | fickling: scanned=1 clean=True
       static capabilities: {'network': 1}
 [2/6] behavioural pass       executing, network off
-      container rc=0  events=6
-        id=  1 compile: <code object>
-        id=  2 exec: <code object>
-        id=  3 import: urllib
-        id=  4 import: socket
-        id=  5 file.read: /etc/hostname
-        id=  6 socket.getaddrinfo: 5be0ec9b224d.probe.invalid
+      container rc=0  events=4
+        id=  1 import: urllib
+        id=  2 import: socket
+        id=  3 file.read: /etc/hostname
+        id=  4 socket.getaddrinfo: 72e6f1f78ead.probe.invalid
 [3/6] semantic pass          local open-weight model
-      reachable=True grounded=True verdict=BLOCK in 11.33s
-      mechanism: The shipped code contains an undeclared sync step at import time, which reads a file outside the artifact and 
+      reachable=True grounded=True verdict=BLOCK in 12.01s
+      mechanism: The artifact declared that it must not spawn processes, but the trace shows a call to `socket.getaddrinfo`, wh
 [4/6] repair pass            local open-weight model
-      generated=True ok=True forbidden=[] in 5.85s
+      generated=True ok=True forbidden=[] in 10.33s
 [5/6] equivalence proof
-      equivalent=True (['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'] vs ['HELLO WORLD', 'QUARANTINE PROBE 123', 'A'])
+      equivalent=True over 12 prompts; capability ops original=2 repaired=0
 [6/6] sign receipt
       new keypair -> /home/logic/win/quarantine/runs/probe/keys/quarantine.pub.pem
-      signed and verified: True  keyid=03a3e949e4b0cf83
+      signed and verified: True  keyid=3a48b0e1e104132c
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
   incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
-  behavioural trace 6 events, network=none
+  behavioural trace 4 events, network=none
   verdict           BLOCK  (grounded=True)
   repair            ok=True equivalent=True
   receipt           /home/logic/win/quarantine/runs/probe/receipt.json  verified=True

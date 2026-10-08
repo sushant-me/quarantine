@@ -78,9 +78,10 @@ def cmd_inspect(args: argparse.Namespace) -> int:
         decided = "UNKNOWN"
         print("      -> verdict was ungrounded (evidence or cross-check failed); recorded as UNKNOWN")
 
+    custom_files = static["custom_code_files"]
     print("[4/6] repair pass            local open-weight model")
     repair = {"attempted": False, "ok": False, "code": None}
-    if decided == "BLOCK":
+    if decided == "BLOCK" and custom_files:
         repair = synthesize_loader(declared, code, verdict)
         repair["attempted"] = True
         if repair.get("code"):
@@ -89,17 +90,26 @@ def cmd_inspect(args: argparse.Namespace) -> int:
               f"forbidden={repair.get('forbidden')} in {repair.get('elapsed_s')}s")
         if repair.get("error"):
             print(f"      error: {repair['error'][:110]}")
+    elif decided == "BLOCK":
+        # A pickle-only artifact ships no Python to rewrite. Repairing it means
+        # re-serialising the weights (safetensors), which is a different operation —
+        # so we say so instead of inventing a loader or crashing on an empty list.
+        repair["skipped_reason"] = "no shipped Python to repair (payload is a weight file)"
+        print(f"      skipped: {repair['skipped_reason']}")
     else:
         print("      skipped (no grounded BLOCK)")
 
     print("[5/6] equivalence proof")
     equivalence = {"equivalent": False, "note": "not attempted"}
-    if repair.get("attempted") and repair.get("ok"):
-        original = root / static["custom_code_files"][0]
+    if repair.get("attempted") and repair.get("ok") and custom_files:
+        original = root / custom_files[0]
         equivalence = compare(original, out / "loader_sanitized.py", out)
         (out / "equivalence.json").write_text(json.dumps(equivalence, indent=2), encoding="utf-8")
-        print(f"      equivalent={equivalence['equivalent']} "
-              f"({equivalence['original_outputs']} vs {equivalence['sanitized_outputs']})")
+        print(f"      equivalent={equivalence['equivalent']} over {equivalence['prompt_count']} prompts; "
+              f"capability ops original={len(equivalence['original_capability_events'])} "
+              f"repaired={len(equivalence['sanitized_capability_events'])}")
+        if not equivalence["equivalent"]:
+            print(f"      rejected: {equivalence['note'][:110]}")
     else:
         (out / "equivalence.json").write_text(json.dumps(equivalence, indent=2), encoding="utf-8")
         print("      skipped (no verified repair)")

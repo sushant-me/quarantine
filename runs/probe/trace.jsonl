@@ -1,6 +1,4 @@
-{"i": 1, "event": "compile", "detail": "<code object>"}
-{"i": 2, "event": "exec", "detail": "<code object>"}
-{"i": 3, "event": "import", "detail": "urllib"}
-{"i": 4, "event": "import", "detail": "socket"}
-{"i": 5, "event": "file.read", "detail": "/etc/hostname"}
-{"i": 6, "event": "socket.getaddrinfo", "detail": "5be0ec9b224d.probe.invalid"}
+{"i": 1, "event": "import", "detail": "urllib"}
+{"i": 2, "event": "import", "detail": "socket"}
+{"i": 3, "event": "file.read", "detail": "/etc/hostname"}
+{"i": 4, "event": "socket.getaddrinfo", "detail": "72e6f1f78ead.probe.invalid"}

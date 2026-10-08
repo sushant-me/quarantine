@@ -37,6 +37,8 @@ The challenge's test: *delete the AI call — does the product still do its job?
 | detection, 8 undeclared artifacts | **8/8** | 1/8 | 1/8 |
 | false positives, 4 benign controls | **0** | 0 | 0 |
 | false positives, 4 **real published models** | **0** | 0 | **4/4** |
+| repair produced and capability-clean | **7/7** attempted | — | — |
+| repair verified by output-equivalence | **6/7** (one honest refusal) | — | — |
 | sandbox escape, 10 primitives | **0 escaped** | — | — |
 
 The incumbents' single catch on the labeled corpus is the only artifact whose payload is a **pickle** — the
@@ -49,10 +51,11 @@ ordinary PyTorch model. **Static scanning fails in both directions at once.**
 
 Copied from [`LIMITATIONS.md`](LIMITATIONS.md) so it is not buried: the malicious corpus and its labels are
 ours; the third-party controls are tiny models; **no live CVE bypass is claimed** (current picklescan catches
-our pickle pattern); one model size; equivalence is a three-prompt smoke test; the escape attempt is ten
-primitives rather than a fuzzing campaign; the receipt has not been independently verified; Python only, and
-zip-format checkpoints are recorded as unreadable rather than executed; the repair path was exercised on one
-artifact.
+our pickle pattern); one model size; equivalence is 12 prompts plus a capability check rather than a proof of
+behavioural equivalence; the escape attempt is ten primitives rather than a fuzzing campaign; the receipt has
+not been independently verified; Python only, and zip-format checkpoints are recorded as unreadable rather
+than executed; and the repair is verified on 6 of 7 attempts, with the seventh a refusal and weight-only
+payloads skipped rather than repaired.
 
 ## 5. Run it
 
@@ -64,7 +67,7 @@ uv pip install --python .venv/bin/python cryptography picklescan fickling jsonsc
 .venv/bin/python scripts/make_corpus.py
 PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py       # detection vs the incumbents
 PYTHONPATH=src .venv/bin/python scripts/escape_attempt.py    # ten breakout primitives
-PYTHONPATH=src .venv/bin/python -m pytest -q                 # 32 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q                 # 36 tests
 
 # one artifact, the whole loop, offline
 PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-generate --out runs/probe
