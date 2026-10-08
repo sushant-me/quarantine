@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| file | `quarantine-demo.mp4` — 1280×720, H.264, ~2 minutes, silent with on-screen captions |
+| file | `quarantine-demo.mp4` — 1280×720, H.264, 3:02, silent with on-screen captions |
 | transcript | `transcript.txt` — the exact text of every frame, in order |
 | raw capture | `session/` — the actual unedited output of every command the video shows |
 | rebuild | `python scripts/build_demo_video.py` (needs `ffmpeg`, `magick`, and the model server for the live run) |

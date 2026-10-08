@@ -179,6 +179,48 @@ def check_files() -> list[dict]:
     return out
 
 
+def check_quoted_video_duration_is_true() -> list[dict]:
+    """A duration quoted next to the demo video must match the video.
+
+    `docs/EVENT-REQUIREMENTS.md` said the demo was 2:31 when it is 3:02 - the video was rebuilt
+    with exact per-scene timing and the sentence describing it was not. A judge checking one
+    document against the artifact finds that in ten seconds, so the comparison is a script's job.
+    """
+    import re as _re
+    import subprocess
+
+    video = ROOT / "reports" / "video" / "quarantine-demo.mp4"
+    if not video.exists():
+        return [{"check": "the quoted demo duration is true", "what": "docs", "ok": False,
+                 "detail": "the demo video is missing"}]
+    try:
+        seconds = float(subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+             "-of", "default=noprint_wrappers=1:nokey=1", str(video)],
+            capture_output=True, text=True, timeout=60).stdout.strip())
+    except Exception as exc:                                      # noqa: BLE001
+        return [{"check": "the quoted demo duration is true", "what": "docs", "ok": False,
+                 "detail": f"ffprobe failed: {exc}"}]
+    true_stamp = f"{int(seconds) // 60}:{int(seconds) % 60:02d}"
+
+    bad = []
+    for path in sorted(ROOT.rglob("*.md")):
+        if ".git" in path.parts or "session" in path.parts:
+            continue
+        for number, line in enumerate(path.read_text(encoding="utf-8",
+                                                    errors="replace").splitlines(), 1):
+            # Only a stamp on a line that names the video FILE is a claim about the video.
+            # Matching "demo video" as well flagged the live demo script's planned runtime
+            # ("3:00") as if it described the recording, which it does not.
+            if "quarantine-demo.mp4" not in line:
+                continue
+            for stamp in _re.findall(r"\b(\d{1,2}:\d{2})\b", line):
+                if stamp != true_stamp:
+                    bad.append(f"{path.relative_to(ROOT)}:{number} says {stamp}")
+    return [{"check": "the quoted demo duration is true", "what": "docs", "ok": not bad,
+             "detail": f"every quote matches {true_stamp}" if not bad else "; ".join(bad[:3])}]
+
+
 def check_curated_receipts_match_the_documented_format() -> list[dict]:
     """Every field the README's receipt table names must exist in the published receipt.
 
@@ -430,6 +472,7 @@ def main() -> int:
     results += check_console_entry_point()
     results += check_no_generated_artifacts_are_tracked()
     results += check_curated_receipts_match_the_documented_format()
+    results += check_quoted_video_duration_is_true()
     results += check_presentations_are_self_contained()
     results += check_event_requirements_mapped()
     results += check_no_vendor_inference()
