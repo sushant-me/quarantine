@@ -37,6 +37,28 @@ VERDICT_SCHEMA = {
     "required": ["verdict", "declared_matches_behaviour", "mechanism", "evidence_ids", "confidence"],
 }
 
+# The enum is not decoration. llama.cpp compiles a JSON schema into a grammar, so an enum
+# constrains what the model can *emit*: with the valid trace ids enumerated, a hallucinated
+# citation is impossible rather than merely rejected afterwards. This was measured — asked
+# outright to cite ids 161/166/248 on a 25-event trace, the model could only produce ids
+# that were in the enum. Before this, a real third-party model was escalated because the
+# analyst answered BLOCK citing ids that did not exist.
+MAX_ENUM_IDS = 200
+MAX_EVIDENCE_IDS = 8
+
+
+def verdict_schema(valid_ids: list[int]) -> dict:
+    """The verdict schema, with the admissible evidence constrained to the real trace ids."""
+    schema = json.loads(json.dumps(VERDICT_SCHEMA))
+    ids = sorted({i for i in valid_ids if isinstance(i, int)})
+    if 0 < len(ids) <= MAX_ENUM_IDS:
+        schema["properties"]["evidence_ids"] = {
+            "type": "array",
+            "items": {"enum": ids},
+            "maxItems": MAX_EVIDENCE_IDS,      # also grammar-enforced: no degenerate 45-item loops
+        }
+    return schema
+
 SYSTEM = (
     "You are a model-artifact security analyst. You compare what an artifact DECLARES "
     "with what it actually DID, using only the evidence given to you. "
@@ -67,8 +89,17 @@ def _prompt(declared: str, code: str, events: list[dict], static: dict,
     static_caps = static.get("capability_graph", {}).get("capabilities", {})
     cap_lines = ", ".join(f"{k}={v}" for k, v in static_caps.items() if v) or "none"
     findings = static.get("capability_graph", {}).get("findings", [])[:25]
+    observed_findings = sum(
+        1 for f in findings
+        if f.get("call") and any(f["call"] in str(e.get("detail", "")) for e in events)
+    )
+    # Deliberately NOT `file:line`. That format printed numbers like
+    # `tokenization_indictrans.py:161`, and the analyst cited 161/166/248 as *trace ids* — it
+    # was reading source line numbers as evidence ids. It looked like hallucination and was a
+    # prompt-design defect: two namespaces printed in the same shape.
     find_lines = "\n".join(
-        f"  {f['file']}:{f['line']} {f['capability']} -> {f['call']}" for f in findings
+        f"  {f['file']} (source line {f['line']}): {f['capability']} -> {f['call']}"
+        for f in findings
     ) or "  (none)"
     ex = execution or {}
     executed = [e.get("file") for e in (ex.get("executed") or [])]
@@ -99,17 +130,23 @@ def _prompt(declared: str, code: str, events: list[dict], static: dict,
         f"=== CAPABILITY EVENT COUNT (computed by the harness, not by you) ===\n"
         f"  {len(cap_ids)} of {len(events)} trace events are capability events. ids={cap_ids}\n\n"
         f"=== STATIC CAPABILITY COUNTS ===\n{cap_lines}\n\n"
-        f"=== STATIC FINDINGS ===\n{find_lines}\n\n"
+        f"=== STATIC FINDINGS (what the code COULD do — not what it did) ===\n{find_lines}\n"
+        f"  {len(findings)} static finding(s); {observed_findings} of them appear in the trace. "
+        "These are source-level possibilities, not observations.\n\n"
         "=== DECISION PROCEDURE ===\n"
         f"  Step 0: if ANYTHING OBSERVED is false, nothing was run and the verdict is UNKNOWN. "
         "You cannot judge behaviour you did not observe.\n"
         f"  Step 1: the harness says there are {len(cap_ids)} capability events and "
         f"{len(unresolved)} unresolved globals.\n"
-        "  Step 2: if capability events is 0 AND unresolved globals is 0, nothing suspicious "
-        "happened and the verdict is ALLOW with declared_matches_behaviour=true and "
-        "evidence_ids=[] — even if serialization helpers were stubbed, and even if [context] "
-        "lines mention files, imports or temporary directories. [context] lines are never a "
-        "reason to answer UNKNOWN.\n"
+        "  Step 2: if capability events is 0 AND unresolved globals is 0, the verdict is ALLOW "
+        "with declared_matches_behaviour=true and evidence_ids=[]. This holds even if "
+        "serialization helpers were stubbed, even if [context] lines mention files, imports or "
+        "temporary directories, and — importantly — even if the STATIC FINDINGS above name "
+        "capabilities such as open() or socket(). The static findings are a map of what the code "
+        "COULD do; the capability count is a record of what it DID. This tool exists because "
+        "those are different questions and behaviour is the ground truth. A source file that "
+        "mentions open() while performing zero file reads outside its own directory, in a box "
+        "with the network off, has not done anything its declaration forbids.\n"
         "  Step 3: if capability events is greater than 0, decide whether the DECLARED behaviour "
         "permits each one. If any is not permitted by the declaration, the verdict is BLOCK and "
         "evidence_ids must list the ids of the capability events you rely on.\n"
@@ -184,7 +221,8 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
             {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 400,
              "stream": False,
              "response_format": {"type": "json_schema",
-                                 "json_schema": {"name": "verdict", "schema": VERDICT_SCHEMA}}},
+                                 "json_schema": {"name": "verdict",
+                                                 "schema": verdict_schema(sorted(valid_ids))}}},
             {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 400,
              "stream": False, "response_format": {"type": "json_object"}},
             {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 400,

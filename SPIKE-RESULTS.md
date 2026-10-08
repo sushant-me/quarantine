@@ -261,9 +261,24 @@ runs, and produces **zero capability events after subtraction**.
 
 **It still does not get a verdict, for two reasons that are now precise:**
 
-* **A 3B model hallucinates trace ids under the richer prompt.** It answered BLOCK citing ids 161, 166 and 248
-  in a 25-event trace. The grounding rule refused the verdict and the case escalated — which is the fail-safe
-  working, but it means the bottleneck here is analyst capability, not the box.
+* **What looked like hallucination was our prompt's fault.** The analyst answered BLOCK citing ids 161, 166 and
+  248 in a 25-event trace — and those are not invented numbers at all. The static findings section printed
+  `tokenization_indictrans.py:161`, `:166`, `:248`, and the model read *source line numbers* as *trace ids*.
+  Two namespaces, printed in the same shape, in the same prompt.
+
+  Three fixes, and they are structural rather than argumentative:
+  1. **The evidence field is now grammar-constrained.** `llama.cpp` compiles a JSON schema into a grammar, so
+     enumerating the valid trace ids in the schema makes a citation that does not exist *impossible to emit* —
+     measured directly: asked outright to cite 161/166/248, the model could only produce ids from the enum.
+     A fabricated citation is now a decoding error, not a validation failure.
+  2. **Static findings no longer print id-shaped numbers** — `file (source line N)` instead of `file:N`.
+  3. **Behaviour-over-static precedence is stated as a rule**: the findings are a map of what the code *could*
+     do, the capability count is a record of what it *did*, and this tool exists because those are different
+     questions.
+
+  With all three in place the analyst now *understands* the distinction — its own words: *"the static findings
+  indicate that the code COULD perform file operations"* — and still abstains at 3B. So the residual is an
+  honest model-capability limit at this size, not a defect in the box, and the case escalates.
 * **Version skew is not solvable in one image.** `ujjwal5454/nepali-voice-engine-v4` fails with
   `cannot import name 'isin_mps_friendly' from 'transformers.pytorch_utils'`: it was written against an older
   transformers. No single image satisfies every artifact's pinned dependency versions; per-artifact dependency
@@ -343,7 +358,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Twenty-seven defects found by running it
+## 5. Twenty-eight defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -394,8 +409,9 @@ and exited 0 — and it is the reason the third outcome exists here.
 | 25 | two real remote-code models were **false-positived by one environment variable** | the noise floor could not know that `TORCHINDUCTOR_CACHE_DIR` is torch's own; a hand-written list would be a denylist by another name | the measured baseline now records the image's package names, and an env var referencing an installed package is that package configuring itself |
 | 26 | a real Nepali model failed with `ImportError: attempted relative import` — and we blamed the artifact | `modeling_*.py` was imported as a standalone module, while `transformers` loads remote code inside a package so that relative imports resolve | `sandbox_runner.py::_load_in_package` registers a synthetic parent package; the analysis image also gained `einops`, which another real model declares |
 | 27 | a benign real model was **abstained on** because the analyst read the interpreter's own noise as the artifact's doing | the prompt showed the raw trace with no distinction between evidence and context, so `ctypes.dlopen` and a temp directory looked like capability | every trace line is now marked `[EVIDENCE]` or `[context]` by the harness, and the decision procedure says `[context]` is never a reason to answer UNKNOWN |
+| 28 | the analyst appeared to **hallucinate trace ids** (161/166/248 in a 25-event trace) | the static findings printed `file:line`, so source line numbers and trace ids were two namespaces rendered in the same shape — the model was reading one as the other | the evidence field is now enumerated in the JSON schema, which the runtime compiles to a grammar, so an id that does not exist **cannot be emitted**; findings print `file (source line N)`; behaviour-over-static precedence is stated as a rule |
 
-Twenty-seven defects, and the pattern is consistent: every one was found by a control group, a
+Twenty-eight defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked

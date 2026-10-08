@@ -105,11 +105,14 @@ attached.
     bugs that stood in its way are fixed: an env var named after an installed package is no longer treated as
     capability, custom `modeling_*.py` are loaded inside a package so relative imports resolve, and the
     prompt distinguishes evidence from context. One real model now executes with zero capability events.
-    It still does not get a verdict because **a 3B analyst hallucinates trace ids** under the richer prompt
-    (BLOCK citing ids 161/166/248 in a 25-event trace — refused by the grounding rule, then escalated), and
-    because **version skew is unsolvable in a single image**: a real model needs an older
-    `transformers.pytorch_utils`. Per-artifact dependency resolution from the artifact's own manifest is the
-    real feature, and it is not in this release.
+    It still does not get a verdict, for two reasons. First, **the 3B analyst abstains when static findings
+    exist**, even though it now states the distinction correctly in its own words. The citation problem behind
+    that behaviour is fixed structurally — the evidence field is enumerated in the JSON schema, which the
+    runtime compiles to a grammar, so an id that does not exist cannot be emitted — and the case escalates
+    rather than guessing. The residual is a model-capability limit at 3B; a larger open-weight model is the
+    obvious remedy and is a configuration change, not a code change. Second, **version skew is unsolvable in a
+    single image**: a real model needs an older `transformers.pytorch_utils`. Per-artifact dependency
+    resolution from the artifact's own manifest is the real feature, and it is not in this release.
 18. **Behaviour-based detection is weak against payloads that cannot fire in isolation — measured, not
     suspected.** On picklescan's own corpus (91 malicious samples with real GHSA provenance) our contained run
     observed the payload act on **43 (47%)**, while their denylist flagged **88 (97%)**. Their payloads typically
