@@ -60,6 +60,12 @@ dynamic-code operations, plus 6 benign controls: Quarantine observed the operati
 carries no discriminating signal here. **No denylist gap that both incumbents miss was found**, and
 the pitch does not claim one — the measured difference is coverage of the code path.
 
+**And it was pointed at Nepal, not just at fixtures.** Three real published Nepali-language models
+(NepaliBERT, a Nepali MiniLM embedder, and a Nepali-tuned Qwen shipped as **GGUF**) were fetched and run. The
+first run **escalated the GGUF model** — because GGUF quantisations are how most Nepali models reach users, and
+the reader did not know the format. That is now fixed. Models, counts and limits:
+[`docs/NEPAL.md`](docs/NEPAL.md).
+
 **Three outcomes, and `UNKNOWN` is not a pass.** Exit codes make it a gate: **0 ALLOW · 1 BLOCK · 2 UNKNOWN**.
 Escalation is reserved for cases a human must decide — nothing was observed, the agents disagreed, or the model
 was unreachable. Before that outcome existed, an artifact whose dependency was missing was reported ALLOW:
@@ -93,7 +99,7 @@ uv pip install --python .venv/bin/python cryptography picklescan fickling jsonsc
 .venv/bin/python scripts/make_corpus.py
 PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py       # detection vs the incumbents
 PYTHONPATH=src .venv/bin/python scripts/escape_attempt.py    # ten breakout primitives
-PYTHONPATH=src .venv/bin/python -m pytest -q                 # 58 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q                 # 66 tests
 
 # one artifact, the whole loop, offline
 PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-generate --out runs/probe

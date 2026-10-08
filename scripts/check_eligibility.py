@@ -48,6 +48,8 @@ REQUIRED_FILES = [
     ("requirements-dev.txt", "measurement dependencies are stated separately"),
     ("docs/AI-USAGE.md", "AI usage disclosure"),
     ("docs/EVENT-REQUIREMENTS.md", "the event's requirements, mapped"),
+    ("docs/NEPAL.md", "what this does for the Nepal community"),
+    ("scripts/fetch_nepali_models.py", "the Nepali control set is reproducible"),
     ("docs/DEMO-SCRIPT.md", "demo script"),
     ("reports/video/quarantine-demo.mp4", "demo video (required deliverable)"),
     ("corpus/MANIFEST.json", "the labeled corpus is published"),

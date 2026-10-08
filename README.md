@@ -29,7 +29,7 @@ PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-ge
 PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
 
-PYTHONPATH=src .venv/bin/python -m pytest -q     # 58 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q     # 66 tests
 ```
 
 ## The agent team
@@ -74,9 +74,10 @@ key. The receipt carries the whole agent transcript, so a reviewer sees which ag
 Three real formats, three different questions. A modern `pytorch_model.bin` is a **zip archive** holding
 `archive/data.pkl` plus tensor storage: the reader detects the zip magic, reads `data.pkl`, and unpickles it
 under the audit hook — which is what `torch.load` does, and where the code execution lives. Legacy plain
-pickles are read directly. A `safetensors` container is **validated and not executed**, because that format
-has no pickle and no callable in it — the check that stops the modern default format from being escalated. It
-says nothing about the tensor *values*, which is a different threat: see [`LIMITATIONS.md`](LIMITATIONS.md) item 15.
+pickles are read directly. `safetensors` and `gguf` containers are **validated and not executed**, because
+neither format has a pickle or a callable in it — that check is what stops the modern default formats from
+being escalated, and it says nothing about the tensor *values*, which is a different threat: see
+[`LIMITATIONS.md`](LIMITATIONS.md) item 15.
 
 Unpickling a real checkpoint needs torch's tensor-rebuild helpers, which are not installed, so a narrow
 structural rule stubs them: torch's `*Storage` types and `_rebuild*` family, numpy's array reconstruction, and
@@ -120,6 +121,18 @@ that both incumbents miss was found**, so no bypass is claimed.
 
 The probe is **not malware**. `probe.invalid` is reserved by RFC 2606 and can never resolve; the
 artifact exists so the trace has a real out-of-artifact read and a real network attempt to show.
+
+## For the Nepal community
+
+The challenge is about the Nepali open-source community, so the tool was pointed at it: three real published
+Nepali-language models (NepaliBERT, a Nepali MiniLM embedder, and a Nepali-tuned Qwen shipped as GGUF) were
+fetched and run through the pipeline. **The first run escalated the GGUF model** — and the reason is the shape
+of the ecosystem: GGUF quantisations are how most Nepali models reach users, and the reader did not know the
+format. It does now, validated rather than executed.
+
+[`docs/NEPAL.md`](docs/NEPAL.md) has the models, the counts, the finding, and what this does *not* claim.
+`scripts/fetch_nepali_models.py` reproduces the set with the exact files it needs — a naive fetch of one
+quantisation repository is 5.7 GB.
 
 ## Technology, licence and dependencies
 

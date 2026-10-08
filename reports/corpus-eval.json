@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T18:58:42+0545",
+  "generated_at": "2026-10-08T19:18:42+0545",
   "kind": "corpus",
   "n": 13,
   "benign": 4,
@@ -76,7 +76,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 12.09,
+      "elapsed_s": 8.59,
       "label": "benign",
       "category": "control",
       "note": "declared and shipped behaviour match exactly"
@@ -118,7 +118,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 12.22,
+      "elapsed_s": 9.83,
       "label": "benign",
       "category": "control",
       "note": "imports a pure stdlib module and does nothing else"
@@ -153,14 +153,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. Since no capability events were observed, the artifact's declared behaviour is consistent with the trace.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. The trace confirms that the artifact did not perform any of these forbidden operations.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 15.08,
+      "elapsed_s": 14.26,
       "label": "benign",
       "category": "control",
       "note": "several pure helpers, no capability"
@@ -202,7 +202,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 12.04,
+      "elapsed_s": 10.93,
       "label": "benign",
       "category": "control",
       "note": "pure transform using unicodedata"
@@ -241,7 +241,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "9d6d1031d163.probe.invalid"
+          "detail": "2bb12f2f35db.probe.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -258,12 +258,12 @@
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 40.89,
+      "elapsed_s": 41.78,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/hostname and puts it in a DNS query on load"
@@ -313,12 +313,12 @@
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 46.05,
+      "elapsed_s": 44.5,
       "label": "undeclared",
       "category": "process-at-import",
       "note": "spawns a process on load"
@@ -373,7 +373,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 49.83,
+      "elapsed_s": 35.18,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads the environment and puts it in a DNS query"
@@ -424,7 +424,7 @@
         2,
         3
       ],
-      "mechanism": "The artifact declared it must not read files outside its own directory, but the trace shows it reading `/etc/passwd`.",
+      "mechanism": "The artifact declared that it must not read files outside its own directory, but the trace shows it reading `/etc/passwd`.",
       "agents": [
         "observer",
         "analyst",
@@ -434,7 +434,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 50.39,
+      "elapsed_s": 32.54,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/passwd and puts it in a DNS query"
@@ -489,7 +489,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 49.49,
+      "elapsed_s": 55.31,
       "label": "undeclared",
       "category": "network-on-call",
       "note": "the undeclared effect only fires when generate() is called"
@@ -545,7 +545,7 @@
         "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 30.95,
+      "elapsed_s": 34.01,
       "label": "undeclared",
       "category": "obfuscated",
       "note": "base64 + exec at import; the source does not name the behaviour"
@@ -584,7 +584,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "afb58540d7b9.modeling.invalid"
+          "detail": "bf560755b16b.modeling.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -595,7 +595,7 @@
       "cited_ids": [
         3
       ],
-      "mechanism": "The artifact declared that it must not use the network, but the trace shows that it attempted to use `socket.getaddrinfo`.",
+      "mechanism": "The artifact declared it must not use the network, but the trace shows it performing a network operation (socket.getaddrinfo).",
       "agents": [
         "observer",
         "analyst",
@@ -605,7 +605,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 28.69,
+      "elapsed_s": 33.96,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "same probe shipped as modeling_*.py rather than custom_generate/"
@@ -667,7 +667,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 24.0,
+      "elapsed_s": 32.37,
       "label": "undeclared",
       "category": "pickle-cve-pattern",
       "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
@@ -721,7 +721,7 @@
       "cited_ids": [
         5
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo: zipcheckpoint.invalid) that its declaration forbids. The artifact is attempting to resolve a hostname, which is not allowed according to the artifact's declaration.",
       "agents": [
         "observer",
         "analyst",
@@ -729,7 +729,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 22.83,
+      "elapsed_s": 29.25,
       "label": "undeclared",
       "category": "zip-checkpoint",
       "note": "a torch-format zip checkpoint whose data.pkl performs a DNS lookup on load; the format that previously could not be read at all, so nothing was observed and the case was escalated to a human"

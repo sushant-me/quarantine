@@ -53,7 +53,7 @@ attached.
 9. **The repair removes capability; it does not prove absence.** `forbidden_in_source` is an AST check. An
    obfuscated capability it cannot see would pass. It raises the floor.
 10. **The repair is verified on 6 of 7 attempts, and it is not attempted for weight-only payloads.**
-    Across the eight undeclared artifacts: 8/8 blocked, 7 repairs attempted, 7 produced and capability-clean,
+    Across the nine undeclared artifacts: 9/9 blocked, 7 repairs attempted (two ship only a weight file),
     6 verified by output-equivalence. The one refusal is honest — that artifact's original cannot be executed
     at all, so equivalence with it cannot be established. The artifact that ships only a pickle is **skipped**,
     because repairing it means re-serialising weights rather than rewriting a loader; that is a coverage gap,
@@ -83,12 +83,16 @@ attached.
     "misaligned denylist" is not "undetectable attack", and the product does not rest on it. The
     measured difference is coverage of the code path.
 
-15. **`safetensors` is validated, not inspected — and that is a different threat model.** We check the
+15. **`safetensors` and `gguf` are validated, not inspected — and that is a different threat model.** We check the
     container (header length, JSON index, tensor descriptors), which is enough to conclude that no code
     can execute from it: the format has no pickle and no callable. It says nothing about the *values*.
     **A poisoned-weights or backdoored-model attack is out of scope for this tool** and would need
     detection research of a completely different kind. A file that merely claims the suffix but is not a
-    valid container is rejected into the escalation path rather than trusted.
+    valid container is rejected into the escalation path rather than trusted. The same applies to GGUF
+    (item added after the Nepali control set showed GGUF is that ecosystem's dominant distribution format).
+16. **The Nepali evidence is three models, not a survey.** They are real and third-party, but small in number:
+    we can state what we ran on 2026-10-08, not what the whole Nepali ecosystem contains. We also did not find
+    a Nepali model shipping custom `modeling_*.py`, which would be the highest-risk case.
 
 ## Future improvements, in the order they matter
 

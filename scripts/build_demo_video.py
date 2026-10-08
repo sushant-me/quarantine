@@ -122,6 +122,7 @@ def main() -> int:
 
     corpus_eval = json.loads((ROOT / "reports" / "corpus-eval.json").read_text(encoding="utf-8"))
     real_eval = json.loads((ROOT / "reports" / "corpus-real-eval.json").read_text(encoding="utf-8"))
+    nepali_eval = json.loads((ROOT / "reports" / "nepali-eval.json").read_text(encoding="utf-8"))
     escape = (ROOT / "reports" / "sandbox-escape.md").read_text(encoding="utf-8")
     (WORK / "corpus-eval.json").write_text(json.dumps(corpus_eval, indent=2), encoding="utf-8")
 
@@ -193,6 +194,20 @@ def main() -> int:
             "  ALLOW: \"we could not run it, so we saw nothing, so it is fine.\"",
             "  That is the most dangerous default a security gate can have.",
         ], 15.0, "step 3b — escalation, because UNKNOWN is not a pass"),
+        ("06b-nepal", metric_table(
+            f"THE NEPALI COMMUNITY - {nepali_eval['n']} real published Nepali models",
+            nepali_eval, 0, nepali_eval["n"]) + [
+            "",
+            "  NepaliBERT (703 downloads) . a Nepali MiniLM embedder (500) .",
+            "  a Nepali-tuned Qwen shipped as GGUF (368).",
+            "",
+            "  FIRST RUN: the GGUF model was ESCALATED - 'no weight files found'.",
+            "  GGUF quantisation is how most Nepali models reach users, and the",
+            "  reader did not know the format. Now validated, like safetensors.",
+            "",
+            "  No amount of reasoning about our own corpus produced that.",
+            "  It took downloading what Nepali users download.",
+        ], 14.0, "step 4b - pointed at Nepal, not at fixtures"),
         ("06-numbers", metric_table(
             f"DETECTION — {corpus_eval['n']} artifacts, the same declared API in every one",
             corpus_eval, corpus_eval["undeclared"], corpus_eval["benign"]) + [

@@ -54,7 +54,7 @@
     ],
     [
       "socket.getaddrinfo",
-      "bc6ba1a169d7.probe.invalid"
+      "4ea3aa0009cd.probe.invalid"
     ]
   ],
   "sanitized_capability_events": [],

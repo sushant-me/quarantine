@@ -152,7 +152,7 @@ def _find_custom_code(artifact: str) -> list[str]:
 
 
 WEIGHT_SUFFIXES = (".bin", ".pkl", ".pickle", ".pt", ".pth", ".ckpt", ".joblib",
-                   ".safetensors")
+                   ".safetensors", ".gguf")
 
 # Tensor serialization helpers. A torch checkpoint's `data.pkl` rebuilds tensors through
 # these; with torch absent the lookup fails and the whole unpickling aborts, which is why
@@ -282,16 +282,69 @@ def load_safetensors(path: str, notes: list[dict]) -> tuple[object, str]:
     return index, "safetensors"
 
 
+GGUF_MAGIC = b"GGUF"
+
+
+def load_gguf(path: str, notes: list[dict]) -> tuple[object, str]:
+    """Validate a GGUF container — a format with no pickle and no callable in it.
+
+    GGUF is how the Nepali ecosystem mostly ships models (and a great deal of the wider
+    open-weight world): `mradermacher` alone republishes almost everything as GGUF
+    quantisations. Layout: magic `GGUF`, uint32 version, uint64 tensor count, uint64
+    metadata count, then length-prefixed key/value metadata, then tensor descriptors, then
+    tensor data. There is nothing executable anywhere in it.
+
+    We validate the header and the metadata framing, not the tensor values — the same
+    limit as `safetensors`, and the same honest scope: this is a code-execution question,
+    not a poisoned-weights question (`LIMITATIONS.md` item 15). A pickle renamed `.gguf`
+    fails the magic check and is escalated, never trusted.
+    """
+    import struct
+
+    with open(path, "rb") as fh:
+        head = fh.read(24)
+        if len(head) < 24:
+            raise ValueError("too short to be a GGUF header")
+        if head[:4] != GGUF_MAGIC:
+            raise ValueError(f"bad magic {head[:4]!r}: not a GGUF container")
+        version, tensor_count, kv_count = struct.unpack("<IQQ", head[4:24])
+        if version not in (2, 3):
+            raise ValueError(f"unsupported GGUF version {version}")
+        if not 0 < tensor_count < 10_000_000:
+            raise ValueError(f"implausible tensor count {tensor_count}")
+        if not 0 < kv_count < 100_000:
+            raise ValueError(f"implausible metadata count {kv_count}")
+        raw = fh.read(8)
+        if len(raw) < 8:
+            raise ValueError("truncated metadata")
+        (key_len,) = struct.unpack("<Q", raw)
+        if not 0 < key_len < 4096:
+            raise ValueError(f"implausible metadata key length {key_len}")
+        key = fh.read(key_len)
+        if len(key) != key_len:
+            raise ValueError("truncated metadata key")
+        try:
+            key.decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ValueError(f"metadata key is not UTF-8: {exc}") from exc
+
+    notes.append({"event": "gguf", "global": f"{tensor_count} tensors, {kv_count} metadata entries",
+                  "why": f"GGUF v{version}, valid container"})
+    return {"format": "gguf", "version": version, "tensor_count": tensor_count}, "gguf"
+
+
 def load_weights(path: str, notes: list[dict]) -> tuple[object, str]:
     """Open a weight file in whatever form it actually ships.
 
-    Three real formats, three different questions. A safetensors container is *validated*
-    (nothing in it can execute). A zip checkpoint has its embedded pickle *executed* under
-    the audit hook, because that is what `torch.load` would do. A plain pickle is loaded
-    the same way.
+    Four real formats, three different questions. `safetensors` and `gguf` containers are
+    *validated*, because neither has a pickle or a callable in it. A zip checkpoint has its
+    embedded pickle *executed* under the audit hook, because that is what `torch.load`
+    would do. A plain pickle is loaded the same way.
     """
     if path.lower().endswith(".safetensors"):
         return load_safetensors(path, notes)
+    if path.lower().endswith(".gguf"):
+        return load_gguf(path, notes)
     with open(path, "rb") as fh:
         magic = fh.read(2)
     if magic == b"PK":                                   # zip: the modern torch format

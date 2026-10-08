@@ -4,8 +4,10 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
-# Fetched third-party data (27 MB) — reproduce with scripts/fetch_real_models.py
+# Fetched third-party data (~790 MB on disk) - reproduce with
+# scripts/fetch_real_models.py and scripts/fetch_nepali_models.py
 corpus-real/
+corpus-nepali/
 
 # Per-artifact scratch from the evaluations; the summaries are committed
 reports/eval-runs*/

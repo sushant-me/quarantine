@@ -687,3 +687,67 @@ def test_a_pickle_renamed_safetensors_is_rejected_rather_than_trusted(tmp_path):
     path.write_bytes(_pickle.dumps({"x": Probe()}))
     with pytest.raises(Exception):
         load_weights(str(path), [])
+
+
+# ------------------------------------------------------------- gguf container
+
+def _write_gguf(path, magic=b"GGUF", version=3, tensors=4, kv=2, key=b"general.architecture"):
+    import struct as _struct
+    head = magic + _struct.pack("<IQQ", version, tensors, kv)
+    path.write_bytes(head + _struct.pack("<Q", len(key)) + key + b"\x00" * 64)
+    return path
+
+
+def test_a_valid_gguf_container_is_read_and_needs_no_pickle(tmp_path):
+    """GGUF is how the Nepali ecosystem mostly ships models; nothing in it can execute."""
+    from quarantine.sandbox_runner import load_weights
+    path = _write_gguf(tmp_path / "model.gguf")
+    notes: list[dict] = []
+    info, how = load_weights(str(path), notes)
+    assert how == "gguf"
+    assert info["tensor_count"] == 4 and info["version"] == 3
+    assert notes and notes[0]["event"] == "gguf"
+
+
+def test_a_gguf_only_repository_is_examined_rather_than_escalated(tmp_path):
+    from quarantine.agents.case import Case
+    case = Case(name="nepali", root=tmp_path,
+                execution={"weights_loaded": [{"file": "model.gguf", "status": "loaded",
+                                               "how": "gguf"}]})
+    assert case.observed is True
+    assert case.escalation_reason is None
+    assert case.capability_events == []
+
+
+@pytest.mark.parametrize("broken", ["bad-magic", "short", "bad-version", "zero-tensors", "bad-key"])
+def test_a_malformed_gguf_is_rejected_not_trusted(tmp_path, broken):
+    from quarantine.sandbox_runner import load_weights
+    path = tmp_path / "model.gguf"
+    if broken == "bad-magic":
+        _write_gguf(path, magic=b"PK\x03\x04")
+    elif broken == "short":
+        path.write_bytes(b"GGUF")
+    elif broken == "bad-version":
+        _write_gguf(path, version=99)
+    elif broken == "zero-tensors":
+        _write_gguf(path, tensors=0)
+    else:
+        _write_gguf(path, key=b"\xff\xfe not utf8")
+    with pytest.raises(Exception):
+        load_weights(str(path), [])
+
+
+def test_a_pickle_renamed_gguf_is_rejected_rather_than_trusted(tmp_path):
+    """Claiming the safe suffix must not buy a pass down the escalation path."""
+    import os as _os
+    import pickle as _pickle
+    from quarantine.sandbox_runner import load_weights
+
+    class Probe:
+        def __reduce__(self):
+            return (_os.getcwd, ())
+
+    path = tmp_path / "model.gguf"
+    path.write_bytes(_pickle.dumps({"x": Probe()}))
+    with pytest.raises(Exception):
+        load_weights(str(path), [])

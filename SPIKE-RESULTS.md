@@ -238,7 +238,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Sixteen defects found by running it
+## 5. Eighteen defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -278,8 +278,10 @@ and exited 0 — and it is the reason the third outcome exists here.
 |---|---|---|---|
 | 15 | after the reader learned to open torch zip checkpoints, **every legitimate model started looking suspicious** | `pickle.find_class` was treated as evidence of capability, and a real checkpoint asks for `collections.OrderedDict`, `torch._utils._rebuild_tensor_v2` and `torch.LongStorage` | first fix: filter the serialization scaffolding. **Caught by the third-party negative controls**, not by any hand-written case |
 | 16 | the fix for 15 was still wrong: a benign pickle that merely mentions `json.dumps`, `math.sqrt` or `re.compile` was counted as capability, and `datetime.now` tripped it through `builtins.getattr` | we were treating **every** requested global as evidence, not just dangerous ones — and two of those names collide across modules (`re.compile` vs the builtin, `getattr` that the pickle protocol itself emits to reference a method) | the rule is now: **asking for a global is intent, not capability.** Only unambiguous execution/IO globals count, builtins are matched in `builtins`/`_io` only, and protocol-emitted attribute access is excluded. Found by the 6 benign controls in §2 — **the controls again** |
+| 17 | scaling the controls to 20 real models: a **safetensors-only repository had nothing to read**, so the modern default format was escalated | the reader only looked for pickle-format weight files | safetensors is now *validated and not executed* — the format has no pickle and no callable, so "nothing can run" is a property of the format rather than a guess |
+| 18 | **pointing the tool at the Nepali ecosystem escalated its dominant format** | GGUF is how most Nepali models reach users (six of the top thirty on the Hub are quantisations), and the reader did not know it | `load_gguf` validates the header and metadata framing; a pickle renamed `.gguf` fails the magic check and is escalated, never trusted |
 
-Sixteen defects, and the pattern is consistent: every one was found by a control group, a
+Eighteen defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked
@@ -316,9 +318,11 @@ found only because there was a control group and a rate to compute. That is the 
    capability rather than proving absence: a capability that neither the AST nor the trace reveals would pass.
    Repair is also **not attempted for weight-only payloads**, which is a real gap in coverage rather than a
    passing case.
-10. **3 of the 4 real published models cannot be read at all.** Their checkpoint is a zip archive this reader
-    cannot open, so they are **escalated** rather than allowed — honest, but not coverage. A tool that escalates
-    the common format is not yet usable in a pipeline; this is the biggest piece of engineering left.
+10. **The reader knows four formats; the long tail is longer.** Zip checkpoints, legacy pickles,
+    `safetensors` and `gguf` are handled, and all 20 English controls plus all 3 Nepali ones are decided
+    rather than escalated. ONNX, TensorFlow/Flax (`.msgpack`, `.h5`), `.keras` and `.tflite` are still not
+    opened at all — and for `safetensors` and `gguf` the container is validated, not inspected for poisoned
+    values. The remaining risk is therefore not the format list but the values (item 15).
 11. **The agent team costs three model calls per blocked artifact** (analyst, challenger, repairer) — roughly
     35 s wall-clock on a 3B model. Escalation short-circuits before any model call, which is why the unknown
     path is also the fast path.

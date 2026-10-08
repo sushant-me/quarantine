@@ -1,0 +1,192 @@
+{
+  "generated_at": "2026-10-08T19:09:08+0545",
+  "kind": "nepali",
+  "n": 3,
+  "benign": 3,
+  "undeclared": 0,
+  "escalated": 0,
+  "allowed": 3,
+  "quarantine": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "tn": 3,
+    "detection_rate": null,
+    "false_positive_rate": 0.0
+  },
+  "incumbents_any": {
+    "tp": 0,
+    "fp": 1,
+    "fn": 0,
+    "tn": 2,
+    "detection_rate": null,
+    "false_positive_rate": 0.3333
+  },
+  "picklescan": {
+    "tp": 0,
+    "fp": 0,
+    "fn": 0,
+    "tn": 3,
+    "detection_rate": null,
+    "false_positive_rate": 0.0
+  },
+  "fickling": {
+    "tp": 0,
+    "fp": 1,
+    "fn": 0,
+    "tn": 2,
+    "detection_rate": null,
+    "false_positive_rate": 0.3333
+  },
+  "cases": [
+    {
+      "name": "nepali-bert",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-nepali/nepali-bert/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 7,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch.LongStorage"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 8.81,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "nepali-minilm-embedder",
+      "picklescan": {
+        "scanned_files": 0,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 0,
+        "flagged": [],
+        "says_clean": true
+      },
+      "incumbents_flagged_by": [],
+      "incumbents_flagged": false,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared, and the evidence shows no suspicious operations. The artifact is not performing any operations that are not allowed by its declaration.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 7.67,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "nepali-qwen-gguf",
+      "picklescan": {
+        "scanned_files": 0,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 0,
+        "flagged": [],
+        "says_clean": true
+      },
+      "incumbents_flagged_by": [],
+      "incumbents_flagged": false,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared, and there were no unresolved globals. The observation status indicates that nothing suspicious happened.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 9.92,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    }
+  ],
+  "note": "Labels are authored by us, so this measures the auditors against a known ground truth, not against the real world. See SPIKE-RESULTS.md. UNKNOWN is a third outcome, not a pass: it means nothing was observed or the agents could not agree, and it is referred to a human."
+}

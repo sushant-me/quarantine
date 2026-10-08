@@ -1,10 +1,10 @@
 [1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 9.45s
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 10.01s
       mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation (sock
-[3/4] challenger  refuted=True grounded=True in 11.57s
+[3/4] challenger  refuted=True grounded=True in 12.13s
       objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.getaddri
       supervisor  the challenger objected but could not ground it in the declaration
-[4/4] repairer    ok=True removed=['_sync'] in 6.23s
+[4/4] repairer    ok=True removed=['_sync'] in 6.6s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
 
 === Quarantine verdict ===
