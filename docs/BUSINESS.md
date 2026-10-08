@@ -215,4 +215,4 @@ This section exists because the rest of the document would be worth less without
   is that the signature checks out under `openssl` and that tampering is detected. That is not the same as a
   third party attesting to a verdict.
 - **The product's own limits are documented, not solved.** [`LIMITATIONS.md`](../LIMITATIONS.md) lists 19 of
-  them, and 31 defects were found by running the tool — most of them ours.
+  them, and 32 defects were found by running the tool — most of them ours.

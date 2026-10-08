@@ -46,6 +46,7 @@
 
 <!-- ───────────── cover ───────────── -->
 <section class="page cover">
+  <img src="../docs/assets/banner.svg" alt="Quarantine" style="width:100%;border-radius:4pt;margin-bottom:14pt">
   <div class="kicker">Frogtoberfest 2026 · Build with AI · project idea</div>
   <div class="rule"></div>
   <h1>Quarantine</h1>
@@ -66,7 +67,7 @@
       <code>https://github.com/sushant-me/quarantine</code> (public, Apache-2.0)</p>
     <p style="margin:4pt 0 0"><strong>Runs on</strong> — Python 3.12, Docker, and a local
       <code>qwen2.5-coder-3b</code> served by llama.cpp. No account, no paid API, no network at analysis time.</p>
-    <p style="margin:4pt 0 0"><strong>Status</strong> — working, measured, 80 tests, 60/60 eligibility checks.</p>
+    <p style="margin:4pt 0 0"><strong>Status</strong> — working, measured, 103 tests, 88/88 eligibility checks.</p>
   </div>
   <footer>This document describes the idea, how it works, and what has actually been measured — including the
   result that argues against us.</footer>
@@ -218,7 +219,7 @@ VERIFIED — signed by the holder of this key, and the payload is unmodified.</p
     <code>ctypes.dlopen</code>, sets its own environment variables and creates cache directories. A
     <em>measured</em> noise floor is subtracted; it fixes the plain-model case, not the framework one.</li>
   </ul>
-  <p class="note">Thirty-one defects were found by running the tool, and every one came from a control group, a
+  <p class="note">Thirty-two defects were found by running the tool, and every one came from a control group, a
   third-party artifact, a rate or a corpus — never from the case being demonstrated. If you delete the AI calls
   from this codebase, what remains is a syscall trace and an AST listing: exactly the thing that already fails.</p>
 </section>
@@ -289,7 +290,7 @@ python -m quarantine.cli inspect &lt;artifact&gt;    # 0 allow · 1 block · 2 e
 
   <footer>
     <strong>Quarantine</strong> — Frogtoberfest 2026 · <code>github.com/sushant-me/quarantine</code> · Apache-2.0 ·
-    80 tests · 60/60 eligibility checks · presented with the network off by design.
+    103 tests · 88/88 eligibility checks · presented with the network off by design.
   </footer>
 </section>
 

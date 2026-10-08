@@ -1,0 +1,63 @@
+{
+  "criterion": "identical outputs on every prompt AND zero capability operations by the repaired loader",
+  "prompts": [
+    "hello world",
+    "Quarantine probe 123",
+    "a",
+    "",
+    "   spaced   ",
+    "MiXeD cAsE with 1234 and punctuation?!",
+    "\u0928\u092e\u0938\u094d\u0924\u0947 \u2014 non-ASCII input",
+    "\u00fc\u00f1\u00ef\u00e7\u00f8\u00f0\u00e9",
+    "line one\nline two",
+    "0",
+    "\t tab and trailing space ",
+    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  ],
+  "prompt_count": 12,
+  "original_outputs": [
+    "HELLO WORLD",
+    "QUARANTINE PROBE 123",
+    "A",
+    "",
+    "   SPACED   ",
+    "MIXED CASE WITH 1234 AND PUNCTUATION?!",
+    "\u0928\u092e\u0938\u094d\u0924\u0947 \u2014 NON-ASCII INPUT",
+    "\u00dc\u00d1\u00cf\u00c7\u00d8\u00d0\u00c9",
+    "LINE ONE\nLINE TWO",
+    "0",
+    "\t TAB AND TRAILING SPACE ",
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  ],
+  "sanitized_outputs": [
+    "HELLO WORLD",
+    "QUARANTINE PROBE 123",
+    "A",
+    "",
+    "   SPACED   ",
+    "MIXED CASE WITH 1234 AND PUNCTUATION?!",
+    "\u0928\u092e\u0938\u094d\u0924\u0947 \u2014 NON-ASCII INPUT",
+    "\u00dc\u00d1\u00cf\u00c7\u00d8\u00d0\u00c9",
+    "LINE ONE\nLINE TWO",
+    "0",
+    "\t TAB AND TRAILING SPACE ",
+    "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  ],
+  "original_error": null,
+  "sanitized_error": null,
+  "original_ran": true,
+  "outputs_identical": true,
+  "original_capability_events": [
+    [
+      "file.read",
+      "/etc/hostname"
+    ],
+    [
+      "socket.getaddrinfo",
+      "20fad1b79162.probe.invalid"
+    ]
+  ],
+  "sanitized_capability_events": [],
+  "equivalent": true,
+  "note": "identical outputs on 12 prompts, and the repaired loader performed no capability operation (the original performed 2)"
+}

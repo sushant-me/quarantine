@@ -1,14 +1,53 @@
-# Quarantine — spike
+<img src="docs/assets/banner.svg" alt="Quarantine — the offline clean room for untrusted model artifacts" width="100%">
 
 [![ci](https://github.com/sushant-me/quarantine/actions/workflows/ci.yml/badge.svg)](https://github.com/sushant-me/quarantine/actions/workflows/ci.yml)
+[![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-**The offline clean room for untrusted model artifacts.**
-Every model you download is code you did not write. Quarantine runs it where it cannot hurt you,
-records what it does, has a local open-weight model read that behaviour against the artifact's own
-declaration, blocks what it cannot explain, and repairs what it can — with a signed receipt at the end.
+### A model you download is code you did not write
 
-This directory is a **working spike**, not the final submission repo. It exists to answer one
-question with evidence: *does the core loop actually work, offline, on open weights?*
+`pytorch_model.bin` is a pickle, and a pickle runs code when it is loaded. A repository with `auto_map` in
+its `config.json` ships `modeling_*.py` that the framework executes the moment you load the model — with
+your credentials and your network.
+
+The scanners everyone already runs read pickle opcodes. **Neither picklescan nor fickling opens a `.py`
+file at all**, so the entire remote-code path sits outside their input set and they report "clean".
+
+**Quarantine runs the artifact where it cannot hurt you, records what it actually does, has a local
+open-weight model judge that behaviour against the artifact's own declaration, blocks what it cannot
+explain, repairs what it can — and signs a receipt anyone can check with `openssl`.**
+
+![Three steps: a scanner calls the artifact clean; Quarantine blocks it; the receipt verifies](docs/assets/demo.gif)
+
+### Three things worth knowing before you read further
+
+- **`UNKNOWN` is a real outcome, not a failure.** Exit `0` allow · `1` block · `2` *"we could not look"*.
+  The third one goes to a human and is never reported as "fine" — that distinction is the whole product.
+- **The AI is load-bearing, and we measured it.** With the model endpoint pointed at a closed port,
+  **0 of 13 artifacts can be allowed or blocked** and all 13 escalate
+  ([`reports/delete-the-ai.md`](reports/delete-the-ai.md)).
+- **The honest row is next to the flattering ones.** On picklescan's own corpus of 91 malicious samples
+  their denylist flags **88 (97%)** and our contained observation sees **43 (47%)**. On that corpus they
+  win, and it is published in the same table as the results that favour us. This is **not a replacement
+  for a pickle scanner — it is the other half of the pair**, the half that opens the `.py` files and
+  repairs what it blocks.
+
+## The 30-second version
+
+```bash
+git clone https://github.com/sushant-me/quarantine && cd quarantine
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python -e ".[dev]"
+./scripts/serve_model.sh &                      # local open-weight model: no API key, no egress
+
+.venv/bin/quarantine inspect corpus/probe-custom-generate --out runs/probe
+#   exit 1 -> BLOCK. The scanner said clean.
+
+python tools/verify_receipt_standalone.py runs/probe/receipt.json \
+        --pub runs/probe/keys/quarantine.pub.pem     # stdlib + openssl, imports nothing from us
+```
+
+Nothing above needs a paid account, an API key, or a network connection at analysis time. If something is
+missing, `scripts/try_it.sh` says what in one line and how to fix it.
 
 ---
 

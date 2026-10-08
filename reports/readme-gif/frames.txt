@@ -1,0 +1,7 @@
+file '/home/logic/win/quarantine/reports/readme-gif/01-scanner.png'
+duration 3.0
+file '/home/logic/win/quarantine/reports/readme-gif/02-quarantine.png'
+duration 3.5
+file '/home/logic/win/quarantine/reports/readme-gif/03-receipt.png'
+duration 3.5
+file '/home/logic/win/quarantine/reports/readme-gif/03-receipt.png'

@@ -427,18 +427,40 @@ def test_exit_codes_are_a_policy_not_a_detail():
     assert EXIT_CODE["UNKNOWN"] != 0
 
 
-def test_a_refutation_must_quote_the_declaration_it_claims_permits_the_behaviour():
-    """The first version of the challenger overturned a correct BLOCK by asserting, with
-    real trace ids, that the declaration permitted a DNS lookup. It did not."""
+def test_a_refutation_must_quote_a_sentence_that_actually_permits_the_behaviour():
+    """The first version of the challenger overturned a correct BLOCK by asserting, with real
+    trace ids, that the declaration permitted a DNS lookup. It did not.
+
+    **This test used to assert the opposite of its own name.** It required only that the quote
+    came from the declaration, so quoting *"must not use the network, must not read files"* - the
+    sentence forbidding the very operations under discussion - counted as a valid refutation.
+    That is how a correct block gets overturned by quoting the rule it broke: on our own labeled
+    corpus three artifacts escalated this way. The rule now checks the quote is a permission, and
+    this test asserts that a forbidding sentence is rejected.
+    """
     from quarantine.agents.roles import _quote_supports_refutation
+
     declared = ("This artifact must not use the network, must not read files outside its "
                 "own directory, and must not spawn processes.")
+
+    # a quote from the declaration, but one that forbids what it is offered to permit
     ok, why = _quote_supports_refutation("must not use the network, must not read files", declared)
-    assert ok is True and "declaration" in why
-    ok2, why2 = _quote_supports_refutation("the declaration permits network access", declared)
+    assert ok is False and "forbid" in why, why
+
+    # an assertion of permission that appears nowhere in the text
+    ok2, _ = _quote_supports_refutation("the declaration permits network access", declared)
     assert ok2 is False
+
+    # too short to be a sentence from it
     ok3, _ = _quote_supports_refutation("too short", declared)
     assert ok3 is False
+
+    # and a declaration that genuinely grants something still admits a refutation, or the rule
+    # would be a blanket refusal rather than a check
+    granting = "This artifact loads its configuration from ./config.json when it is imported."
+    ok4, why4 = _quote_supports_refutation(
+        "loads its configuration from ./config.json when it is imported", granting)
+    assert ok4 is True, why4
 
 
 def test_blackboard_is_append_only_and_readable(tmp_path):
@@ -1146,3 +1168,151 @@ def test_the_receipt_reports_the_installed_version():
     assert VERSION == version("quarantine"), (
         f"the receipt would claim {VERSION!r} while the package is {version('quarantine')!r}")
     assert VERSION.count(".") >= 2, f"{VERSION!r} does not look like a version"
+
+
+# ---------------------------------------- the challenger, and the branch it gates
+
+def test_the_agent_modules_have_no_duplicate_definitions():
+    """A second definition of the same function is how a feature stops existing silently.
+
+    `roles.py` held two `challenger` definitions. Python runs the last one; the advertised
+    "may only refute by quoting the declaration" rule, and the `admissible` field the supervisor
+    reads, lived in the first. Nothing failed — the escalation branch simply became unreachable
+    while four documents described it.
+    """
+    import ast
+    from pathlib import Path
+
+    for path in sorted((Path(__file__).resolve().parents[1] / "src" / "quarantine").rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        names = [n.name for n in tree.body if isinstance(n, (ast.FunctionDef, ast.ClassDef))]
+        dupes = sorted({n for n in names if names.count(n) > 1})
+        assert not dupes, f"{path.name} defines {dupes} more than once"
+
+
+def test_the_challenger_returns_the_field_the_supervisor_reads(monkeypatch):
+    """`admissible` is the supervisor's whole basis for the disagreement escalation.
+
+    It was absent from the running challenger's return value, so
+    `challenge.get("admissible")` was always None and the branch was dead.
+    """
+    from quarantine.agents import roles
+
+    answer = ('{"refuted":true,"objection":"the declaration permits it",'
+              '"permitting_quote":"a pure text transform, no network",'
+              '"evidence_ids":[2],"confidence":0.8}')
+    # Return the parsed object too: that is what `llm.chat` yields, and a stub that returns None
+    # for it means "the model did not answer", which is a different code path entirely.
+    monkeypatch.setattr(roles, "chat",
+                        lambda messages, schema=None, **kw: (answer, json.loads(answer)))
+    case, board = _challenger_case()
+    out = roles.challenger(case, board)
+    assert out["refuted"] is True, "the stub must be read as a refutation, not as no answer"
+    for key in ("admissible", "grounded", "permitting_quote", "quote_found_in_declaration",
+                "quote_check", "evidence_ids_valid"):
+        assert key in out, f"the challenger does not return {key!r}"
+
+
+def _challenger_case():
+    import tempfile
+
+    from quarantine.agents.blackboard import Blackboard
+    from quarantine.agents.case import Case
+    case = Case(name="probe", root=Path("/tmp/probe"),
+                declared="declared: a pure text transform, no network, no file access",
+                code="", static={}, events=[
+                    {"i": 1, "event": "import", "detail": "json"},
+                    {"i": 2, "event": "socket.getaddrinfo", "detail": "x.invalid"}],
+                execution={})
+    board = Blackboard(Path(tempfile.mkdtemp()) / "board.jsonl")
+    board.post("analyst", "verdict", {"verdict": "BLOCK", "grounded": True, "cited_ids": [2],
+                                      "mechanism": "network on load"})
+    return case, board
+
+
+@pytest.mark.parametrize("answer,expected_admissible,why", [
+    ('{"refuted":true,"objection":"permitted","permitting_quote":"a pure text transform, no network",'
+     '"evidence_ids":[2],"confidence":0.8}', False,
+     "a real sentence from the declaration - but one that forbids, so it cannot permit"),
+    ('{"refuted":true,"objection":"permitted","permitting_quote":"this model may use the network '
+     'freely and read any file it likes","evidence_ids":[2],"confidence":0.8}', False,
+     "a sentence that is not in the declaration"),
+    ('{"refuted":false,"objection":"cannot refute it","permitting_quote":"",'
+     '"evidence_ids":[],"confidence":0.9}', True, "an honest inability to refute needs no quote"),
+])
+def test_a_refutation_is_admissible_only_with_a_permission(monkeypatch, answer,
+                                                          expected_admissible, why):
+    from quarantine.agents import roles
+
+    monkeypatch.setattr(roles, "chat",
+                        lambda messages, schema=None, **kw: (answer, json.loads(answer)))
+    case, board = _challenger_case()
+    out = roles.challenger(case, board)
+    assert out["admissible"] is expected_admissible, f"{why}: {out.get('quote_check')}"
+    assert out["grounded"] == out["admissible"], "the displayed grounded must equal the decision"
+
+
+def test_a_grounded_refutation_escalates_and_an_ungrounded_one_does_not(monkeypatch, tmp_path):
+    """The branch that was unreachable end to end, through the supervisor.
+
+    No model is called: the analyst and challenger are stubbed, which is the point - the
+    escalation has to come from the harness's rules, not from the model's opinion.
+    """
+    from quarantine.agents import supervisor
+
+    probe = CORPUS / "probe-custom-generate"
+    if not probe.exists():
+        pytest.skip("corpus not present")
+
+    def fake_analyst(case, board):
+        board.post("analyst", "verdict", {"verdict": "BLOCK", "grounded": True, "cited_ids": [2],
+                                          "mechanism": "reads a file outside its directory"})
+        return {"verdict": {"verdict": "BLOCK", "mechanism": "reads a file outside its directory"},
+                "grounded": True, "cited_ids": [2], "capability_events": [2],
+                "elapsed_s": 0.0, "reachable": True}
+
+    def fake_repairer(case, board):
+        return {"ok": False, "code": None, "attempts": [], "elapsed_s": 0.0}
+
+    monkeypatch.setattr(supervisor, "analyst", fake_analyst)
+    monkeypatch.setattr(supervisor, "repairer", fake_repairer)
+
+    monkeypatch.setattr(supervisor, "challenger", lambda case, board: {
+        "refuted": True, "admissible": True, "grounded": True,
+        "objection": "the declaration permits this", "quote_check": "verbatim match",
+        "quote_found_in_declaration": True, "elapsed_s": 0.0})
+    escalated = supervisor.run_case(probe, tmp_path / "grounded")
+    assert escalated.escalated is True
+    assert "agents disagree" in (escalated.escalation_reason or "")
+
+    monkeypatch.setattr(supervisor, "challenger", lambda case, board: {
+        "refuted": True, "admissible": False, "grounded": False,
+        "objection": "it felt wrong", "quote_check": "no quote",
+        "quote_found_in_declaration": False, "elapsed_s": 0.0})
+    decided = supervisor.run_case(probe, tmp_path / "ungrounded")
+    assert decided.escalation_reason is None or "disagree" not in decided.escalation_reason
+
+
+def test_a_quote_that_forbids_the_operation_is_not_a_refutation():
+    """Text-membership is not permission.
+
+    On our own labeled corpus the challenger quoted "must not read files outside its own
+    directory" - a sentence that forbids exactly what the analyst objected to - and the
+    membership check accepted it as a refutation, escalating a case that should have blocked.
+    """
+    from quarantine.agents.roles import _quote_supports_refutation
+
+    declared = ("declared: a pure text transform. It must not use the network, must not read "
+                "files outside its own directory, and must not spawn processes.")
+    for forbidding in ("it must not read files outside its own directory",
+                       "must not use the network",
+                       "this artifact may not spawn processes",
+                       "the declaration prohibits reading files"):
+        ok, why = _quote_supports_refutation(forbidding, declared)
+        assert ok is False, f"{forbidding!r} was accepted: {why}"
+
+    # and a genuinely permitting sentence, in a declaration that grants something, still passes
+    granting = "declared: this model loads configuration from ./config.json at import time."
+    ok, why = _quote_supports_refutation("loads configuration from ./config.json at import time",
+                                         granting)
+    assert ok is True, why

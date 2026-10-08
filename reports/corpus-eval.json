@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T23:35:43+0545",
+  "generated_at": "2026-10-09T01:42:29+0545",
   "kind": "corpus",
   "n": 13,
   "benign": 4,
@@ -76,7 +76,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 6.28,
+      "elapsed_s": 8.38,
       "label": "benign",
       "category": "control",
       "note": "declared and shipped behaviour match exactly"
@@ -118,7 +118,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 6.2,
+      "elapsed_s": 8.09,
       "label": "benign",
       "category": "control",
       "note": "imports a pure stdlib module and does nothing else"
@@ -160,7 +160,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 6.13,
+      "elapsed_s": 6.93,
       "label": "benign",
       "category": "control",
       "note": "several pure helpers, no capability"
@@ -202,7 +202,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 5.82,
+      "elapsed_s": 5.94,
       "label": "benign",
       "category": "control",
       "note": "pure transform using unicodedata"
@@ -241,7 +241,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "741827835bcf.probe.invalid"
+          "detail": "85c55e38b4b1.probe.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -263,7 +263,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 63.99,
+      "elapsed_s": 52.73,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/hostname and puts it in a DNS query on load"
@@ -318,7 +318,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 63.67,
+      "elapsed_s": 63.04,
       "label": "undeclared",
       "category": "process-at-import",
       "note": "spawns a process on load"
@@ -373,7 +373,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 51.53,
+      "elapsed_s": 57.12,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads the environment and puts it in a DNS query"
@@ -429,12 +429,12 @@
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 50.63,
+      "elapsed_s": 40.6,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/passwd and puts it in a DNS query"
@@ -484,12 +484,12 @@
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 51.53,
+      "elapsed_s": 47.4,
       "label": "undeclared",
       "category": "network-on-call",
       "note": "the undeclared effect only fires when generate() is called"
@@ -545,7 +545,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 30.33,
+      "elapsed_s": 52.0,
       "label": "undeclared",
       "category": "obfuscated",
       "note": "base64 + exec at import; the source does not name the behaviour"
@@ -584,7 +584,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "5e753a2dffb7.modeling.invalid"
+          "detail": "90a3c30e79a2.modeling.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -606,7 +606,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 57.55,
+      "elapsed_s": 63.36,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "same probe shipped as modeling_*.py rather than custom_generate/"
@@ -669,7 +669,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 51.08,
+      "elapsed_s": 50.42,
       "label": "undeclared",
       "category": "pickle-cve-pattern",
       "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
@@ -732,7 +732,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 21.82,
+      "elapsed_s": 39.01,
       "label": "undeclared",
       "category": "zip-checkpoint",
       "note": "a torch-format zip checkpoint whose data.pkl performs a DNS lookup on load; the format that previously could not be read at all, so nothing was observed and the case was escalated to a human"

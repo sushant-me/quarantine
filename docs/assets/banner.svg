@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="Quarantine — the offline clean room for untrusted model artifacts">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b0f14"/>
+      <stop offset="100%" stop-color="#101823"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#88c0d0"/>
+      <stop offset="100%" stop-color="#5e9fb3"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="260" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="3" fill="url(#accent)"/>
+
+  <!-- the mark: a container, an artifact inside it, and a barrier across it -->
+  <g transform="translate(74,58)">
+    <rect x="0" y="0" width="144" height="144" rx="18" fill="none" stroke="#88c0d0" stroke-width="3" opacity="0.55"/>
+    <rect x="26" y="26" width="92" height="92" rx="10" fill="#131c27" stroke="#88c0d0" stroke-width="2"/>
+    <line x1="26" y1="86" x2="118" y2="48" stroke="#a3be8c" stroke-width="4"/>
+    <circle cx="52" cy="52" r="5" fill="#88c0d0"/>
+    <circle cx="92" cy="92" r="5" fill="#bf616a"/>
+    <text x="72" y="132" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace"
+          font-size="15" fill="#7a8797">no network</text>
+  </g>
+
+  <text x="262" y="112" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="64" font-weight="700" fill="#e5e9f0" letter-spacing="6">QUARANTINE</text>
+  <text x="264" y="156" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="21" fill="#88c0d0">the offline clean room for untrusted model artifacts</text>
+  <text x="264" y="196" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+        font-size="16" fill="#7a8797">run it where it cannot hurt you · record what it does · prove the repair · sign the receipt</text>
+
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="15" fill="#7a8797">
+    <text x="264" y="232">exit 0 ALLOW · 1 BLOCK · 2 UNKNOWN — and UNKNOWN is never "fine"</text>
+  </g>
+</svg>

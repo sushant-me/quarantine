@@ -1,0 +1,13 @@
+$ quarantine inspect corpus/probe-custom-generate
+
+[1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 12.2s
+[3/4] challenger  refuted=True grounded=False in 38.3s
+      supervisor  the challenger objected but could not ground it in the declaration
+[4/4] repairer    ok=True removed=['_sync'] in 6.9s
+      verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
+=== Quarantine verdict ===
+  incumbents        picklescan clean=True fickling clean=True (custom Python scanned: no)
+  verdict           BLOCK
+  repair            ok=True equivalent=True
+  agents            observer, analyst, challenger, supervisor, repairer, verifier in 5 turns

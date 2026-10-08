@@ -50,6 +50,10 @@ REQUIRED_FILES = [
     ("docs/EVENT-REQUIREMENTS.md", "the event's requirements, mapped"),
     ("docs/NEPAL.md", "what this does for the Nepal community"),
     ("docs/BUSINESS.md", "the commercial case is part of the submission"),
+    ("docs/assets/banner.svg", "the repository has an identity, and the README shows it"),
+    ("docs/assets/demo.gif", "the README shows the product running"),
+    ("scripts/try_it.sh", "a first-time reader gets told what is missing, in words"),
+    ("scripts/build_readme_gif.py", "the README animation is generated from real output"),
     ("scripts/verify_published_receipts.py", "independent verification is runnable"),
     ("docs/RECEIPT-FORMAT.md", "the receipt format is a specification somebody else can build against"),
     ("docs/receipt-vector/valid-receipt.json", "the format has a signed test vector"),
@@ -335,11 +339,26 @@ def check_presentations_are_self_contained() -> list[dict]:
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
         refs = [r for r in _re.findall(r'(?:src|href)="([^"]+)"', text) if not r.startswith("#")]
+        # The guarantee is "no network fetch", not "no files". A bundled local asset is offline-safe;
+        # a URL is not. So remote references are refused, and local ones must exist - which turns a
+        # broken image path into a build failure instead of a broken box on a slide. The earlier
+        # version refused every src, which was both too blunt (it banned a local banner) and weaker
+        # (it never checked that a referenced file was there).
+        remote = [r for r in refs if "://" in r or r.startswith("//")]
+        local = [r for r in refs if r not in remote]
+        broken = [r for r in local if not (path.parent / r).resolve().exists()]
         sections = text.count('class="slide') + text.count('class="page')
-        ok = not refs and sections >= minimum
-        out.append({"check": f"{rel} is self-contained", "what": "presentation", "ok": ok,
-                    "detail": (f"{sections} sections, no external references" if ok
-                               else f"{sections} sections, external refs: {refs[:3]}")})
+        ok = not remote and not broken and sections >= minimum
+        if remote:
+            detail = f"{sections} sections, network references: {remote[:3]}"
+        elif broken:
+            detail = f"{sections} sections, unresolvable local references: {broken[:3]}"
+        elif sections < minimum:
+            detail = f"only {sections} sections, expected at least {minimum}"
+        else:
+            detail = (f"{sections} sections, {len(local)} local asset(s), no network references")
+        out.append({"check": f"{rel} works with the network off", "what": "presentation",
+                    "ok": ok, "detail": detail})
 
     pdf = ROOT / "presentation" / "Quarantine-Project-Idea.pdf"
     size = pdf.stat().st_size if pdf.exists() else 0

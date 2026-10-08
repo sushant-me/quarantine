@@ -431,6 +431,53 @@ that costs a correct decision while saving none is to remove the enforcement and
 
 ---
 
+## 3g. A headline feature was dead code, and a test asserted the bug
+
+While building the README's terminal GIF, the captured output of a real run showed this:
+
+```
+[3/4] challenger  refuted=True grounded=True in 18.69s
+      supervisor  the challenger objected but could not ground it in the declaration
+```
+
+An objection cannot be both grounded and not grounded. Reading the code found worse than a display bug:
+
+- **`roles.py` held two `challenger` definitions.** Python runs the last one, and the advertised rule —
+  *"a refutation may only succeed by quoting the declaration verbatim"*, together with the `admissible`
+  field the supervisor reads — lived in the first. `_quote_supports_refutation` was called by nothing that
+  runs.
+- **The "agents disagree" escalation was therefore unreachable.** `challenge.get("admissible")` was always
+  `None`, so a grounded refutation could never overturn a block.
+- **A test asserted the bug.** `test_a_refutation_must_quote_the_declaration_it_claims_permits_the_behaviour`
+  required only that the quote *came from* the declaration, and explicitly asserted that quoting
+  *"must not use the network, must not read files"* — the sentence forbidding the very operations under
+  discussion — was a valid refutation. The test was named for the behaviour it did not check.
+
+Four documents (README, `docs/AI-USAGE.md`, the Demo Day deck, the business case) described the rule as
+shipped. The product did not implement it. This is the worst class of defect in this repository, because
+it is a false claim *about* the submission, made by the submission.
+
+**Fixed, and then measured — which is where it becomes interesting:**
+
+1. The duplicate was deleted; one `challenger` remains, returning `admissible`, `permitting_quote`,
+   `quote_found_in_declaration` and `quote_check`. `grounded` is now the same value as `admissible`, so the
+   display cannot contradict the decision.
+2. **The rule was too weak even once live.** It checked that the quote *appears in* the declaration, not
+   that it *permits* anything — so a model could overturn a correct block by quoting the rule it broke. On
+   the labeled corpus that is exactly what happened: three artifacts escalated, on declarations reading
+   *"must not read files outside its own directory"*. A quote containing a prohibition is now rejected,
+   which is the safe direction: a refutation that cannot be established leaves the block standing.
+3. With both fixes, the published numbers return **unchanged and for sound reasons**: corpus 9/9 with 0
+   false positives and 0 escalations, English controls 20/20 allowed, Nepali/Indic 0 false positives.
+   Worth stating precisely: before the fix those numbers came from a branch that could not fire; the
+   challenger now genuinely tries and genuinely fails to ground a refutation.
+4. Tests: a structural test forbids duplicate top-level definitions in `src/`, the escalation is exercised
+   end to end through the supervisor with the model stubbed, and the forbidding-quote case is asserted.
+   The test that encoded the bug was rewritten to assert the corrected rule, with the history in its
+   docstring.
+
+---
+
 ## 4. The corpus
 
 `scripts/make_corpus.py` generates it deterministically; `corpus/MANIFEST.json` is the label file. All
@@ -458,7 +505,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Thirty-one defects found by running it
+## 5. Thirty-two defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -513,10 +560,12 @@ and exited 0 — and it is the reason the third outcome exists here.
 | 29 | the AI-usage disclosure claimed `src/quarantine/llm.py::chat` is **one place that talks to the model**, and it was not true | `analyst.py` and `repair/loader.py` each held their own HTTP client, own URL and own default model — the analyst's default was even the 1.5B while `llm.py` said 3B | both now call `llm.chat`; the duplicate clients and constants are deleted. Found because a "delete the AI" experiment patched the shared endpoint and measured **identical** results, which was the clue that nothing had been deleted |
 | 30 | `LIMITATIONS.md` named "a larger open-weight model" as the remedy for analyst abstention, and it was never tested | an untested remedy in a limitations list reads as a plan; this one was wrong, and it sat in the same document as the numbers it contradicted | measured instead with `scripts/compare_analyst_models.py`: the 7B abstains twice as often, twice as slowly, and states a reason the harness's own count contradicts. The remedy is struck from the documents |
 | 31 | a check added to make a model's stated ground impossible to misstate **cost two correct decisions and saved none** | it compared the reason against the *verdict label* rather than against the counters, so a correct ALLOW with a loose label was rejected and three retries degraded real model `bert-tiny` into an abstention; `benign-unicode` likewise escalated, taking the corpus from 0 escalations to 1 | measured over two models and eleven artifacts; the check now validates only claims about the harness's counters and **annotates** the receipt instead of vetoing the verdict, and the vocabulary lost `capability_permitted`, a ground naming an outcome the evidence rule forbids |
+| 32 | **a headline feature was dead code**: the challenger's "may only refute by quoting the declaration" rule, and the `admissible` field the supervisor checks, lived in a *duplicate* `challenger` definition that Python shadows | `roles.py` defined `challenger` twice; the second definition won, `_quote_supports_refutation` was called by nothing, `challenge.get("admissible")` was always `None`, and the "agents disagree" escalation could never fire. Four documents described the rule as shipped | one definition, returning the fields the supervisor reads; the rule now also rejects a quote that *forbids* the operation, which it did not (three corpus artifacts escalated by quoting "must not read files outside its own directory"); a structural test forbids duplicate definitions, and the escalation branch is exercised end to end with the model stubbed |
 
 
 
-Thirty-one defects, and the pattern is consistent: every one was found by a control group, a
+
+Thirty-two defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked

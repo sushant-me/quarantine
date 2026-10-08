@@ -1,0 +1,11 @@
+$ python3 tools/verify_receipt_standalone.py runs/probe/receipt.json \
+        --pub runs/probe/keys/quarantine.pub.pem
+
+ok    payload is canonical JSON (re-serialising it reproduces the signed bytes)
+ok    keyid matches the public key (c8e42c6c9cdeaf5f)
+ok     openssl: Signature Verified Successfully
+  artifact   probe-custom-generate  tree=906eaac93a559e40
+  verdict    BLOCK
+  model      qwen2.5-coder-3b-instruct-q4_k_m.gguf
+  image      python:3.12-slim
+VERIFIED — signed by the holder of this key, and the payload is unmodified.
