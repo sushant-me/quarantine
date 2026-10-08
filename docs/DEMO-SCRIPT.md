@@ -141,6 +141,11 @@ trace showing what it missed; everything else is evidence that the first two are
 
 If you are recording a voice over [`reports/video/quarantine-demo.mp4`](../reports/video/quarantine-demo.mp4), read [`presentation/quarantine-demo-narration.srt`](../presentation/quarantine-demo-narration.srt). It has one cue per scene, timed from the video's own scene manifest, and the video's duration is now exactly the sum of its scenes (182s), so the last cue ends with the picture.
 
+## Two cuts
+
+`reports/video/quarantine-demo-captioned.mp4` has the narration burned in and works on its own;
+`quarantine-demo.mp4` is the silent cut for presenting live with the script below.
+
 ## Before you present
 
 ```bash

@@ -88,6 +88,7 @@ REQUIRED_FILES = [
     ("baselines/python_3.12-slim.jsonl", "the default image's noise floor is recorded"),
     ("docs/DEMO-SCRIPT.md", "demo script"),
     ("reports/video/quarantine-demo.mp4", "demo video (required deliverable)"),
+    ("reports/video/quarantine-demo-captioned.mp4", "the demo can be watched on mute"),
     ("corpus/MANIFEST.json", "the labeled corpus is published"),
     ("tests", "tests present"),
 ]

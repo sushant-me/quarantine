@@ -313,16 +313,29 @@ bug this tool can have.
 [v0.3.0](https://github.com/sushant-me/quarantine/releases/tag/v0.3.0) carries the project-idea PDF, the
 demo video as downloadables, with the measured table and the honest counterweight in the notes.
 
-## Demo video and narration
+## Demo video
 
-[`reports/video/quarantine-demo.mp4`](reports/video/quarantine-demo.mp4) — 3:02, built from real captured
-command output rather than a screen recording. The video is silent on purpose: there is no English
-text-to-speech on the machine that built it, and a synthetic voice would be worse than none.
+**Watch this one if you are on your own, or on mute:**
+[`reports/video/quarantine-demo-captioned.mp4`](reports/video/quarantine-demo-captioned.mp4) — 3:02 with the
+narration burned in, so the demo tells its own story without anyone speaking over it.
 
-[`presentation/quarantine-demo-narration.srt`](presentation/quarantine-demo-narration.srt) is a timed
-narration script, one cue per scene, generated from the same scene list the video is built from by
-`scripts/build_demo_narration.py` — so it stays in sync by construction rather than by hand. Read it
-aloud over the video and the demo is narrated.
+[`reports/video/quarantine-demo.mp4`](reports/video/quarantine-demo.mp4) is the same 3:02 with no voice
+track, for presenting live. There is no synthetic voice anywhere: there is no English text-to-speech on the
+machine that built this, and a synthetic narrator would be worse than none.
+
+[`presentation/quarantine-demo-narration.srt`](presentation/quarantine-demo-narration.srt) is the timed
+script, one cue per scene, generated from the same scene list the video is built from by
+`scripts/build_demo_narration.py` — so it stays in sync by construction rather than by hand. Read it aloud
+over the silent cut, or burn it in again with:
+
+```bash
+ffmpeg -i reports/video/quarantine-demo.mp4 \
+  -vf "subtitles=presentation/quarantine-demo-narration.srt:force_style='BorderStyle=3,MarginV=26,Alignment=2'" \
+  -c:v libx264 -crf 20 -pix_fmt yuv420p reports/video/quarantine-demo-captioned.mp4
+```
+
+Both cuts are built from real captured command output rather than a screen recording, and every number on
+screen comes from the reports in this repository.
 
 ## Demo Day deck
 
