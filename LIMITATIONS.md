@@ -100,12 +100,16 @@ attached.
     we can state what we ran on 2026-10-08, not what the whole Nepali ecosystem contains. We also did not find
     a Nepali model shipping custom `modeling_*.py`, which would be the highest-risk case.
 
-17. **Custom model code that needs a modelling framework escalates by default, and the image that fixes
-    it measures worse.** `docker/Dockerfile.analysis` (CPU torch + transformers, 362 MB) exists and works,
-    but on the Nepali/Indic controls it *raised* false positives from 0 to 2 of 5, and it broke legacy
-    `pytorch_model.bin` reading that the stubs had handled. It is therefore opt-in via
-    `QUARANTINE_IMAGE=quarantine-analysis:latest`, with the measurements behind that decision in
-    [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) §3b. Proper event attribution is what would make it the default.
+17. **The analysis image is opt-in, and the blocking reasons are now precise rather than suspected.**
+    `docker/Dockerfile.analysis` (CPU torch + transformers + einops, 362 MB) is built and works, and three
+    bugs that stood in its way are fixed: an env var named after an installed package is no longer treated as
+    capability, custom `modeling_*.py` are loaded inside a package so relative imports resolve, and the
+    prompt distinguishes evidence from context. One real model now executes with zero capability events.
+    It still does not get a verdict because **a 3B analyst hallucinates trace ids** under the richer prompt
+    (BLOCK citing ids 161/166/248 in a 25-event trace — refused by the grounding rule, then escalated), and
+    because **version skew is unsolvable in a single image**: a real model needs an older
+    `transformers.pytorch_utils`. Per-artifact dependency resolution from the artifact's own manifest is the
+    real feature, and it is not in this release.
 18. **Behaviour-based detection is weak against payloads that cannot fire in isolation — measured, not
     suspected.** On picklescan's own corpus (91 malicious samples with real GHSA provenance) our contained run
     observed the payload act on **43 (47%)**, while their denylist flagged **88 (97%)**. Their payloads typically

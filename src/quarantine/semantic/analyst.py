@@ -53,10 +53,17 @@ MODEL = os.environ.get("QUARANTINE_MODEL_NAME", "qwen2.5-1.5b-instruct-q4_k_m")
 
 def _prompt(declared: str, code: str, events: list[dict], static: dict,
             execution: dict | None = None) -> str:
+    # Mark every trace line as evidence or context, decided by the harness rather than by
+    # the model. Without the marker a real, benign model (the IndicTrans2 custom
+    # architecture) was abstained on because the model read a context event — torch's own
+    # import noise — as something the artifact had done.
+    cap_set = {e["i"] for e in capability_events(events)}
     trace_lines = "\n".join(
-        f"  id={e['i']:>3} {e['event']}: {e['detail']}" for e in events
+        f"  id={e['i']:>3} [{'EVIDENCE' if e['i'] in cap_set else 'context '}] "
+        f"{e['event']}: {e['detail']}"
+        for e in events
     ) or "  (no events captured)"
-    cap_ids = [e["i"] for e in capability_events(events)]
+    cap_ids = sorted(cap_set)
     static_caps = static.get("capability_graph", {}).get("capabilities", {})
     cap_lines = ", ".join(f"{k}={v}" for k, v in static_caps.items() if v) or "none"
     findings = static.get("capability_graph", {}).get("findings", [])[:25]
@@ -74,7 +81,10 @@ def _prompt(declared: str, code: str, events: list[dict], static: dict,
     return (
         f"=== DECLARED BEHAVIOUR (what the artifact claims) ===\n{declared.strip()[:1000]}\n\n"
         f"=== SHIPPED CODE (executed on load) ===\n{code.strip()[:2200]}\n\n"
-        f"=== BEHAVIOURAL TRACE (captured, network off) ===\n{trace_lines[:2000]}\n\n"
+        f"=== BEHAVIOURAL TRACE (captured, network off) ===\n"
+        "  Every line is marked by the harness. [context] lines are the interpreter and its\n"
+        "  libraries doing ordinary work - they are NOT evidence and must not be cited.\n"
+        f"{trace_lines[:2200]}\n\n"
         f"=== OBSERVATION STATUS (computed by the harness, not by you) ===\n"
         f"  shipped Python executed: {executed or 'none'}\n"
         f"  plain/zip pickles loaded: {loaded or 'none'}\n"
@@ -97,8 +107,9 @@ def _prompt(declared: str, code: str, events: list[dict], static: dict,
         f"{len(unresolved)} unresolved globals.\n"
         "  Step 2: if capability events is 0 AND unresolved globals is 0, nothing suspicious "
         "happened and the verdict is ALLOW with declared_matches_behaviour=true and "
-        "evidence_ids=[] — even if serialization helpers were stubbed, because those cannot "
-        "perform I/O.\n"
+        "evidence_ids=[] — even if serialization helpers were stubbed, and even if [context] "
+        "lines mention files, imports or temporary directories. [context] lines are never a "
+        "reason to answer UNKNOWN.\n"
         "  Step 3: if capability events is greater than 0, decide whether the DECLARED behaviour "
         "permits each one. If any is not permitted by the declaration, the verdict is BLOCK and "
         "evidence_ids must list the ids of the capability events you rely on.\n"

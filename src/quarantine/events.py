@@ -139,11 +139,50 @@ def baseline_keys(path: Path | None = None) -> set:
                 continue
             try:
                 event = json.loads(line)
-                keys.add(noise_key(event["event"], event.get("detail", "")))
-            except (json.JSONDecodeError, KeyError):
+            except json.JSONDecodeError:
                 continue
+            if event.get("event") == "baseline.libraries":
+                continue                     # ownership metadata, not an observed event
+            keys.add(noise_key(event.get("event", ""), event.get("detail", "")))
     _BASELINE_CACHE[cache_key] = keys
     return keys
+
+
+_LIBRARY_TOKENS: dict[str, set] = {}
+
+
+def library_tokens(path: Path | None = None) -> set:
+    """Package names the image owns, as reported by the measured baseline.
+
+    Used for exactly one rule: `os.putenv`/`os.unsetenv` for a variable whose name
+    references an installed package is that package configuring itself, not the artifact
+    reaching out. `TORCHINDUCTOR_CACHE_DIR` was the only surviving capability event on two
+    real remote-code models, and removing it is the difference between a false positive and
+    a verdict.
+    """
+    path = path or baseline_path()
+    key = str(path)
+    if key in _LIBRARY_TOKENS:
+        return _LIBRARY_TOKENS[key]
+    tokens: set = set()
+    if path.exists():
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                event = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if event.get("event") == "baseline.libraries":
+                tokens = {t for t in str(event.get("detail", "")).split(",") if len(t) >= 3}
+    _LIBRARY_TOKENS[key] = tokens
+    return tokens
+
+
+def _is_library_env_var(detail: object) -> bool:
+    name = str(detail).lower().strip("b'\"")
+    return any(token in name for token in library_tokens())
 
 
 def baseline_info(image: str | None = None) -> dict:
@@ -173,6 +212,8 @@ def capability_events(events: list[dict]) -> list[dict]:
         if name == "pickle.find_class" and not _find_class_is_evidence(event.get("detail", "")):
             continue
         if floor and noise_key(name, event.get("detail", "")) in floor:
+            continue
+        if name in ("os.putenv", "os.unsetenv") and _is_library_env_var(event.get("detail", "")):
             continue
         out.append(event)
     return out

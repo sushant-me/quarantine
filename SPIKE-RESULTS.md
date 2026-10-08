@@ -239,11 +239,39 @@ Three separate effects, all measured:
    That removes the `bert-tiny` false positive (5 events → 0) but does **not** close the gap
    for the artifact's own framework code path, which is why the image stays opt-in.
 
-**So the analysis image is built, documented, and off by default — and the reason is a
-measurement rather than a preference.** Making it the default needs proper event
-*attribution*: knowing that a `dlopen` came from a library's import rather than from the
-artifact. That is a real piece of engineering, and pretending a key-matching subtraction
-solved it would have shipped a 40% false-positive rate.
+**Then the cause was actually diagnosed, and three of the four reasons were ours.**
+
+Instrumenting the two remote-code models with the analysis image showed that after floor subtraction each
+one had exactly **one** surviving capability event: `os.putenv('TORCHINDUCTOR_CACHE_DIR')` — torch naming an
+environment variable after itself. Three fixes followed:
+
+1. **Ownership rule.** The measured baseline now also records the package names the image owns (40 tokens),
+   and an `os.putenv`/`os.unsetenv` whose variable name references an installed package is that package
+   configuring itself. Deterministic, and it removes the sole surviving "capability".
+2. **Package-context loading.** `transformers` loads remote code inside a package so relative imports resolve;
+   we were importing `modeling_*.py` as a standalone module, so a real Nepali model failed with
+   `ImportError: attempted relative import`. Fixed in `sandbox_runner.py::_load_in_package`, and the image
+   gained `einops`, which another real model declares.
+3. **Evidence marking.** The prompt now marks every trace line `[EVIDENCE]` or `[context]` — decided by the
+   harness — because a benign real model was abstained on when the analyst read the interpreter's own noise
+   as the artifact's doing. `[context]` lines are explicitly not citable and not a reason to answer UNKNOWN.
+
+After those, `prajdabre/rotary-indictrans2-en-indic-dist-200M` **executes**: its custom architecture imports,
+runs, and produces **zero capability events after subtraction**.
+
+**It still does not get a verdict, for two reasons that are now precise:**
+
+* **A 3B model hallucinates trace ids under the richer prompt.** It answered BLOCK citing ids 161, 166 and 248
+  in a 25-event trace. The grounding rule refused the verdict and the case escalated — which is the fail-safe
+  working, but it means the bottleneck here is analyst capability, not the box.
+* **Version skew is not solvable in one image.** `ujjwal5454/nepali-voice-engine-v4` fails with
+  `cannot import name 'isin_mps_friendly' from 'transformers.pytorch_utils'`: it was written against an older
+  transformers. No single image satisfies every artifact's pinned dependency versions; per-artifact dependency
+  resolution from the artifact's own manifest is the real feature, and it is not in this release.
+
+So the image remains **opt-in**, now with a measured reason list rather than a suspicion, and the default
+configuration is unchanged at 9/9 on the corpus, 20/20 on the English controls and 0 false positives on the
+Nepali/Indic set.
 
 ---
 
@@ -315,7 +343,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Twenty-four defects found by running it
+## 5. Twenty-seven defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -363,8 +391,11 @@ and exited 0 — and it is the reason the third outcome exists here.
 | 22 | a model requiring `trust_remote_code=True` was **blocked because it appeared to declare nothing** | the declaration was built from `README.md` only — and `config.json`, which is where `auto_map` and the architecture are declared, was ignored. My own fetch patterns had also missed `*.md`, so there was no README either | `agents/supervisor.py::_declared` now includes the config's `architectures`, `auto_map`, `model_type`, `library_name` and declared dependencies; the fetchers take `*.md` |
 | 23 | installing torch made **a dependency's import look like the artifact's behaviour**, and every real model a false positive | capability was counted from events with no notion of who caused them | a *measured* noise floor (`mode_baseline` + `baselines/`) is subtracted; it fixes the plain-model case and, on the evidence, is not sufficient for the framework case — so the analysis image is opt-in (see §3b) |
 | 24 | on picklescan's corpus, several samples were "observed" only via `file.read /harness/runner.py` | our own harness's files were being read by library machinery and counted as the artifact's capability | `/harness/` joins the safe-open prefixes; the measured rate fell from 49% to 47%, because those were never the payload's doing |
+| 25 | two real remote-code models were **false-positived by one environment variable** | the noise floor could not know that `TORCHINDUCTOR_CACHE_DIR` is torch's own; a hand-written list would be a denylist by another name | the measured baseline now records the image's package names, and an env var referencing an installed package is that package configuring itself |
+| 26 | a real Nepali model failed with `ImportError: attempted relative import` — and we blamed the artifact | `modeling_*.py` was imported as a standalone module, while `transformers` loads remote code inside a package so that relative imports resolve | `sandbox_runner.py::_load_in_package` registers a synthetic parent package; the analysis image also gained `einops`, which another real model declares |
+| 27 | a benign real model was **abstained on** because the analyst read the interpreter's own noise as the artifact's doing | the prompt showed the raw trace with no distinction between evidence and context, so `ctypes.dlopen` and a temp directory looked like capability | every trace line is now marked `[EVIDENCE]` or `[context]` by the harness, and the decision procedure says `[context]` is never a reason to answer UNKNOWN |
 
-Twenty-four defects, and the pattern is consistent: every one was found by a control group, a
+Twenty-seven defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked

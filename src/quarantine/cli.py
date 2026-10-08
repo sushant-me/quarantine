@@ -23,6 +23,7 @@ import sys
 from pathlib import Path
 
 from quarantine.agents.supervisor import loader_sha256, run_case
+from quarantine.events import baseline_info
 from quarantine.llm import served_model
 from quarantine.receipt import generate_keypair, sign_receipt, verify_receipt
 from quarantine.sandbox.execute import IMAGE
@@ -101,6 +102,7 @@ def cmd_inspect(args: argparse.Namespace) -> int:
             "execution": case.execution,
             "container": {"image": IMAGE, "network": "none", "read_only": True,
                           "cap_drop": "ALL", "no_new_privileges": True},
+            "noise_floor": baseline_info(IMAGE),
         },
         "verdict": {
             "decided": outcome.decided,

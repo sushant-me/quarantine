@@ -22,6 +22,7 @@ import io
 import json
 import os
 import pickle
+import re
 import sys
 import traceback
 import zipfile
@@ -376,6 +377,32 @@ def _find_weight_files(artifact: str) -> list[str]:
 BASELINE_MODULES = ("torch", "transformers", "numpy", "safetensors", "sentencepiece")
 
 
+def _load_in_package(path: str):
+    """Import a module file with a parent package, so relative imports resolve.
+
+    `transformers` loads remote code inside a package namespace for this reason. We register
+    a synthetic parent whose `__path__` is the file's own directory, then import the file as
+    a submodule of it. Without this, a legitimate `from .configuration_x import X` fails and
+    the failure looks like the artifact's fault.
+    """
+    import types
+
+    parent_dir = os.path.dirname(os.path.abspath(path))
+    stem = os.path.splitext(os.path.basename(path))[0]
+    pkg_name = "artifact_pkg"
+    if pkg_name not in sys.modules:
+        pkg = types.ModuleType(pkg_name)
+        pkg.__path__ = [parent_dir]                      # makes submodule search work
+        pkg.__package__ = pkg_name
+        sys.modules[pkg_name] = pkg
+    mod_name = f"{pkg_name}.{stem}"
+    spec = importlib.util.spec_from_file_location(mod_name, path)
+    mod = importlib.util.module_from_spec(spec)
+    mod.__package__ = pkg_name
+    sys.modules[mod_name] = mod
+    return mod
+
+
 def mode_baseline(out: str) -> int:
     """Record the events this image produces **on its own**, by importing its libraries.
 
@@ -402,7 +429,32 @@ def mode_baseline(out: str) -> int:
 
     _run_active(_import_all)
     _flush(out)
+
+    # Also record which packages the image owns, for one host-side rule: an environment
+    # variable whose *name* references an installed package is that package configuring
+    # itself. `os.putenv('TORCHINDUCTOR_CACHE_DIR')` was the single surviving "capability"
+    # on both real remote-code models, and it is torch talking about torch.
+    #
+    # Read outside the hook on purpose: enumerating distributions does file I/O, and doing
+    # it while recording would fill the floor with the measurement's own noise.
+    tokens = _installed_package_tokens()
+    with open(out, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps({"i": 0, "event": "baseline.libraries",
+                             "detail": ",".join(tokens)}) + "\n")
     return 0
+
+
+def _installed_package_tokens() -> list[str]:
+    """Lower-case names of the distributions installed in this image."""
+    import importlib.metadata as md
+
+    tokens: set[str] = set()
+    for dist in md.distributions():
+        name = (dist.metadata or {}).get("Name") or ""
+        for part in re.split(r"[-_.]+", name.lower()):
+            if len(part) >= 3:
+                tokens.add(part)
+    return sorted(tokens)
 
 
 def mode_trace(artifact: str, out: str) -> int:
@@ -419,10 +471,13 @@ def mode_trace(artifact: str, out: str) -> int:
     for path in targets:
         rel = os.path.relpath(path, artifact)
         try:
-            spec = importlib.util.spec_from_file_location("artifact_custom", path)
-            mod = importlib.util.module_from_spec(spec)
-            sys.modules["artifact_custom"] = mod
-            _run_active(lambda: spec.loader.exec_module(mod))
+            # Load the file *inside a package*, the way `transformers` does when it honours
+            # `trust_remote_code`. Importing a `modeling_*.py` as a standalone module makes
+            # `from .configuration_x import X` raise ImportError — which is exactly what
+            # happened to the real Nepali model `ujjwal5454/nepali-voice-engine-v4`, and it
+            # was being reported as the artifact's failure rather than ours.
+            mod = _load_in_package(path)
+            _run_active(lambda: mod.__spec__.loader.exec_module(mod))
             # Exercise the declared API, so a loader that only acts when called is seen too.
             if hasattr(mod, "generate"):
                 try:

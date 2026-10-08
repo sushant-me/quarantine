@@ -22,8 +22,11 @@ FROM python:3.12-slim
 
 # torch from the CPU index first, so transformers finds it satisfied and does not pull a
 # CUDA build in behind our back.
+# einops is not decoration: `prajdabre/rotary-indictrans2-en-indic-dist-200M` declares it in
+# its custom modelling code, and without it the code path cannot run at all — so the case
+# escalates for a missing dependency rather than being judged.
 RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch \
- && pip install --no-cache-dir transformers safetensors sentencepiece
+ && pip install --no-cache-dir transformers safetensors sentencepiece einops
 
 # Everything the harness itself needs is standard library; nothing is added here.
 WORKDIR /work

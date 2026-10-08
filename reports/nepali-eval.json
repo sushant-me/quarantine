@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T20:19:05+0545",
+  "generated_at": "2026-10-08T21:14:58+0545",
   "kind": "nepali",
   "n": 5,
   "benign": 5,
@@ -100,7 +100,7 @@
         "supervisor"
       ],
       "turns": 1,
-      "elapsed_s": 1.13,
+      "elapsed_s": 1.14,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -161,20 +161,60 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its configuration. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to do. The artifact is not performing any operations that are forbidden by its declaration.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.14,
+      "elapsed_s": 11.28,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
     },
     {
       "name": "nepali-minilm-embedder",
+      "picklescan": {
+        "scanned_files": 0,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 0,
+        "flagged": [],
+        "says_clean": true
+      },
+      "incumbents_flagged_by": [],
+      "incumbents_flagged": false,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to do. The artifact declares that it performs no operations, so the trace aligns with the declared behaviour.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 10.67,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "nepali-qwen-gguf",
       "picklescan": {
         "scanned_files": 0,
         "infected": 0,
@@ -208,47 +248,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 6.99,
-      "label": "benign",
-      "category": "real-published-model",
-      "note": "third-party artifact fetched from the Hub; none of this code is ours"
-    },
-    {
-      "name": "nepali-qwen-gguf",
-      "picklescan": {
-        "scanned_files": 0,
-        "infected": 0,
-        "suspicious": 0,
-        "dangerous": 0,
-        "says_clean": true,
-        "verdict_malicious": false,
-        "flagged_anything": false
-      },
-      "fickling": {
-        "scanned_files": 0,
-        "flagged": [],
-        "says_clean": true
-      },
-      "incumbents_flagged_by": [],
-      "incumbents_flagged": false,
-      "static_capabilities": {},
-      "custom_code_files": [],
-      "trace_events": 1,
-      "sensitive_events": [],
-      "verdict": "ALLOW",
-      "escalated": false,
-      "escalation_reason": null,
-      "observed": true,
-      "grounded": true,
-      "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids, and there are no capability events to block. The observation status indicates that nothing suspicious happened.",
-      "agents": [
-        "observer",
-        "analyst",
-        "supervisor"
-      ],
-      "turns": 2,
-      "elapsed_s": 7.79,
+      "elapsed_s": 9.58,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -291,7 +291,7 @@
         "supervisor"
       ],
       "turns": 1,
-      "elapsed_s": 0.48,
+      "elapsed_s": 0.47,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
