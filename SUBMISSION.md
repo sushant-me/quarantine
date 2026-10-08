@@ -36,8 +36,8 @@ The challenge's test: *delete the AI call — does the product still do its job?
 |---|---|---|---|
 | detection, 9 undeclared artifacts | **9/9** | 2/9 | 2/9 |
 | false positives, 4 benign controls | **0** | 0 | 0 |
-| false positives, 4 **real published models** | **0 blocked** | 0 | **4/4** |
-| real models escalated (UNKNOWN, referred to a human) | **0 of 4** | — | — |
+| false positives, **20 real published models** | **0 blocked** | 0 | **18 (90%)** |
+| real models escalated (UNKNOWN, referred to a human) | **0 of 20** | — | — |
 | repair produced and capability-clean | **7/7** attempted | — | — |
 | repair verified by output-equivalence | **6/7** (one honest refusal) | — | — |
 | sandbox escape, 10 primitives | **0 escaped** | — | — |
@@ -64,12 +64,14 @@ ordinary PyTorch model. **Static scanning fails in both directions at once.**
 ## 4. What this does NOT claim
 
 Copied from [`LIMITATIONS.md`](LIMITATIONS.md) so it is not buried: the malicious corpus and its labels are
-ours; the third-party controls are tiny models; **no live CVE bypass is claimed** (current picklescan catches
-our pickle pattern); one model size; equivalence is 12 prompts plus a capability check rather than a proof of
-behavioural equivalence; the escape attempt is ten primitives rather than a fuzzing campaign; the receipt has
-not been independently verified; **3 of the 4 real models are escalated because their checkpoint format cannot
-be read**, which is honest but not coverage; and the repair is verified on 6 of 7 attempts, with the seventh a
-refusal and weight-only payloads skipped rather than repaired.
+ours; the 20 third-party controls are deliberately small models, so they test format handling and false
+positives rather than scale; **no live CVE bypass is claimed** — we looked for a denylist gap that both
+incumbents miss and did not find one (see [`reports/scanner-coverage.md`](reports/scanner-coverage.md)); one
+model size; equivalence is 12 prompts plus a capability check rather than a proof of behavioural equivalence;
+the escape attempt is ten primitives rather than a fuzzing campaign; the receipt has not been independently
+verified; **`safetensors` is validated but its tensor values are not inspected**, so a poisoned-weights attack
+is out of scope; and the repair is verified on 6 of 7 attempts, with the seventh a refusal and weight-only
+payloads skipped rather than repaired.
 
 ## 5. Run it
 
@@ -81,7 +83,7 @@ uv pip install --python .venv/bin/python cryptography picklescan fickling jsonsc
 .venv/bin/python scripts/make_corpus.py
 PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py       # detection vs the incumbents
 PYTHONPATH=src .venv/bin/python scripts/escape_attempt.py    # ten breakout primitives
-PYTHONPATH=src .venv/bin/python -m pytest -q                 # 45 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q                 # 58 tests
 
 # one artifact, the whole loop, offline
 PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-generate --out runs/probe

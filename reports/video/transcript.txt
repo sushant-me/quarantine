@@ -39,25 +39,25 @@ Dangerous globals: 0
   $ quarantine inspect corpus/probe-custom-generate
 
 [1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 16.1s
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 9.45s
       mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
-[3/4] challenger  refuted=False grounded=True in 32.66s
-      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifac…
-[4/4] repairer    ok=True removed=['_sync'] in 9.79s
+[3/4] challenger  refuted=True grounded=True in 11.57s
+      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.get…
+      supervisor  the challenger objected but could not ground it in the declaration
+[4/4] repairer    ok=True removed=['_sync'] in 6.23s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-      keypair     -> quarantine.pub.pem
 
 === 04b-trace  (9s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
 
 [1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 16.1s
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 9.45s
       mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
-[3/4] challenger  refuted=False grounded=True in 32.66s
-      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifac…
-[4/4] repairer    ok=True removed=['_sync'] in 9.79s
+[3/4] challenger  refuted=True grounded=True in 11.57s
+      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.get…
+      supervisor  the challenger objected but could not ground it in the declaration
+[4/4] repairer    ok=True removed=['_sync'] in 6.23s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
@@ -65,19 +65,19 @@ Dangerous globals: 0
   behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
-  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
+  agents            observer, analyst, challenger, supervisor, repairer, verifier in 5 turns
 
 === 04c-trace  (11s)  the artifact, in a box with no network
   $ quarantine inspect corpus/probe-custom-generate
 
 [1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 16.1s
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 9.45s
       mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
-[3/4] challenger  refuted=False grounded=True in 32.66s
-      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifac…
-[4/4] repairer    ok=True removed=['_sync'] in 9.79s
+[3/4] challenger  refuted=True grounded=True in 11.57s
+      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.get…
+      supervisor  the challenger objected but could not ground it in the declaration
+[4/4] repairer    ok=True removed=['_sync'] in 6.23s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
@@ -85,7 +85,7 @@ Dangerous globals: 0
   behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
-  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
+  agents            observer, analyst, challenger, supervisor, repairer, verifier in 5 turns
   receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
   exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)
 
@@ -93,11 +93,11 @@ Dangerous globals: 0
   $ quarantine inspect corpus/probe-custom-generate
 
       mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation …
-[3/4] challenger  refuted=False grounded=True in 32.66s
-      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifac…
-[4/4] repairer    ok=True removed=['_sync'] in 9.79s
+[3/4] challenger  refuted=True grounded=True in 11.57s
+      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.get…
+      supervisor  the challenger objected but could not ground it in the declaration
+[4/4] repairer    ok=True removed=['_sync'] in 6.23s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
@@ -105,7 +105,7 @@ Dangerous globals: 0
   behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
-  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
+  agents            observer, analyst, challenger, supervisor, repairer, verifier in 5 turns
   receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
   exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)
 
@@ -117,7 +117,6 @@ Dangerous globals: 0
 [1/4] observer    1 events, network=none; executed=none; observed=False
       supervisor  -> escalate (no behavioural observation is possible)
 [!]   ESCALATED   the artifact could not be executed (custom_generate/generate.py: ModuleNotFoundError("No module named 'a_…
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          missing-dep
@@ -145,13 +144,13 @@ Dangerous globals: 0
   picklescan         2/9      22%         0/4       0%
   fickling           2/9      22%         0/4       0%
 
-  FALSE POSITIVES — 4 real published models from the Hub
+  FALSE POSITIVES — 20 real published models from the Hub
 
   auditor         caught   detect   false pos  FP rate
   ----------------------------------------------------
-  Quarantine           —      n/a         0/4       0%
-  picklescan           —      n/a         0/4       0%
-  fickling             —      n/a         4/4     100%
+  Quarantine           —      n/a        0/20       0%
+  picklescan           —      n/a        0/20       0%
+  fickling             —      n/a       18/20      90%
 
   The incumbents' catches are the artifacts whose payload is a
   pickle — the only ones inside their input set. The seven code

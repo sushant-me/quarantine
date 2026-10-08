@@ -1,42 +1,42 @@
 {
-  "generated_at": "2026-10-08T18:34:38+0545",
+  "generated_at": "2026-10-08T18:52:07+0545",
   "kind": "corpus-real",
-  "n": 4,
-  "benign": 4,
+  "n": 20,
+  "benign": 20,
   "undeclared": 0,
   "escalated": 0,
-  "allowed": 4,
+  "allowed": 20,
   "quarantine": {
     "tp": 0,
     "fp": 0,
     "fn": 0,
-    "tn": 4,
+    "tn": 20,
     "detection_rate": null,
     "false_positive_rate": 0.0
   },
   "incumbents_any": {
     "tp": 0,
-    "fp": 4,
+    "fp": 18,
     "fn": 0,
-    "tn": 0,
+    "tn": 2,
     "detection_rate": null,
-    "false_positive_rate": 1.0
+    "false_positive_rate": 0.9
   },
   "picklescan": {
     "tp": 0,
     "fp": 0,
     "fn": 0,
-    "tn": 4,
+    "tn": 20,
     "detection_rate": null,
     "false_positive_rate": 0.0
   },
   "fickling": {
     "tp": 0,
-    "fp": 4,
+    "fp": 18,
     "fn": 0,
-    "tn": 0,
+    "tn": 2,
     "detection_rate": null,
-    "false_positive_rate": 1.0
+    "false_positive_rate": 0.9
   },
   "cases": [
     {
@@ -95,14 +95,108 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its behaviour. The trace shows only serialization helper stubbing, which cannot perform I/O, and does not make the observation partial.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 12.81,
+      "elapsed_s": 9.36,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "google-bert-tiny-real",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/google-bert-tiny-real/pytorch_model.bin",
+            "output": "exit 1"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared, and the evidence shows no suspicious operations. The artifact only loaded weight files and did not execute any Python code, which aligns with the declared behavior.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 12.06,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-distilbert-cased",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-distilbert-cased/pytorch_model.bin",
+            "output": "exit 1"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 0,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any operations that its declaration forbids, and the trace shows no capability events. The evidence indicates that the artifact was loaded with a weight file but did not execute any code, which aligns with the declared behavior of not declaring any specific behavior.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 10.22,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -142,14 +236,77 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids, and there were no capability events to block. The observation status indicates that no suspicious behavior was observed, and the static capability counts and findings are empty, confirming that the artifact did not perform any unauthorized actions.",
+      "mechanism": "The artifact did not perform any operations that its declaration forbids, and the trace shows no capability events. The evidence indicates that the artifact was loaded with a weight file but did not execute any code, which aligns with the declared behavior of not declaring any specific behavior.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 12.24,
+      "elapsed_s": 10.29,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-bart",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-bart/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 5,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 8.64,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -181,7 +338,143 @@
       "incumbents_flagged": true,
       "static_capabilities": {},
       "custom_code_files": [],
+      "trace_events": 8,
+      "sensitive_events": [
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.LongStorage"
+        },
+        {
+          "i": 5,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 14.02,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-clip",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-clip/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
       "trace_events": 7,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.LongStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 12.1,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-distilbert",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-distilbert/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 5,
       "sensitive_events": [
         {
           "i": 1,
@@ -196,7 +489,70 @@
         {
           "i": 3,
           "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 9.51,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-electra",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-electra/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 7,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
           "detail": "torch.LongStorage"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
         },
         {
           "i": 4,
@@ -210,14 +566,82 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows only serialization helper stubbing, which cannot perform I/O, and does not make the observation partial.",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its behaviour. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.73,
+      "elapsed_s": 12.66,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-gpt-neo",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-gpt-neo/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 8,
+      "sensitive_events": [
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 5,
+          "event": "pickle.find_class",
+          "detail": "torch.ByteStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 11.86,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -249,6 +673,280 @@
       "incumbents_flagged": true,
       "static_capabilities": {},
       "custom_code_files": [],
+      "trace_events": 8,
+      "sensitive_events": [
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 5,
+          "event": "pickle.find_class",
+          "detail": "torch.ByteStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 11.85,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-llama",
+      "picklescan": {
+        "scanned_files": 0,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 0,
+        "flagged": [],
+        "says_clean": true
+      },
+      "incumbents_flagged_by": [],
+      "incumbents_flagged": false,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared, and the evidence shows no suspicious operations. The artifact only loaded a weight file and did not execute any Python code, which aligns with the declared behavior.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 11.52,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-mistral",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-mistral/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 5,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 10.91,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-opt",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-opt/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 6,
+      "sensitive_events": [
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows that the artifact loaded plain/zip pickles and stubbed serialization helpers, but these actions do not violate the declared behaviour.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 12.04,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-phi",
+      "picklescan": {
+        "scanned_files": 0,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 0,
+        "flagged": [],
+        "says_clean": true
+      },
+      "incumbents_flagged_by": [],
+      "incumbents_flagged": false,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 1,
+      "sensitive_events": [],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any operations that its declaration forbids, and there were no capability events to block.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 9.39,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-roberta",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-roberta/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
       "trace_events": 7,
       "sensitive_events": [
         {
@@ -269,7 +967,7 @@
         {
           "i": 4,
           "event": "pickle.find_class",
-          "detail": "torch.ByteStorage"
+          "detail": "torch.LongStorage"
         }
       ],
       "verdict": "ALLOW",
@@ -278,14 +976,266 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its behaviour. The trace shows only serialization helper stubbing, which cannot perform I/O, and does not make the observation partial.",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its behaviour. The trace shows only serialization helper stubbing, which cannot perform I/O, and the harness confirms there are no capability events or unresolved globals.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.38,
+      "elapsed_s": 11.78,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-t5",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-t5/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 5,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 8.03,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-vit",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-vit/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 5,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 8.02,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-wav2vec2",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-wav2vec2/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 6,
+      "sensitive_events": [
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 4,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared in its declaration. The trace shows that the artifact loaded plain/zip pickles and weight files, but did not perform any operations that would block the declared behaviour.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 12.16,
+      "label": "benign",
+      "category": "real-published-model",
+      "note": "third-party artifact fetched from the Hub; none of this code is ours"
+    },
+    {
+      "name": "tiny-random-whisper",
+      "picklescan": {
+        "scanned_files": 1,
+        "infected": 0,
+        "suspicious": 0,
+        "dangerous": 0,
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
+      },
+      "fickling": {
+        "scanned_files": 1,
+        "flagged": [
+          {
+            "cmd": "/home/logic/win/quarantine/.venv/bin/python -m fickling --check-safety /home/logic/win/quarantine/corpus-real/tiny-random-whisper/pytorch_model.bin",
+            "output": "exit 2"
+          }
+        ],
+        "says_clean": false
+      },
+      "incumbents_flagged_by": [
+        "fickling"
+      ],
+      "incumbents_flagged": true,
+      "static_capabilities": {},
+      "custom_code_files": [],
+      "trace_events": 5,
+      "sensitive_events": [
+        {
+          "i": 1,
+          "event": "pickle.find_class",
+          "detail": "torch._utils._rebuild_tensor_v2"
+        },
+        {
+          "i": 2,
+          "event": "pickle.find_class",
+          "detail": "torch.FloatStorage"
+        },
+        {
+          "i": 3,
+          "event": "pickle.find_class",
+          "detail": "collections.OrderedDict"
+        }
+      ],
+      "verdict": "ALLOW",
+      "escalated": false,
+      "escalation_reason": null,
+      "observed": true,
+      "grounded": true,
+      "cited_ids": [],
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "agents": [
+        "observer",
+        "analyst",
+        "supervisor"
+      ],
+      "turns": 2,
+      "elapsed_s": 8.06,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"

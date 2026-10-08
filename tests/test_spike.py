@@ -617,3 +617,73 @@ def test_benign_control_produces_no_capability_events(tmp_path):
     assert result["returncode"] == 0
     assert not [e for e in result["events"]
                 if e["event"] in {"socket.getaddrinfo", "file.read", "subprocess.Popen"}]
+
+
+# ------------------------------------------------------- safetensors container
+
+def _write_safetensors(path, index=None, header_bytes=None, pad=b"\x00" * 16):
+    import json as _json
+    import struct as _struct
+    blob = header_bytes if header_bytes is not None else _json.dumps(
+        index if index is not None else {"weight": {"dtype": "F32", "shape": [2], "data_offsets": [0, 8]}}
+    ).encode()
+    path.write_bytes(_struct.pack("<Q", len(blob)) + blob + pad)
+    return path
+
+
+def test_a_valid_safetensors_container_is_read_and_needs_no_pickle(tmp_path):
+    """The format cannot execute code, so validating it is a conclusion, not a guess."""
+    from quarantine.sandbox_runner import load_weights
+    path = _write_safetensors(tmp_path / "model.safetensors")
+    notes: list[dict] = []
+    index, how = load_weights(str(path), notes)
+    assert how == "safetensors"
+    assert "weight" in index
+    assert notes and notes[0]["event"] == "safetensors"
+
+
+def test_every_real_safetensors_repo_is_now_examined_rather_than_escalated(tmp_path):
+    """Before this, a safetensors-only repository was escalated: nothing to read."""
+    from quarantine.agents.case import Case
+    case = Case(name="m", root=tmp_path,
+                execution={"weights_loaded": [{"file": "model.safetensors",
+                                               "status": "loaded", "how": "safetensors"}]})
+    assert case.observed is True
+    assert case.escalation_reason is None
+    assert case.capability_events == []
+
+
+@pytest.mark.parametrize("broken", ["truncated", "not-json", "empty-object", "bad-index"])
+def test_a_malformed_container_is_rejected_not_trusted(tmp_path, broken):
+    from quarantine.sandbox_runner import load_weights
+    path = tmp_path / "model.safetensors"
+    if broken == "truncated":
+        path.write_bytes(b"\x40\x00")                          # header claims 64, file has 2
+    elif broken == "not-json":
+        _write_safetensors(path, header_bytes=b"this is not json")
+    elif broken == "empty-object":
+        _write_safetensors(path, header_bytes=b"{}")
+    else:
+        _write_safetensors(path, header_bytes=b'{"weight": {"dtype": "F32"}}')  # no shape
+    with pytest.raises(Exception):
+        load_weights(str(path), [])
+
+
+def test_a_pickle_renamed_safetensors_is_rejected_rather_than_trusted(tmp_path):
+    """The dangerous direction: claiming a safe suffix must not buy a pass.
+
+    A plain pickle renamed to `.safetensors` fails validation, which routes it to the
+    escalation path — never to ALLOW.
+    """
+    import os as _os
+    import pickle as _pickle
+    from quarantine.sandbox_runner import load_weights
+
+    class Probe:
+        def __reduce__(self):
+            return (_os.getcwd, ())
+
+    path = tmp_path / "model.safetensors"
+    path.write_bytes(_pickle.dumps({"x": Probe()}))
+    with pytest.raises(Exception):
+        load_weights(str(path), [])

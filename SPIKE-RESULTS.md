@@ -7,7 +7,7 @@
 
 ## 1. Two headline results
 
-### 1.1 Detection on a labeled corpus of 12 artifacts
+### 1.1 Detection on a labeled corpus of 13 artifacts
 
 Every artifact declares the **same** API (`generate(prompt) -> str`, a pure deterministic transform).
 Four ship exactly that. Nine ship something else as well.
@@ -46,15 +46,17 @@ Identity inside the box: `uid 1000, euid 1000, pid 1`. Full report: `reports/san
 
 ### 1.3 Third-party negative controls — real published models
 
-The labeled corpus is ours, so a false-positive rate measured only against it proves little. Four **real
+The labeled corpus is ours, so a false-positive rate measured only against it proves little. **Twenty real
 repositories published by other people** were fetched (`scripts/fetch_real_models.py`) and run through the
-same pipeline. Every one is expected to be benign; any `BLOCK` is a false positive.
+same pipeline — chosen for architecture *and format* variety: zip checkpoints, legacy pickles, safetensors
+containers and sharded layouts, plus one genuinely real widely-used model (`google/bert_uncased_L-2_H-128_A-2`)
+rather than only fixtures. Every one is expected to be benign; any `BLOCK` is a false positive.
 
-| auditor | false positives (of 4 real models) | what it says |
+| auditor | false positives (of 20 real models) | what it says |
 |---|---|---|
-| **Quarantine** | **0** | `ALLOW`, grounded, on all four |
-| picklescan 1.0.5 | 0 | clean on all four |
-| **fickling 0.1.12** | **4 (100%)** | `exit 2` on every one |
+| **Quarantine** | **0 blocked, 0 escalated** | `ALLOW`, grounded, on all twenty |
+| picklescan 1.0.5 | 0 | clean on all twenty |
+| **fickling 0.1.12** | **18 (90%)** | `exit 2` on nearly every one |
 
 **The fickling result is the finding, and it is fair to state it precisely.** A real checkpoint
 (`pytorch_model.bin`) is a **zip archive**, not a bare pickle — `file` confirms it, and fickling cannot
@@ -132,7 +134,8 @@ gate.
 
 On the 13-artifact corpus the agent team reaches **9/9 with zero escalations and zero false positives** — the
 adversarial check and the escalation path cost nothing on decidable cases. On the four real published models
-**0 of 4 escalate**: the reader opens torch's zip format, so a benign checkpoint is now *looked at* and allowed
+**0 of 20 escalate**: the reader opens torch's zip format and validates safetensors, so a benign
+checkpoint is now *looked at* and allowed
 rather than referred to a human. Getting there introduced defect 15, which the controls caught.
 
 ---

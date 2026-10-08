@@ -13,13 +13,13 @@ attached.
 |---|---|
 | detection on 13 labeled artifacts (9 undeclared, 4 benign controls) | **9/9**, 0 false positives, 0 escalations |
 | the same corpus: picklescan 1.0.5 / fickling 0.1.12 | **2/9** each (22%) |
-| false positives on 4 **real published models** | Quarantine **0 blocked** · picklescan 0 · **fickling 4** |
-| real published models **escalated** | **0 of 4** — the reader now opens torch's zip checkpoint format |
+| false positives on **20 real published models** | Quarantine **0 blocked** · picklescan **0** · **fickling 18 (90%)** |
+| real published models **escalated** | **0 of 20** — the reader opens torch's zip format *and* validates safetensors |
 | repair produced and capability-clean, across the corpus | **7/7** attempted (2 of 9 ship only weights) |
 | repair **verified by output-equivalence** | **6/7** — the seventh is a refusal, see 10 below |
 | deliberate sandbox escape, ten primitives | **0 of 10** succeeded |
 | scanner denylist coverage (19 direct I/O primitives, 6 benign controls) | Quarantine **19/19 observed, 0/6 false positives** · picklescan verdict **10/19** · fickling flagged **25/25 — operations *and* controls** |
-| test suite | 50 passing, including the escalation, challenger-grounding and reader rules |
+| test suite | 58 passing, including the escalation, challenger-grounding and reader rules |
 
 ## What is NOT established
 
@@ -82,6 +82,13 @@ attached.
     `os.getcwd` and `datetime.now` infected, so its denylist is misaligned in both directions; but
     "misaligned denylist" is not "undetectable attack", and the product does not rest on it. The
     measured difference is coverage of the code path.
+
+15. **`safetensors` is validated, not inspected — and that is a different threat model.** We check the
+    container (header length, JSON index, tensor descriptors), which is enough to conclude that no code
+    can execute from it: the format has no pickle and no callable. It says nothing about the *values*.
+    **A poisoned-weights or backdoored-model attack is out of scope for this tool** and would need
+    detection research of a completely different kind. A file that merely claims the suffix but is not a
+    valid container is rejected into the escalation path rather than trusted.
 
 ## Future improvements, in the order they matter
 

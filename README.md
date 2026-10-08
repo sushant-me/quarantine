@@ -29,7 +29,7 @@ PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-ge
 PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
 
-PYTHONPATH=src .venv/bin/python -m pytest -q     # 45 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q     # 58 tests
 ```
 
 ## The agent team
@@ -71,9 +71,12 @@ key. The receipt carries the whole agent transcript, so a reviewer sees which ag
 
 ## What the reader can open
 
-A modern `pytorch_model.bin` is a **zip archive** holding `archive/data.pkl` plus tensor storage. The reader
-detects the zip magic, reads `data.pkl`, and unpickles it under the audit hook — which is what `torch.load`
-does, and where the code execution lives. Legacy plain pickles are read directly.
+Three real formats, three different questions. A modern `pytorch_model.bin` is a **zip archive** holding
+`archive/data.pkl` plus tensor storage: the reader detects the zip magic, reads `data.pkl`, and unpickles it
+under the audit hook — which is what `torch.load` does, and where the code execution lives. Legacy plain
+pickles are read directly. A `safetensors` container is **validated and not executed**, because that format
+has no pickle and no callable in it — the check that stops the modern default format from being escalated. It
+says nothing about the tensor *values*, which is a different threat: see [`LIMITATIONS.md`](LIMITATIONS.md) item 15.
 
 Unpickling a real checkpoint needs torch's tensor-rebuild helpers, which are not installed, so a narrow
 structural rule stubs them: torch's `*Storage` types and `_rebuild*` family, numpy's array reconstruction, and

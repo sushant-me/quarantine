@@ -1,11 +1,11 @@
 [1/4] observer    3 events, network=none; executed=['custom_generate/generate.py']; observed=True
-[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 16.1s
+[2/4] analyst     BLOCK grounded=True cited=[2, 3] in 9.45s
       mechanism   The artifact declared it must not use the network, but the trace shows it performing a network operation (sock
-[3/4] challenger  refuted=False grounded=True in 32.66s
-      objection   The analyst's verdict cites a network operation (socket.getaddrinfo) that is not permitted by the artifact's d
-[4/4] repairer    ok=True removed=['_sync'] in 9.79s
+[3/4] challenger  refuted=True grounded=True in 11.57s
+      objection   The analyst cited evidence from id=3, which shows the artifact performing a network operation (socket.getaddri
+      supervisor  the challenger objected but could not ground it in the declaration
+[4/4] repairer    ok=True removed=['_sync'] in 6.23s
       verifier    equivalent=True over 12 prompts; capability ops 2 -> 0
-      keypair     -> quarantine.pub.pem
 
 === Quarantine verdict ===
   artifact          probe-custom-generate
@@ -13,6 +13,6 @@
   behavioural trace 3 events, network=none, observed=True
   verdict           BLOCK
   repair            ok=True equivalent=True
-  agents            observer, analyst, challenger, repairer, verifier, supervisor in 5 turns
+  agents            observer, analyst, challenger, supervisor, repairer, verifier in 5 turns
   receipt           /home/logic/win/quarantine/runs/demo/receipt.json  verified=True
   exit code         1 (BLOCK — 0 allow, 1 block, 2 unknown)

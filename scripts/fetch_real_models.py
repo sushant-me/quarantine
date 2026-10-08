@@ -20,10 +20,32 @@ ROOT = Path(__file__).resolve().parents[1]
 DEST_ROOT = ROOT / "corpus-real"
 
 REPOS = [
+    # --- the four that started this: legacy and zip checkpoints
     ("hf-internal-testing/tiny-random-gpt2", "tiny-random-gpt2"),
     ("hf-internal-testing/tiny-random-bert", "tiny-random-bert"),
     ("sshleifer/tiny-gpt2", "tiny-gpt2"),
     ("prajjwal1/bert-tiny", "bert-tiny"),
+    # --- scale out: architecture and *format* variety. The question this answers is "what
+    # does the tool do when handed a range of real repositories?", so the set is chosen to
+    # cover zip-checkpoint, legacy-pickle, safetensors-only and sharded layouts rather than
+    # to flatter a single number.
+    ("hf-internal-testing/tiny-random-LlamaForCausalLM", "tiny-random-llama"),
+    ("hf-internal-testing/tiny-random-MistralForCausalLM", "tiny-random-mistral"),
+    ("hf-internal-testing/tiny-random-PhiForCausalLM", "tiny-random-phi"),
+    ("hf-internal-testing/tiny-random-T5ForConditionalGeneration", "tiny-random-t5"),
+    ("hf-internal-testing/tiny-random-BartForConditionalGeneration", "tiny-random-bart"),
+    ("hf-internal-testing/tiny-random-distilbert", "tiny-random-distilbert"),
+    ("hf-internal-testing/tiny-random-roberta", "tiny-random-roberta"),
+    ("hf-internal-testing/tiny-random-ElectraForMaskedLM", "tiny-random-electra"),
+    ("hf-internal-testing/tiny-random-ViTForImageClassification", "tiny-random-vit"),
+    ("hf-internal-testing/tiny-random-CLIPModel", "tiny-random-clip"),
+    ("hf-internal-testing/tiny-random-WhisperForConditionalGeneration", "tiny-random-whisper"),
+    ("hf-internal-testing/tiny-random-wav2vec2", "tiny-random-wav2vec2"),
+    ("hf-internal-testing/tiny-random-gpt_neo", "tiny-random-gpt-neo"),
+    ("hf-internal-testing/tiny-random-OPTForCausalLM", "tiny-random-opt"),
+    ("sshleifer/tiny-distilbert-base-cased", "tiny-distilbert-cased"),
+    # --- a genuinely real, widely-used model rather than a fixture (17 MB)
+    ("google/bert_uncased_L-2_H-128_A-2", "google-bert-tiny-real"),
 ]
 
 # Everything needed to load and describe the artifact, nothing large.

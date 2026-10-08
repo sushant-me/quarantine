@@ -151,7 +151,8 @@ def _find_custom_code(artifact: str) -> list[str]:
     return found
 
 
-WEIGHT_SUFFIXES = (".bin", ".pkl", ".pickle", ".pt", ".pth", ".ckpt", ".joblib")
+WEIGHT_SUFFIXES = (".bin", ".pkl", ".pickle", ".pt", ".pth", ".ckpt", ".joblib",
+                   ".safetensors")
 
 # Tensor serialization helpers. A torch checkpoint's `data.pkl` rebuilds tensors through
 # these; with torch absent the lookup fails and the whole unpickling aborts, which is why
@@ -243,8 +244,54 @@ class AuditUnpickler(pickle.Unpickler):
         return None
 
 
+def load_safetensors(path: str, notes: list[dict]) -> tuple[object, str]:
+    """Validate a safetensors container — a format that cannot execute code by design.
+
+    Layout: 8-byte little-endian header length, that many bytes of JSON, then tensor data.
+    There is no pickle and no callable anywhere in it, so "we examined it and nothing can
+    run" is a conclusion the format itself supports rather than one we are guessing at.
+
+    Two honest limits, recorded here because they are easy to forget at the call site:
+    we validate the *container and index*, not the tensor values — so a poisoned-weights
+    attack is out of scope for this tool (see `LIMITATIONS.md`). And a file that merely
+    claims the suffix but is not a valid container is rejected, which sends it down the
+    escalation path rather than being quietly trusted.
+    """
+    import struct
+
+    with open(path, "rb") as fh:
+        raw = fh.read(8)
+        if len(raw) != 8:
+            raise ValueError("too short to be a safetensors header")
+        (header_len,) = struct.unpack("<Q", raw)
+        if header_len == 0 or header_len > 100 * 1024 * 1024:
+            raise ValueError(f"implausible header length {header_len}")
+        blob = fh.read(header_len)
+        if len(blob) != header_len:
+            raise ValueError(f"truncated header ({len(blob)} of {header_len} bytes)")
+
+    index = json.loads(blob.decode("utf-8"))
+    if not isinstance(index, dict) or not index:
+        raise ValueError("header is not a non-empty JSON object")
+    tensors = {k: v for k, v in index.items() if k != "__metadata__" and isinstance(v, dict)}
+    malformed = [k for k, v in tensors.items() if "dtype" not in v or "shape" not in v]
+    if malformed:
+        raise ValueError(f"{len(malformed)} index entries are not tensor descriptors")
+    notes.append({"event": "safetensors", "global": f"{len(tensors)} tensors indexed",
+                  "why": f"header {header_len} bytes, valid container"})
+    return index, "safetensors"
+
+
 def load_weights(path: str, notes: list[dict]) -> tuple[object, str]:
-    """Unpickle a weight file: a torch zip checkpoint, or a plain pickle."""
+    """Open a weight file in whatever form it actually ships.
+
+    Three real formats, three different questions. A safetensors container is *validated*
+    (nothing in it can execute). A zip checkpoint has its embedded pickle *executed* under
+    the audit hook, because that is what `torch.load` would do. A plain pickle is loaded
+    the same way.
+    """
+    if path.lower().endswith(".safetensors"):
+        return load_safetensors(path, notes)
     with open(path, "rb") as fh:
         magic = fh.read(2)
     if magic == b"PK":                                   # zip: the modern torch format
