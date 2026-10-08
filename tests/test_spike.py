@@ -214,6 +214,27 @@ def test_the_eligibility_gate_can_actually_fail():
     assert "no such symbol" in detail2
 
 
+def test_the_gate_catches_dangling_document_paths_but_not_prose():
+    """A document pointing at a path that does not resolve is the defect this catches.
+
+    Scoping matters as much as the check: artifact-relative names and generated
+    evidence paths appear in prose and are not claims about this repository.
+    """
+    checker = _load_checker()
+    assert checker._repo_paths_in("see `docs/AI-USAGE.md`") == {"docs/AI-USAGE.md"}
+    assert checker._repo_paths_in("[x](reports/corpus-eval.md)") == {"reports/corpus-eval.md"}
+    assert checker._repo_paths_in("see `custom_generate/generate.py`") == set()
+    assert checker._repo_paths_in("see `pytorch_model.bin`") == set()
+    assert checker._repo_paths_in("see `runs/demo/out.json`") == set()
+    assert checker._repo_paths_in("see `https://example.com/a.md`") == set()
+
+
+def test_every_documented_repository_path_exists():
+    checker = _load_checker()
+    result = checker.check_doc_paths()[0]
+    assert result["ok"] is True, result["detail"]
+
+
 def test_vendor_scan_ignores_prose_but_still_scans_string_literals():
     checker = _load_checker()
     doc_only = '"""This mentions openai in prose."""\nx = 1\n'

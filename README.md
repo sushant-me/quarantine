@@ -28,7 +28,7 @@ PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-ge
 PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
 
-PYTHONPATH=src .venv/bin/python -m pytest -q     # 30 tests
+PYTHONPATH=src .venv/bin/python -m pytest -q     # 32 tests
 ```
 
 ## The five passes

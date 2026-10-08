@@ -66,6 +66,60 @@ def _load_symbol(rel_path: str, symbol: str) -> tuple[bool, str]:
     return True, "resolved"
 
 
+# Which first segments count as a claim about this repository.
+#
+# `runs/` is deliberately absent: it is generated evidence produced by running the
+# documented commands, so a document naming an output path there is describing what
+# the reader will see, not asserting that the file is committed. Everything under
+# the directories below is authored content and must resolve.
+TOP_LEVEL_DIRS = {"src", "scripts", "tests", "corpus", "docs", "reports", ".github"}
+TOP_LEVEL_FILES = {"README.md", "SUBMISSION.md", "LIMITATIONS.md", "SPIKE-RESULTS.md", "LICENSE", "pytest.ini"}
+BACKTICK_PATH = re.compile(r"`([A-Za-z0-9_./-]+\.(?:md|py|json|ya?ml|txt|toml|sh|ini))`")
+MD_LINK_PATH = re.compile(r"\]\(([A-Za-z0-9_./-]+\.(?:md|py|json|ya?ml|txt|toml|sh|ini))\)")
+
+
+def _repo_paths_in(text: str) -> set[str]:
+    """Tokens that are meant as *repository* paths.
+
+    Scoped deliberately: an artifact-relative name like `custom_generate/generate.py`
+    or a bare `pytorch_model.bin` appears in prose about model artifacts and is not a
+    claim about this repository. A path counts only when its first segment is a real
+    top-level directory or file here.
+    """
+    found: set[str] = set()
+    for match in list(BACKTICK_PATH.findall(text)) + list(MD_LINK_PATH.findall(text)):
+        if "://" in match or any(ch in match for ch in "*?["):
+            continue
+        token = match.split("::")[0].lstrip("./")
+        head = token.split("/")[0]
+        if head in TOP_LEVEL_DIRS or token in TOP_LEVEL_FILES or head in TOP_LEVEL_FILES:
+            found.add(token)
+    return found
+
+
+def check_doc_paths() -> list[dict]:
+    """Every repository path a document points at must exist.
+
+    This is the exact defect class found in a sibling codebase: a document cited a
+    path that did not resolve. Symbols are resolved (above); paths are checked here.
+    """
+    docs = ["README.md", "SUBMISSION.md", "LIMITATIONS.md", "SPIKE-RESULTS.md"]
+    docs += [str(p.relative_to(ROOT)) for p in sorted((ROOT / "docs").glob("*.md"))]
+    missing: list[str] = []
+    checked = 0
+    for rel in docs:
+        path = ROOT / rel
+        if not path.exists():
+            continue
+        for ref in sorted(_repo_paths_in(path.read_text(encoding="utf-8"))):
+            checked += 1
+            if not (ROOT / ref).exists():
+                missing.append(f"{rel} -> {ref}")
+    return [{"check": "documented repository paths resolve", "what": f"{checked} references in {len(docs)} docs",
+             "ok": not missing,
+             "detail": "all resolve" if not missing else "; ".join(missing[:4])}]
+
+
 def check_files() -> list[dict]:
     out = []
     for rel, label in REQUIRED_FILES:
@@ -160,6 +214,7 @@ def main() -> int:
     results += check_files()
     results += check_licence()
     results += check_no_vendor_inference()
+    results += check_doc_paths()
     results += check_disclosure_symbols()
 
     failures = [r for r in results if not r["ok"]]
