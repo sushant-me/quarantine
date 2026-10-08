@@ -174,7 +174,14 @@ def _num(stdout: str, label: str) -> int | None:
 
 
 def parse_picklescan(run: dict) -> dict:
-    """Read picklescan's own summary rather than guessing from words."""
+    """Read picklescan's own summary rather than guessing from words.
+
+    Two levels are kept apart deliberately. `verdict_malicious` is picklescan calling the
+    file infected — that is its verdict. `flagged_anything` also counts a *suspicious*
+    global, which it reports for ordinary pickles that merely mention a stdlib helper. A
+    comparison that conflated the two would overstate both its detections and its false
+    positives, in whatever direction suited the argument.
+    """
     text = run.get("stdout") or ""
     scanned = _num(text, "Scanned files")
     infected = _num(text, "Infected files")
@@ -184,7 +191,9 @@ def parse_picklescan(run: dict) -> dict:
     if None not in (infected, suspicious, dangerous):
         clean = (infected == 0 and suspicious == 0 and dangerous == 0)
     return {"scanned_files": scanned, "infected": infected, "suspicious": suspicious,
-            "dangerous": dangerous, "says_clean": clean}
+            "dangerous": dangerous, "says_clean": clean,
+            "verdict_malicious": (infected or 0) > 0,
+            "flagged_anything": clean is False}
 
 
 def parse_fickling(runs: list[dict]) -> dict:

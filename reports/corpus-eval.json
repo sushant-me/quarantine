@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T16:18:25+0545",
+  "generated_at": "2026-10-08T16:43:22+0545",
   "kind": "corpus",
   "n": 13,
   "benign": 4,
@@ -46,7 +46,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -74,7 +76,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 17.78,
+      "elapsed_s": 13.22,
       "label": "benign",
       "category": "control",
       "note": "declared and shipped behaviour match exactly"
@@ -86,7 +88,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -107,14 +111,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. The trace confirms that the artifact did not perform any of these forbidden operations.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The evidence is sufficient to confirm that the artifact did not perform any prohibited operations.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 20.82,
+      "elapsed_s": 10.75,
       "label": "benign",
       "category": "control",
       "note": "imports a pure stdlib module and does nothing else"
@@ -126,7 +130,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -147,14 +153,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. Since no operations were performed that violate the declared behaviour, the verdict is ALLOW.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact declared it would not do. The artifact's declared behaviour is a pure, deterministic text transform that does not use the network, read files outside its own directory, or spawn processes. Since no capability events were observed, the artifact's declared behaviour is consistent with the trace.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 23.62,
+      "elapsed_s": 13.89,
       "label": "benign",
       "category": "control",
       "note": "several pure helpers, no capability"
@@ -166,7 +172,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -194,7 +202,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 17.96,
+      "elapsed_s": 10.22,
       "label": "benign",
       "category": "control",
       "note": "pure transform using unicodedata"
@@ -206,7 +214,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -231,7 +241,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "6cf23261365b.probe.invalid"
+          "detail": "0bacac826a57.probe.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -243,7 +253,7 @@
         2,
         3
       ],
-      "mechanism": "The artifact declared it must not use the network, but the trace shows it performing a network operation (socket.getaddrinfo).",
+      "mechanism": "The artifact declared that it must not use the network, but the trace shows it performing a network operation (socket.getaddrinfo).",
       "agents": [
         "observer",
         "analyst",
@@ -253,7 +263,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 43.94,
+      "elapsed_s": 43.47,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/hostname and puts it in a DNS query on load"
@@ -265,7 +275,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -306,7 +318,7 @@
         "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 46.66,
+      "elapsed_s": 67.1,
       "label": "undeclared",
       "category": "process-at-import",
       "note": "spawns a process on load"
@@ -318,7 +330,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -359,7 +373,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 75.32,
+      "elapsed_s": 52.25,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads the environment and puts it in a DNS query"
@@ -371,7 +385,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -408,7 +424,7 @@
         2,
         3
       ],
-      "mechanism": "The artifact declared that it must not read files outside its own directory, but the trace shows it reading `/etc/passwd`.",
+      "mechanism": "The artifact declared it must not read files outside its own directory, but the trace shows it reading `/etc/passwd`.",
       "agents": [
         "observer",
         "analyst",
@@ -418,7 +434,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 39.65,
+      "elapsed_s": 57.16,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/passwd and puts it in a DNS query"
@@ -430,7 +446,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -461,7 +479,7 @@
       "cited_ids": [
         2
       ],
-      "mechanism": "The trace shows the artifact performing a network operation (socket.getaddrinfo) that the artifact declares it must not do.",
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
       "agents": [
         "observer",
         "analyst",
@@ -471,7 +489,7 @@
         "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 67.0,
+      "elapsed_s": 63.91,
       "label": "undeclared",
       "category": "network-on-call",
       "note": "the undeclared effect only fires when generate() is called"
@@ -483,7 +501,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -515,7 +535,7 @@
       "cited_ids": [
         3
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "The trace shows the artifact performing a network operation (socket.getaddrinfo) that is not permitted by the declaration.",
       "agents": [
         "observer",
         "analyst",
@@ -525,7 +545,7 @@
         "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 37.92,
+      "elapsed_s": 39.78,
       "label": "undeclared",
       "category": "obfuscated",
       "note": "base64 + exec at import; the source does not name the behaviour"
@@ -537,7 +557,9 @@
         "infected": 0,
         "suspicious": 0,
         "dangerous": 0,
-        "says_clean": true
+        "says_clean": true,
+        "verdict_malicious": false,
+        "flagged_anything": false
       },
       "fickling": {
         "scanned_files": 1,
@@ -562,7 +584,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "093ac164c7cf.modeling.invalid"
+          "detail": "4df25e572093.modeling.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -573,17 +595,17 @@
       "cited_ids": [
         3
       ],
-      "mechanism": "The artifact declared that it must not use the network, but the trace shows a capability event (id=3) that uses socket.getaddrinfo, which is not permitted by the declaration.",
+      "mechanism": "The artifact declared it must not use the network, but the trace shows it performing a network operation (socket.getaddrinfo).",
       "agents": [
         "observer",
         "analyst",
         "challenger",
-        "supervisor",
         "repairer",
-        "verifier"
+        "verifier",
+        "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 45.82,
+      "elapsed_s": 65.08,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "same probe shipped as modeling_*.py rather than custom_generate/"
@@ -595,7 +617,9 @@
         "infected": 1,
         "suspicious": 0,
         "dangerous": 1,
-        "says_clean": false
+        "says_clean": false,
+        "verdict_malicious": true,
+        "flagged_anything": true
       },
       "fickling": {
         "scanned_files": 1,
@@ -643,7 +667,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 32.89,
+      "elapsed_s": 30.31,
       "label": "undeclared",
       "category": "pickle-cve-pattern",
       "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
@@ -655,7 +679,9 @@
         "infected": 1,
         "suspicious": 0,
         "dangerous": 1,
-        "says_clean": false
+        "says_clean": false,
+        "verdict_malicious": true,
+        "flagged_anything": true
       },
       "fickling": {
         "scanned_files": 1,
@@ -695,7 +721,7 @@
       "cited_ids": [
         5
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo: zipcheckpoint.invalid) that its declaration forbids. The artifact attempts to resolve a hostname, which is not allowed by the declaration.",
       "agents": [
         "observer",
         "analyst",
@@ -703,7 +729,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 33.11,
+      "elapsed_s": 37.59,
       "label": "undeclared",
       "category": "zip-checkpoint",
       "note": "a torch-format zip checkpoint whose data.pkl performs a DNS lookup on load; the format that previously could not be read at all, so nothing was observed and the case was escalated to a human"

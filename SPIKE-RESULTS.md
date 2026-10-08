@@ -168,7 +168,47 @@ evidence (defect 15 below).
 
 ---
 
-## 3. The corpus
+## 3. Does the incumbent denylist have holes? (Negative result — and a real one)
+
+The most tempting claim available to this project is *"we detect what the scanners miss"*. So we
+tested it directly instead of asserting it: 19 standard-library callables that perform network,
+filesystem, process or dynamic-code operations, each built into a one-pickle probe, plus **6
+benign controls** (harmless stdlib calls a legitimate pickle makes). Every hostname is under
+`.invalid` (RFC 2606) and no filesystem target is harmed — these are probes, not payloads.
+
+`scripts/probe_scanner_coverage.py` · `reports/scanner-coverage.md`
+
+| measure | result |
+|---|---|
+| Quarantine observed the operation | **19/19** |
+| Quarantine false positives on the benign controls | **0/6** |
+| picklescan 1.0.5 **called infected** (its own verdict) | **10/19** |
+| picklescan **called benign controls infected** | **2/6** |
+| fickling 0.1.12 flagged — operations *and* controls | **25/25** |
+
+**What this says, including the part that does not flatter us.** We looked for a callable that
+reaches the network or the filesystem while both scanners report clean. **Fickling flagged
+everything, so there was no such gap** — a negative result we are publishing rather than burying.
+Fickling's 25/25 is not detection: it flags all six harmless controls too, so it carries no
+discriminating signal here.
+
+picklescan is more interesting, and reading its *verdict* rather than its "suspicious globals"
+count matters. It misses **9 of 19** direct I/O primitives — `socket.gethostbyname`,
+`socket.gethostbyaddr`, `http.client.HTTPConnection`, `ftplib.FTP`, `smtplib.SMTP`, `poplib.POP3`,
+`imaplib.IMAP4`, `xmlrpc.client.ServerProxy`, `builtins.open` — while calling **`os.getcwd` and
+`datetime.datetime.now` infected**. Its denylist is not aligned with capability in either
+direction.
+
+Two things follow, and we state both: a denylist gap alone would not settle anything (fickling
+catches these by flagging indiscriminately), and **this is still not the product's claim.** The
+measured difference the product rests on is the one in §1: the payloads that matter live in
+`custom_generate/generate.py` and `modeling_*.py`, files neither scanner opens. This experiment
+sharpens the *why* — name-matching cannot see behaviour — without pretending a bypass we cannot
+demonstrate.
+
+---
+
+## 4. The corpus
 
 `scripts/make_corpus.py` generates it deterministically; `corpus/MANIFEST.json` is the label file. All
 hostnames are under `.invalid` (RFC 2606) and can never resolve — **nothing here is malware.**
@@ -195,7 +235,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 4. Fifteen defects found by running it
+## 5. Sixteen defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -233,9 +273,10 @@ and exited 0 — and it is the reason the third outcome exists here.
 
 | # | What broke | Root cause | Fix |
 |---|---|---|---|
-| 15 | after the reader learned to open torch zip checkpoints, **every legitimate model started looking suspicious** | `pickle.find_class` was treated as evidence of capability, and a real checkpoint asks for `collections.OrderedDict`, `torch._utils._rebuild_tensor_v2` and `torch.LongStorage` | the same `is_serialization_helper` predicate now filters that event, so only a global that is *not* scaffolding counts. **Caught by the third-party negative controls**, not by any hand-written case |
+| 15 | after the reader learned to open torch zip checkpoints, **every legitimate model started looking suspicious** | `pickle.find_class` was treated as evidence of capability, and a real checkpoint asks for `collections.OrderedDict`, `torch._utils._rebuild_tensor_v2` and `torch.LongStorage` | first fix: filter the serialization scaffolding. **Caught by the third-party negative controls**, not by any hand-written case |
+| 16 | the fix for 15 was still wrong: a benign pickle that merely mentions `json.dumps`, `math.sqrt` or `re.compile` was counted as capability, and `datetime.now` tripped it through `builtins.getattr` | we were treating **every** requested global as evidence, not just dangerous ones — and two of those names collide across modules (`re.compile` vs the builtin, `getattr` that the pickle protocol itself emits to reference a method) | the rule is now: **asking for a global is intent, not capability.** Only unambiguous execution/IO globals count, builtins are matched in `builtins`/`_io` only, and protocol-emitted attribute access is excluded. Found by the 6 benign controls in §2 — **the controls again** |
 
-Fifteen defects, and the pattern is consistent: every one was found by a control group, a
+Sixteen defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked
@@ -244,7 +285,7 @@ found only because there was a control group and a rate to compute. That is the 
 
 ---
 
-## 5. What is NOT proven
+## 6. What is NOT proven
 
 1. **The malicious set and its labels are ours.** Eight undeclared artifacts were written by us. Four real
    published models now cover the *negative* side, so the false-positive finding is third-party evidence —
@@ -281,7 +322,7 @@ found only because there was a control group and a rate to compute. That is the 
 
 ---
 
-## 6. Timing (this machine, model warm)
+## 7. Timing (this machine, model warm)
 
 | stage | per artifact |
 |---|---|
@@ -292,7 +333,7 @@ found only because there was a control group and a rate to compute. That is the 
 
 ---
 
-## 7. Next
+## 8. Next
 
 1. Reproduce `GHSA-93mv-x874-956g` and `CERT VU#290`/`CVE-2026-80047` as *current-version* bypass cases —
    the pickle case here is caught by today's picklescan, so a case that still defeats it is the honest test.

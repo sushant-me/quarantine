@@ -42,6 +42,14 @@ The challenge's test: *delete the AI call — does the product still do its job?
 | repair verified by output-equivalence | **6/7** (one honest refusal) | — | — |
 | sandbox escape, 10 primitives | **0 escaped** | — | — |
 
+**We also looked for a bypass and did not find one — see [`reports/scanner-coverage.md`](reports/scanner-coverage.md).**
+19 one-pickle probes for standard-library callables that perform network, filesystem, process or
+dynamic-code operations, plus 6 benign controls: Quarantine observed the operation **19/19** with
+**0/6 false positives**; picklescan's own verdict caught **10/19** while calling `os.getcwd` and
+`datetime.now` infected; fickling flagged **all 25 probes and all 6 harmless controls**, so it
+carries no discriminating signal here. **No denylist gap that both incumbents miss was found**, and
+the pitch does not claim one — the measured difference is coverage of the code path.
+
 **Three outcomes, and `UNKNOWN` is not a pass.** Exit codes make it a gate: **0 ALLOW · 1 BLOCK · 2 UNKNOWN**.
 Escalation is reserved for cases a human must decide — nothing was observed, the agents disagreed, or the model
 was unreachable. Before that outcome existed, an artifact whose dependency was missing was reported ALLOW:

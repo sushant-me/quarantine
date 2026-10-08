@@ -42,7 +42,22 @@ def test_picklescan_summary_is_parsed_not_guessed():
                       "Infected files: 0\nSuspicious globals: 0\nDangerous globals: 0\n")}
     parsed = parse_picklescan(run)
     assert parsed == {"scanned_files": 1, "infected": 0, "suspicious": 0,
-                      "dangerous": 0, "says_clean": True}
+                      "dangerous": 0, "says_clean": True,
+                      "verdict_malicious": False, "flagged_anything": False}
+
+
+def test_picklescan_verdict_is_kept_apart_from_a_suspicious_global():
+    """A benign pickle that mentions json.dumps is 'suspicious', not infected.
+
+    Conflating the two would let a comparison overstate detections *or* false positives,
+    depending on which argument it was making. picklescan's own verdict is `infected`.
+    """
+    run = {"stdout": ("----------- SCAN SUMMARY -----------\nScanned files: 1\n"
+                      "Infected files: 0\nSuspicious globals: 1\nDangerous globals: 0\n")}
+    parsed = parse_picklescan(run)
+    assert parsed["says_clean"] is False          # something was said
+    assert parsed["verdict_malicious"] is False   # but it was not called malicious
+    assert parsed["flagged_anything"] is True
 
 
 def test_picklescan_parser_reports_a_dirty_scan():
@@ -297,11 +312,13 @@ def test_the_reader_opens_a_torch_zip_and_actually_runs_the_pickle_inside(tmp_pa
 
 
 def test_serialization_scaffolding_is_not_evidence_of_capability():
-    """Reading torch checkpoints made every legitimate model ask for these globals.
+    """Asking for a global is intent, not capability.
 
-    Counting them would have flagged every real model — which the third-party controls
-    caught. Only a global that is not scaffolding counts, and the dangerous builtins
-    still do.
+    Two rounds of controls were needed. First, reading torch checkpoints made every
+    legitimate model ask for `collections.OrderedDict`, `torch._utils._rebuild_tensor_v2`
+    and `torch.LongStorage`. Then a benign control group showed we were still counting
+    *every* requested global — so an ordinary pickle mentioning `json.dumps` looked
+    suspicious. Only unambiguous execution/IO globals count now.
     """
     from quarantine.events import capability_events
     events = [
@@ -311,8 +328,17 @@ def test_serialization_scaffolding_is_not_evidence_of_capability():
         {"i": 4, "event": "pickle.find_class", "detail": "ssl.get_server_certificate"},
         {"i": 5, "event": "pickle.find_class", "detail": "builtins.eval"},
         {"i": 6, "event": "socket.getaddrinfo", "detail": "x.invalid"},
+        # benign standard-library calls a legitimate pickle makes
+        {"i": 7, "event": "pickle.find_class", "detail": "json.dumps"},
+        {"i": 8, "event": "pickle.find_class", "detail": "math.sqrt"},
+        {"i": 9, "event": "pickle.find_class", "detail": "posix.getcwd"},
+        {"i": 10, "event": "pickle.find_class", "detail": "re.compile"},
+        {"i": 11, "event": "pickle.find_class", "detail": "datetime.datetime"},
+        # a recursive load counts only inside a loader module
+        {"i": 12, "event": "pickle.find_class", "detail": "pickle.load"},
+        {"i": 13, "event": "pickle.find_class", "detail": "json.load"},
     ]
-    assert [e["i"] for e in capability_events(events)] == [4, 5, 6]
+    assert [e["i"] for e in capability_events(events)] == [4, 5, 6, 12]
 
 
 def test_an_unresolvable_global_is_recorded_not_silently_stubbed():

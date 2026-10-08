@@ -99,6 +99,15 @@ One measured consequence worth knowing: dropping **all** capabilities also remov
 run failed with `Permission denied` on the harness for exactly that reason — the container now runs
 as the invoking unprivileged user.
 
+## The scanner-coverage experiment
+
+`scripts/probe_scanner_coverage.py` builds 19 one-pickle probes for standard-library callables that
+perform network, filesystem, process or dynamic-code operations, plus 6 benign controls, and asks the
+same three questions of each: does picklescan flag it, does fickling, and does our contained run observe
+the operation? Everything is benign by construction — hostnames under `.invalid`, no filesystem target
+harmed. Results are in `reports/scanner-coverage.md`, including the negative result: **no denylist gap
+that both incumbents miss was found**, so no bypass is claimed.
+
 ## The corpus
 
 | Artifact | What it is |

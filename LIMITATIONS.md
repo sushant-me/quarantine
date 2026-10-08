@@ -18,6 +18,7 @@ attached.
 | repair produced and capability-clean, across the corpus | **7/7** attempted (2 of 9 ship only weights) |
 | repair **verified by output-equivalence** | **6/7** — the seventh is a refusal, see 10 below |
 | deliberate sandbox escape, ten primitives | **0 of 10** succeeded |
+| scanner denylist coverage (19 direct I/O primitives, 6 benign controls) | Quarantine **19/19 observed, 0/6 false positives** · picklescan verdict **10/19** · fickling flagged **25/25 — operations *and* controls** |
 | test suite | 50 passing, including the escalation, challenger-grounding and reader rules |
 
 ## What is NOT established
@@ -71,6 +72,16 @@ attached.
 13. **`UNKNOWN` exists and is not a pass.** Exit code 2 covers *nothing was observed*, *the agents disagreed*,
     and *the model was unreachable*. A CI policy that treats 2 as success has defeated the point; the tool
     cannot enforce how you configure that, it can only refuse to call it ALLOW.
+
+
+14. **No scanner bypass is claimed, and we tried to find one.** We built 19 one-pickle probes for
+    standard-library callables that perform network, filesystem, process or dynamic-code operations
+    and looked for one that both incumbents miss. **Fickling flagged all 25 probes including the six
+    benign controls, so no such gap exists in this set** — a negative result, published in
+    `reports/scanner-coverage.md`. picklescan's *verdict* misses 9 of the 19 while calling
+    `os.getcwd` and `datetime.now` infected, so its denylist is misaligned in both directions; but
+    "misaligned denylist" is not "undetectable attack", and the product does not rest on it. The
+    measured difference is coverage of the code path.
 
 ## Future improvements, in the order they matter
 

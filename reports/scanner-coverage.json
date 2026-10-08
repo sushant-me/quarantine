@@ -1,0 +1,321 @@
+{
+  "generated_at": "2026-10-08T16:34:49+0545",
+  "candidates": 25,
+  "operation_candidates": 19,
+  "benign_controls": 6,
+  "picklescan_flagged": 12,
+  "fickling_flagged": 25,
+  "quarantine_observed": 19,
+  "both_scanners_clean_but_observed": 0,
+  "gaps": [],
+  "picklescan_false_positives_on_controls": 2,
+  "fickling_false_positives_on_controls": 6,
+  "quarantine_false_positives_on_controls": 0,
+  "rows": [
+    {
+      "global": "socket.gethostbyname",
+      "kind": "network",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: _socket.gethostbyname",
+        "socket.gethostbyname: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "socket.gethostbyaddr",
+      "kind": "network",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: _socket.gethostbyaddr",
+        "socket.gethostbyaddr: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "socket.getfqdn",
+      "kind": "network",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: socket.getfqdn",
+        "socket.gethostbyaddr: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "socket.getaddrinfo",
+      "kind": "network",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: socket.getaddrinfo",
+        "socket.getaddrinfo: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "socket.create_connection",
+      "kind": "network",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: socket.create_connection",
+        "socket.getaddrinfo: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "ssl.get_server_certificate",
+      "kind": "network",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: ssl.get_server_certificate",
+        "socket.getaddrinfo: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "http.client.HTTPConnection",
+      "kind": "network",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: http.client.HTTPConnection"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "urllib.request.urlopen",
+      "kind": "network",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: urllib.request.urlopen",
+        "socket.getaddrinfo: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "ftplib.FTP",
+      "kind": "network",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: ftplib.FTP",
+        "socket.getaddrinfo: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "smtplib.SMTP",
+      "kind": "network",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: smtplib.SMTP",
+        "socket.getaddrinfo: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "poplib.POP3",
+      "kind": "network",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: poplib.POP3",
+        "socket.getaddrinfo: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "imaplib.IMAP4",
+      "kind": "network",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: imaplib.IMAP4",
+        "socket.getaddrinfo: coverage.invalid"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "xmlrpc.client.ServerProxy",
+      "kind": "network",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: xmlrpc.client.ServerProxy"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "builtins.open",
+      "kind": "filesystem",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: _io.open",
+        "file.read: /etc/hostname"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "pathlib.Path.read_text",
+      "kind": "filesystem",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "file.read: /etc/hostname"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "os.remove",
+      "kind": "filesystem",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: posix.remove",
+        "os.remove: /tmp/coverage-probe-does-not-exist"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "subprocess.Popen",
+      "kind": "process",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: subprocess.Popen",
+        "subprocess.Popen: /bin/true"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "os.popen",
+      "kind": "process",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: os.popen",
+        "file.read: 4",
+        "subprocess.Popen: /bin/sh"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "builtins.eval",
+      "kind": "dynamic_code",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": true,
+      "observed_events": [
+        "pickle.find_class: builtins.eval"
+      ],
+      "both_clean": false
+    },
+    {
+      "global": "json.dumps (control)",
+      "kind": "benign",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": false,
+      "observed_events": [],
+      "both_clean": false
+    },
+    {
+      "global": "math.sqrt (control)",
+      "kind": "benign",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": false,
+      "observed_events": [],
+      "both_clean": false
+    },
+    {
+      "global": "collections.OrderedDict (control)",
+      "kind": "benign",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": false,
+      "observed_events": [],
+      "both_clean": false
+    },
+    {
+      "global": "datetime.datetime.now (control)",
+      "kind": "benign",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": false,
+      "observed_events": [],
+      "both_clean": false
+    },
+    {
+      "global": "os.getcwd (control)",
+      "kind": "benign",
+      "picklescan_flagged": true,
+      "picklescan_suspicious_only": false,
+      "fickling_flagged": true,
+      "quarantine_observed": false,
+      "observed_events": [],
+      "both_clean": false
+    },
+    {
+      "global": "re.compile (control)",
+      "kind": "benign",
+      "picklescan_flagged": false,
+      "picklescan_suspicious_only": true,
+      "fickling_flagged": true,
+      "quarantine_observed": false,
+      "observed_events": [],
+      "both_clean": false
+    }
+  ],
+  "note": "Every payload is a benign probe: hostnames are under `.invalid` (RFC 2606) and no filesystem target is harmed. This measures denylist coverage, not an exploit."
+}
