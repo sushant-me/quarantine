@@ -129,6 +129,9 @@ def _parse_json(text: str) -> dict | None:
     return None
 
 
+MAX_ROUNDS = 3
+
+
 def verdict_is_grounded(verdict_name: str | None, cited: list, valid_ids: set,
                         cap_ids: set) -> bool:
     """Is this verdict admissible, given what the harness independently observed?
@@ -165,7 +168,7 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
 
     # Two rounds: if the model cites evidence that does not exist, it is told exactly
     # which ids are valid and asked again. An ungrounded verdict is never accepted.
-    for round_no in range(2):
+    for round_no in range(MAX_ROUNDS):
         candidates = [
             {"model": MODEL, "messages": messages, "temperature": 0.0, "max_tokens": 400,
              "stream": False,
@@ -202,7 +205,7 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
         out.update({"verdict": parsed, "cited_ids": cited, "grounded": grounded,
                     "valid_ids": sorted(valid_ids), "rounds": round_no + 1,
                     "capability_events": [e["i"] for e in caps]})
-        if grounded or not valid_ids or round_no == 1:
+        if grounded or not valid_ids or round_no == MAX_ROUNDS - 1:
             break
 
         ids_ok = all(isinstance(i, int) and i in valid_ids for i in cited)
@@ -212,9 +215,11 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
         elif verdict_name == "BLOCK":
             # The block was grounded in nothing: it cited ids that exist but no capability
             # event. Saying so is more useful than repeating the whole prompt.
-            feedback = (f"You answered BLOCK, but none of the ids you cited {cited} is a capability "
-                        f"event. The capability events are {[e['i'] for e in caps]}. A block must cite "
-                        "one of those; if there are none, the verdict cannot be BLOCK.")
+            feedback = (f"You answered BLOCK but cited {cited}, and none of those ids is a capability "
+                        f"event. Your evidence_ids MUST include at least one of these ids: "
+                        f"{[e['i'] for e in caps]} - they are the capability events, and they are what "
+                        "the declaration is compared against. If none of them is unexplained by the "
+                        "declared behaviour, the verdict cannot be BLOCK. Answer again.")
         else:
             feedback = (f"You answered ALLOW, but the captured trace contains capability events "
                         f"{[e['i'] for e in caps]} that the declaration does not allow: "

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T19:56:52+0545",
+  "generated_at": "2026-10-08T20:18:41+0545",
   "kind": "corpus-real",
   "n": 20,
   "benign": 20,
@@ -95,14 +95,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and the harness confirms there are no capability events or unresolved globals.",
+      "mechanism": "The artifact did not perform any capability events that were not declared. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.56,
+      "elapsed_s": 7.77,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -149,7 +149,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 10.73,
+      "elapsed_s": 7.7,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -189,14 +189,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to do. The evidence indicates that the artifact was loaded with a model file ('pytorch_model.bin') but no Python code was executed, which aligns with the artifact's declared behavior.",
+      "mechanism": "The trace shows no capability events, indicating that no operations were performed that the artifact claims to do. The evidence also shows that no operations were performed that the artifact claims to do, as there is no shipped Python code and no plain/zip pickles loaded. Therefore, the artifact's declared behavior matches the actual behavior observed.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 12.16,
+      "elapsed_s": 9.92,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -243,7 +243,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.92,
+      "elapsed_s": 9.38,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -299,14 +299,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its configuration. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its configuration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.4,
+      "elapsed_s": 7.91,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -367,14 +367,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows no capability events, indicating that no operations were performed that would violate the declared behavior.",
+      "mechanism": "The artifact did not perform any capability events that would violate its declared behavior. The trace shows only serialization helper stubbing, which is not capable of performing I/O or making the observation partial.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.41,
+      "elapsed_s": 7.93,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -435,14 +435,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that would violate its declared behavior. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to do. The artifact is not performing any operations that its declaration forbids, so the verdict is ALLOW.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.56,
+      "elapsed_s": 7.98,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -498,14 +498,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows no capability events, indicating that no operations were performed that would violate the declared behavior.",
+      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows no capability events, indicating that no operations were performed that the artifact claims to be capable of. The evidence provided does not suggest any suspicious behavior.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.03,
+      "elapsed_s": 8.49,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -566,14 +566,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to do. The artifact is not performing any operations that are forbidden by its declaration.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to do. The artifact is not performing any actions that violate its declared behavior.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.53,
+      "elapsed_s": 7.46,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -634,14 +634,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its configuration. The trace shows only serialization helper stubbing, which is not considered suspicious behavior.",
+      "mechanism": "The artifact did not perform any capability events that would violate its declared behavior. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.46,
+      "elapsed_s": 7.83,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -702,14 +702,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows no capability events, indicating that no operations were performed that would violate the declared behavior.",
+      "mechanism": "The artifact did not perform any operations that the declaration forbids. The trace shows no capability events, indicating that no operations were performed that would violate the declared behavior.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.49,
+      "elapsed_s": 7.53,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -749,7 +749,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.04,
+      "elapsed_s": 7.62,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -805,14 +805,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows no capability events, indicating that no operations were performed that the artifact claims to be capable of. The evidence provided does not suggest any suspicious behavior.",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its configuration. The trace shows only pickling operations, which are not considered capability events in this context.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 12.09,
+      "elapsed_s": 7.56,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -868,14 +868,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to be able to do. The artifact's declared behavior is that it should load a model from a .safetensors file, which is what the trace shows happening.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to be able to do. The artifact is not performing any actions that violate its declared behavior.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 13.03,
+      "elapsed_s": 7.93,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -908,14 +908,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids, and there are no capability events to block.",
+      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows no capability events, indicating that no operations were performed that the artifact claims to be capable of. The evidence is sufficient to conclude that the artifact's declared behavior matches its actual behavior.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.66,
+      "elapsed_s": 9.01,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -976,14 +976,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that would violate its declared behavior. The trace shows only serialization helper stubbing, which cannot perform I/O, and there are no unresolved globals.",
+      "mechanism": "The artifact did not perform any capability events that were not declared in its configuration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.52,
+      "elapsed_s": 7.88,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1039,14 +1039,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to be able to do. The evidence provided does not indicate any suspicious behavior.",
+      "mechanism": "The trace shows no capability events, which means no operations were performed that the artifact claims to be able to do. The evidence provided does not indicate any suspicious behavior, and the artifact's declared capabilities are consistent with the observed behavior.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 10.93,
+      "elapsed_s": 8.57,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1102,14 +1102,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that were not declared in its configuration. The trace shows only serialization helper stubbing, which cannot perform I/O and does not make the observation partial.",
+      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows only the loading of a model, which is consistent with the declared architecture and model type.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.41,
+      "elapsed_s": 7.56,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1165,14 +1165,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any capability events that would violate its declared behavior. The trace shows that the artifact loaded the model and its weights, which are consistent with the declared model type and transformers version.",
+      "mechanism": "The artifact did not perform any capability events that would violate its declared behavior. The trace shows that the artifact loaded the model files without any I/O operations, which aligns with the declared model type and transformers version.",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.91,
+      "elapsed_s": 8.33,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1235,7 +1235,7 @@
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 11.68,
+      "elapsed_s": 7.86,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"

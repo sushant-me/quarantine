@@ -54,6 +54,11 @@ SUSPICIOUS_IMPORTS = {
 SAFE_OPEN_PREFIXES = (
     "/usr/", "/proc/self", "/sys/", "/lib/", "/etc/ld.so", "/dev/null",
     "/dev/urandom", "/usr/local/lib/python", "/tmp/",
+    # The harness's own files. A payload that makes a library read *our* source is not doing
+    # anything to the artifact — it showed up as `file.read /harness/runner.py` on several
+    # samples of picklescan's corpus, where the payload only asked for `inspect`/`linecache`
+    # behaviour, and it was being counted as evidence of capability.
+    "/harness/",
 )
 
 

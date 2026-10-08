@@ -54,6 +54,8 @@ REQUIRED_FILES = [
     ("docker/Dockerfile.analysis", "the analysis image is defined"),
     ("scripts/build_analysis_image.sh", "the analysis image is buildable"),
     ("scripts/measure_image_baseline.py", "the noise floor is measurable"),
+    ("scripts/eval_third_party.py", "the third-party corpus evaluation is reproducible"),
+    ("reports/third-party-eval.md", "the third-party result is published"),
     ("baselines/python_3.12-slim.jsonl", "the default image's noise floor is recorded"),
     ("docs/DEMO-SCRIPT.md", "demo script"),
     ("reports/video/quarantine-demo.mp4", "demo video (required deliverable)"),

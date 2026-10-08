@@ -247,6 +247,47 @@ solved it would have shipped a 40% false-positive rate.
 
 ---
 
+## 3c. Someone else's malicious corpus — and the result that corrects our framing
+
+The weakest thing about our own evidence is that the malicious artifacts are ours, and that a
+hand-written corpus rewards the tool that was written against it. So the incumbents' own published corpus was
+run instead: **picklescan ships `tests/data` and `tests/data2`, 91 malicious and 4 benign samples**, one file
+per real advisory (`GHSA-....pkl`) plus named exploit samples. These are not ours.
+`scripts/eval_third_party.py` · `reports/third-party-eval.md`
+
+| | our box observes the payload act | picklescan calls it infected |
+|---|---|---|
+| **91 malicious samples** (picklescan's corpus) | **43 (47%)** | **88 (97%)** |
+| **4 benign samples** (picklescan's corpus) | **0 (0%)** | 0 (0%) |
+| our own 9 undeclared artifacts | 9 (100%) | 2 (22%) |
+
+**On their corpus their scanner is far ahead, and the reason is not a bug in either tool.** It is what the two
+approaches can see:
+
+* Our corpus's payloads *do something the moment they are loaded* — a DNS lookup during unpickling. Behaviour
+  catches that, and a scanner that never executes anything cannot.
+* Their corpus's payloads mostly **name a vulnerable entry point in a host library** —
+  `cProfile.run`, `profile.Profile.run`, `pty.spawn`, `torch.utils.collect_env.run`,
+  `symbolic_shapes.ShapeEnv.evaluate_guards_expression`. Loaded in isolation they call nothing, so nothing
+  happens, and there is no behaviour to observe. A denylist sees the name and flags it anyway.
+
+So the correct claim is the narrower one, and it is the one the pitch now makes: **the two tools answer
+different questions.** Name-matching finds *references to dangerous entry points*; behaviour finds *what
+actually happened*. Neither is a superset of the other, and 21 of our 43 observations here were
+`pickle.find_class` — intent by name, i.e. we are partly a denylist ourselves, and should say so.
+
+What survives unchanged is the specific thing this project is for: **of the seven payloads in our corpus that
+live in `custom_generate/` and `modeling_*.py`, neither scanner opens a single file.** And a payload that
+cannot fire in isolation *because its host application is absent* is exactly the payload that fires for real
+when the model is loaded by the framework it targets.
+
+**Defect 24 came out of this run**: several samples were "observed" only through
+`file.read /harness/runner.py` — our own harness being read by library machinery, counted as the artifact's
+capability. `/harness/` is now excluded, and the rate moved from 49% to 47% because those were never the
+payload's doing.
+
+---
+
 ## 4. The corpus
 
 `scripts/make_corpus.py` generates it deterministically; `corpus/MANIFEST.json` is the label file. All
@@ -274,7 +315,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Twenty-three defects found by running it
+## 5. Twenty-four defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -321,8 +362,9 @@ and exited 0 — and it is the reason the third outcome exists here.
 | 21 | the CLI **crashed with a traceback** on a real model (`NameError: name 'ids_ok' is not defined`) | a refactor extracted the grounding rule and left one reference to the removed variable behind — on the retry path, which only a model that produced an ungrounded first answer would reach | the retry feedback now distinguishes three cases (phantom ids, a block with no capability event, an allow with capability present); the real model that found it is a Nepali voice engine |
 | 22 | a model requiring `trust_remote_code=True` was **blocked because it appeared to declare nothing** | the declaration was built from `README.md` only — and `config.json`, which is where `auto_map` and the architecture are declared, was ignored. My own fetch patterns had also missed `*.md`, so there was no README either | `agents/supervisor.py::_declared` now includes the config's `architectures`, `auto_map`, `model_type`, `library_name` and declared dependencies; the fetchers take `*.md` |
 | 23 | installing torch made **a dependency's import look like the artifact's behaviour**, and every real model a false positive | capability was counted from events with no notion of who caused them | a *measured* noise floor (`mode_baseline` + `baselines/`) is subtracted; it fixes the plain-model case and, on the evidence, is not sufficient for the framework case — so the analysis image is opt-in (see §3b) |
+| 24 | on picklescan's corpus, several samples were "observed" only via `file.read /harness/runner.py` | our own harness's files were being read by library machinery and counted as the artifact's capability | `/harness/` joins the safe-open prefixes; the measured rate fell from 49% to 47%, because those were never the payload's doing |
 
-Twenty-three defects, and the pattern is consistent: every one was found by a control group, a
+Twenty-four defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked

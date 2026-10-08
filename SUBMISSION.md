@@ -70,6 +70,14 @@ first run **escalated the GGUF model** — because GGUF quantisations are how mo
 the reader did not know the format. That is now fixed. Models, counts and limits:
 [`docs/NEPAL.md`](docs/NEPAL.md).
 
+**The counterweight is measured too.** On picklescan's *own* published malicious corpus (91 samples, one per
+real GHSA advisory) their denylist flags **88 (97%)** and our contained run observes the payload act on
+**43 (47%)** — 0 false positives on their 4 benign samples. Their payloads typically name a vulnerable entry
+point in a host library and do nothing when loaded alone; ours act on load. **This is not a replacement for a
+pickle scanner; it is the other half of the pair** — with the code path (no scanner opens a `.py`) and the
+repair (no scanner attempts one) as the parts only this tool covers.
+[`reports/third-party-eval.md`](reports/third-party-eval.md)
+
 **Three outcomes, and `UNKNOWN` is not a pass.** Exit codes make it a gate: **0 ALLOW · 1 BLOCK · 2 UNKNOWN**.
 Escalation is reserved for cases a human must decide — nothing was observed, the agents disagreed, or the model
 was unreachable. Before that outcome existed, an artifact whose dependency was missing was reported ALLOW:

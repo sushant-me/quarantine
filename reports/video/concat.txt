@@ -14,6 +14,8 @@ file '/home/logic/win/quarantine/reports/video/frames/05-verdict.png'
 duration 15.0
 file '/home/logic/win/quarantine/reports/video/frames/05b-escalate.png'
 duration 15.0
+file '/home/logic/win/quarantine/reports/video/frames/06c-their-corpus.png'
+duration 17.0
 file '/home/logic/win/quarantine/reports/video/frames/06b-nepal.png'
 duration 14.0
 file '/home/logic/win/quarantine/reports/video/frames/06-numbers.png'

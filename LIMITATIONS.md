@@ -100,6 +100,23 @@ attached.
     `pytorch_model.bin` reading that the stubs had handled. It is therefore opt-in via
     `QUARANTINE_IMAGE=quarantine-analysis:latest`, with the measurements behind that decision in
     [`SPIKE-RESULTS.md`](SPIKE-RESULTS.md) §3b. Proper event attribution is what would make it the default.
+18. **Behaviour-based detection is weak against payloads that cannot fire in isolation — measured, not
+    suspected.** On picklescan's own corpus (91 malicious samples with real GHSA provenance) our contained run
+    observed the payload act on **43 (47%)**, while their denylist flagged **88 (97%)**. Their payloads typically
+    name a vulnerable entry point in a host library (`cProfile.run`, `pty.spawn`,
+    `torch.utils.collect_env.run`) and do nothing when loaded alone. This is not a defect to be fixed by better
+    engineering; it is the boundary of the approach, and it is why the honest positioning is *use both* rather
+    than *replace*. Our advantage is confined to the thing it was built for: the custom Python every scanner
+    ignores, and the repair none of them attempt.
+
+19. **The analyst's citation is occasionally non-compliant, and the fail-safe then escalates a decidable
+    case.** A 3B model sometimes answers `BLOCK` while citing an id that is not a capability event; the
+    grounding rule correctly refuses it. During one measurement round this moved the corpus from 9/9 to 8/9
+    with 1 escalation, and a re-run with a third attempt allowed and sharper feedback returned it to 9/9. So
+    the number carries real run-to-run variance, and the honest way to state it is *9/9 on the run recorded
+    in `reports/corpus-eval.json`*, not *always 9/9*. The fail-safe direction is right — an ungrounded block is
+    never accepted — but the variance is a property of the model, not of the rule.
+
 ## Future improvements, in the order they matter
 
 1. Reproduce a **still-live** published bypass rather than a fixed one, and publish the case either way.

