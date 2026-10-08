@@ -49,6 +49,8 @@ REQUIRED_FILES = [
     ("docs/AI-USAGE.md", "AI usage disclosure"),
     ("docs/EVENT-REQUIREMENTS.md", "the event's requirements, mapped"),
     ("docs/NEPAL.md", "what this does for the Nepal community"),
+    ("docs/BUSINESS.md", "the commercial case is part of the submission"),
+    ("scripts/verify_published_receipts.py", "independent verification is runnable"),
     ("scripts/fetch_nepali_models.py", "the Nepali control set is reproducible"),
     ("scripts/find_remote_code_models.py", "the remote-code search is reproducible"),
     ("docker/Dockerfile.analysis", "the analysis image is defined"),

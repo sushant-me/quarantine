@@ -38,6 +38,14 @@ jobs:
       # Docker is available on the runner, so the contained-execution tests run here too.
       # Tests needing the local model server or the fetched third-party corpora skip
       # themselves rather than failing: a fresh clone has neither.
+      # The claim is that a verdict can be checked without trusting the code that produced it.
+      # Until this step existed, the only place that was exercised was the machine that signed.
+      # This runs the standalone verifier (stdlib + openssl, imports nothing from the package)
+      # against the receipts the README points at, on a runner we do not control, and then
+      # tampers with copies and requires the verifier to say NOT VERIFIED.
+      - name: verify the published receipts with openssl
+        run: .venv/bin/python scripts/verify_published_receipts.py
+
       - name: tests
         run: PYTHONPATH=src .venv/bin/python -m pytest -q
 

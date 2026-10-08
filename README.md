@@ -47,6 +47,28 @@ python tools/verify_receipt_standalone.py runs/probe/receipt.json \
 Contributing without installing? `PYTHONPATH=src .venv/bin/python -m quarantine.cli …` works too;
 the scripts put `src/` on the path themselves. `scripts/check_eligibility.py` must pass either way.
 
+## Why it could be a business
+
+[`docs/BUSINESS.md`](docs/BUSINESS.md) is the commercial case: what is being bought (artifact admission
+control), who signs, the packaging and unit economics, the Nepal/South Asia beachhead, the competition, the IP
+position — including which parts of this product are deliberately *not* ownable — and a section listing what
+could not be verified, which is the longest honest part of it.
+
+The technical claims it rests on are not taken on trust: every one links to a report in this repository, and
+the row that argues against us (picklescan's own corpus, 97% to our 47%) is in the same table as the ones that
+argue for us.
+
+## Verifying it without trusting us
+
+```bash
+python scripts/verify_published_receipts.py
+```
+
+This checks the two published receipts with the standalone verifier — stdlib only, Ed25519 through `openssl`,
+importing nothing from this package — and then **tampers with copies and requires the check to fail**. It runs
+in CI, on a runner we do not control, because a verifier that returns "VERIFIED" for everything passes every
+happy-path test ever written.
+
 ## The receipt
 
 A DSSE-shaped envelope: `payloadType` is `application/vnd.quarantine.receipt+json`, the payload is
