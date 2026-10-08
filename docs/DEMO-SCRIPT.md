@@ -113,7 +113,7 @@ PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py --prefix demo 2>&1 | tail
 | Never say | Why |
 |---|---|
 | "we bypass picklescan" | current picklescan **catches** our pickle pattern. The claim is the code path, not a bypass |
-| "we detect all malware" | 8/8 on a corpus we wrote is not a detection rate for the world |
+| "we detect all malware" | 9/9 on a corpus we wrote is not a detection rate for the world |
 | "the sandbox is secure" | ten primitives failed; nobody has fuzzed it |
 | "AI-powered" as a phrase | point at the file and function that consumes the output instead |
 | any number not on screen | every number in this script is in `SPIKE-RESULTS.md` with its weakness attached |
