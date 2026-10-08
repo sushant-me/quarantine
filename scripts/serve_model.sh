@@ -5,7 +5,11 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 AISTACK="${AISTACK:-/home/logic/win/aistack}"
-MODEL="${MODEL:-$AISTACK/gguf/qwen2.5-1.5b-instruct-q4_k_m.gguf}"
+# The default is the model every document, receipt and measurement in this repository refers
+# to. It used to default to the 1.5B instruct model, so the documented quickstart served a
+# different model than the documentation described. Lower-RAM alternative:
+#   MODEL=$AISTACK/gguf/qwen2.5-1.5b-instruct-q4_k_m.gguf ./scripts/serve_model.sh
+MODEL="${MODEL:-$AISTACK/gguf/qwen2.5-coder-3b-instruct-q4_k_m.gguf}"
 PORT="${PORT:-8081}"
 THREADS="${THREADS:-6}"
 NGL="${NGL:-99}"

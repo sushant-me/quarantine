@@ -1,3 +1,8 @@
+# Editable-install artefacts
+*.egg-info/
+build/
+dist/
+
 # Build artifacts
 .venv/
 __pycache__/

@@ -15,29 +15,37 @@ question with evidence: *does the core loop actually work, offline, on open weig
 ## Run it
 
 ```bash
+git clone https://github.com/sushant-me/quarantine && cd quarantine
 uv venv --python 3.12 .venv
-uv pip install --python .venv/bin/python cryptography picklescan fickling jsonschema pytest
+uv pip install --python .venv/bin/python -e ".[dev]"   # the package, plus measurement tooling
+.venv/bin/quarantine --help
 
-./scripts/serve_model.sh &                       # local open-weight model, no API key
-.venv/bin/python scripts/make_corpus.py          # rebuild the 12 labeled artifacts
-PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py      # detection vs the incumbents
-PYTHONPATH=src .venv/bin/python scripts/fetch_real_models.py            # 4 real published models
-PYTHONPATH=src .venv/bin/python scripts/eval_corpus.py --dir corpus-real --label benign
-PYTHONPATH=src .venv/bin/python scripts/eval_repair.py      # repair + equivalence, whole corpus
-PYTHONPATH=src .venv/bin/python scripts/escape_attempt.py   # ten breakout primitives
+./scripts/serve_model.sh &            # local open-weight model, no API key, no egress
 
-# one artifact, the whole loop
-PYTHONPATH=src .venv/bin/python -m quarantine.cli inspect corpus/probe-custom-generate --out runs/probe
-PYTHONPATH=src .venv/bin/python -m quarantine.cli verify  runs/probe/receipt.json \
-        --pub runs/probe/keys/quarantine.pub.pem
+# the numbers in this README
+.venv/bin/python scripts/make_corpus.py        # rebuild the 13 labeled artifacts
+.venv/bin/python scripts/eval_corpus.py        # detection vs the incumbents
+.venv/bin/python scripts/fetch_real_models.py  # 20 real published models (network, first time)
+.venv/bin/python scripts/eval_corpus.py --dir corpus-real --label benign
+.venv/bin/python scripts/eval_repair.py        # repair + output-equivalence, whole corpus
+.venv/bin/python scripts/escape_attempt.py     # ten breakout primitives
+.venv/bin/python scripts/measure_delete_the_ai.py   # the organisers' Core Test
+```
 
-# or verify it without trusting this codebase at all - stdlib only, and the Ed25519
+One artifact through the whole agent team — exit **0 allow**, **1 block**, **2 escalate**:
+
+```bash
+.venv/bin/quarantine inspect corpus/probe-custom-generate --out runs/probe
+.venv/bin/quarantine verify  runs/probe/receipt.json --pub runs/probe/keys/quarantine.pub.pem
+
+# or verify it without trusting this codebase at all — stdlib only, and the Ed25519
 # signature is checked with openssl rather than the Python that produced it
 python tools/verify_receipt_standalone.py runs/probe/receipt.json \
         --pub runs/probe/keys/quarantine.pub.pem
-
-PYTHONPATH=src .venv/bin/python -m pytest -q     # 80 tests
 ```
+
+Contributing without installing? `PYTHONPATH=src .venv/bin/python -m quarantine.cli …` works too;
+the scripts put `src/` on the path themselves. `scripts/check_eligibility.py` must pass either way.
 
 ## The agent team
 

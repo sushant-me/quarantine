@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quarantine"
+version = "0.1.0"
+description = "The offline clean room for untrusted model artifacts."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [{ name = "Sushant Poudel" }]
+keywords = [
+    "ai-security", "model-supply-chain", "pickle", "malware-analysis",
+    "llm-security", "sandbox", "supply-chain-security",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+]
+
+# The analysis path is standard library apart from the receipt signature. The model is not a
+# pip dependency: it runs under llama.cpp, started by scripts/serve_model.sh.
+dependencies = ["cryptography>=42"]
+
+[project.optional-dependencies]
+# Measurement and control tooling. Kept out of the runtime on purpose: the tool's own
+# behaviour must not depend on the scanners it is measured against.
+dev = ["pytest>=8", "picklescan>=1.0", "fickling>=0.1", "huggingface-hub>=0.30"]
+
+[project.scripts]
+quarantine = "quarantine.cli:main"
+
+[project.urls]
+Repository = "https://github.com/sushant-me/quarantine"
+Changelog = "https://github.com/sushant-me/quarantine/releases"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

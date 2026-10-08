@@ -62,6 +62,8 @@ REQUIRED_FILES = [
     ("presentation/quarantine-demo-day.html", "the Demo Day deck is present"),
     ("presentation/quarantine-project-idea.html", "the project-idea document source"),
     ("presentation/Quarantine-Project-Idea.pdf", "the project-idea PDF all these documents explain"),
+    ("pyproject.toml", "the package is installable, so no documented command needs PYTHONPATH"),
+    ("scripts/build_demo_narration.py", "the narration is generated, not hand-timed"),
     ("presentation/quarantine-demo-narration.srt", "the demo video has a narration script"),
     ("scripts/build_demo_narration.py", "the narration is generated, not hand-timed"),
     ("runs/probe/keys/quarantine.pub.pem", "the public key is published so anyone can verify"),
@@ -207,6 +209,40 @@ def check_presentations_are_self_contained() -> list[dict]:
     return out
 
 
+def check_console_entry_point() -> list[dict]:
+    """The console script named in pyproject.toml must actually resolve.
+
+    `pip install -e .` creating the file is not the same as the file working: the entry point is
+    a string until something imports it. This imports the module and takes the attribute, which
+    is what setuptools' generated wrapper does at run time.
+    """
+    import re as _re
+    out = []
+    pyproject = (ROOT / "pyproject.toml")
+    text = pyproject.read_text(encoding="utf-8") if pyproject.exists() else ""
+    match = _re.search(r'^\s*quarantine\s*=\s*"([^"]+)"', text, _re.M)
+    if not match:
+        out.append({"check": "the console script resolves", "what": "packaging", "ok": False,
+                    "detail": "pyproject.toml declares no quarantine entry point"})
+        return out
+    target = match.group(1)
+    module_name, _, attribute = target.partition(":")
+    rel = "src/" + module_name.replace(".", "/") + ".py"
+    resolved, detail = _load_symbol(rel, attribute)
+    if not resolved:
+        out.append({"check": "the console script resolves", "what": "packaging", "ok": False,
+                    "detail": f"quarantine -> {target}: {detail}"})
+        return out
+    # Existing the attribute is not the same as being usable as an entry point: testuptools'
+    # wrapper calls it, so it has to be callable.
+    probe = sys.modules.get("eligibility_probe_" + _re.sub(r"\W", "_", rel))
+    callable_ok = callable(getattr(probe, attribute, None))
+    out.append({"check": "the console script resolves", "what": "packaging", "ok": callable_ok,
+                "detail": f"quarantine -> {target} "
+                          f"({'imports and is callable' if callable_ok else 'resolves but is not callable'})"})
+    return out
+
+
 def check_licence() -> list[dict]:
     text = (ROOT / "LICENSE").read_text(encoding="utf-8", errors="replace") if (ROOT / "LICENSE").exists() else ""
     recognized = "Apache License" in text or "MIT License" in text
@@ -320,6 +356,7 @@ def main() -> int:
     results += check_files()
     results += check_licence()
     results += check_verifiable_facts()
+    results += check_console_entry_point()
     results += check_presentations_are_self_contained()
     results += check_event_requirements_mapped()
     results += check_no_vendor_inference()
