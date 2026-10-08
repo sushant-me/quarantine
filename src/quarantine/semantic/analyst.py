@@ -24,6 +24,38 @@ import quarantine.llm as llm
 from quarantine.events import capability_events
 from quarantine.modelinfo import resolve_model
 
+# The ground a verdict rests on, as a closed vocabulary rather than free text.
+#
+# This exists because a 7B model, given the harness's own counters, answered UNKNOWN with the
+# mechanism "unresolved globals" on an artifact whose unresolved-globals count was ZERO and
+# whose capability count was zero - a case the written procedure says must be ALLOW. The
+# sentence was in a free-text field, so nothing could contradict it. Now the ground is chosen
+# from a list, and the harness checks the choice against the numbers it counted itself.
+REASONS = (
+    "nothing_observed",        # observed, nothing capability-like happened      -> ALLOW
+    "capability_observed",     # a capability happened that the declaration bars  -> BLOCK
+    "nothing_run",             # the code path never ran                          -> UNKNOWN
+    "counters_incomplete",     # unresolved globals make the observation partial  -> UNKNOWN
+    "evidence_ambiguous",      # the evidence fits none of the above              -> UNKNOWN
+)
+
+REASON_VERDICT = {
+    "nothing_observed": "ALLOW",
+    "capability_observed": "BLOCK",
+    "nothing_run": "UNKNOWN",
+    "counters_incomplete": "UNKNOWN",
+    "evidence_ambiguous": "UNKNOWN",
+}
+
+# There is deliberately no "capability_permitted" ground. The policy is that an observed
+# capability is never allowed: `verdict_is_grounded` requires zero capability events for ALLOW,
+# so a ground meaning "it happened but the declaration allows it" describes an outcome this
+# system cannot produce. It was in the first draft of this vocabulary and the 3B model chose it
+# for four benign artifacts that had zero capability events — a label for an impossible state,
+# which turned four correct ALLOWs into rejected ones. Removing it is a correction, not a
+# concession: the vocabulary should only name states the machine can actually be in.
+
+
 VERDICT_SCHEMA = {
     "type": "object",
     "properties": {
@@ -32,8 +64,10 @@ VERDICT_SCHEMA = {
         "mechanism": {"type": "string"},
         "evidence_ids": {"type": "array", "items": {"type": "integer"}},
         "confidence": {"type": "number"},
+        "reason": {"type": "string", "enum": list(REASONS)},
     },
-    "required": ["verdict", "declared_matches_behaviour", "mechanism", "evidence_ids", "confidence"],
+    "required": ["verdict", "declared_matches_behaviour", "mechanism", "evidence_ids",
+                 "confidence", "reason"],
 }
 
 # The enum is not decoration. llama.cpp compiles a JSON schema into a grammar, so an enum
@@ -44,6 +78,48 @@ VERDICT_SCHEMA = {
 # analyst answered BLOCK citing ids that did not exist.
 MAX_ENUM_IDS = 200
 MAX_EVIDENCE_IDS = 8
+
+def reason_is_admissible(reason: str | None, verdict_name: str | None, cap_count: int,
+                         unresolved_count: int, observed: bool) -> tuple[bool, str]:
+    """Is the stated ground factually available on this evidence?
+
+    **This checks claims about the counters, not labels about the verdict.** The harness owns
+    the counters; the model owns the judgement. A ground that asserts a condition the harness
+    counted as absent is rejected, because that is how a model abstains by asserting a false
+    premise. A ground that merely picks an imprecise label for a correct verdict is not
+    rejected — an earlier version of this function did that, and it cost a real published model
+    its ALLOW: `bert-tiny` answered ALLOW with a mechanism that read "further supporting the
+    ALLOW verdict", the label was rejected, and three retries degraded a correct answer into an
+    UNKNOWN. Rejecting a correct decision over a word is worse than accepting a loose word.
+
+    So the rules are only about what the harness counted:
+
+    * `counters_incomplete` asserts unresolved globals exist — rejected when none were counted.
+    * `nothing_run` asserts the artifact never ran — rejected when the harness watched it run.
+    * `capability_observed` asserts a capability happened — rejected when none was counted.
+    * `nothing_observed` asserts nothing happened and nothing is unresolved — likewise checked.
+
+    The verdict is deliberately not compared against the reason. `evidence_ambiguous` is always
+    admissible: an honest abstention must stay available, or the rule would abolish abstention
+    rather than validate it.
+    """
+    if reason is None:
+        return True, "no reason stated"
+    if reason not in REASONS:
+        return False, f"{reason!r} is not one of the grounds the harness defines"
+    if reason == "counters_incomplete" and unresolved_count == 0:
+        return False, ("the reason is counters_incomplete but the harness counted 0 unresolved "
+                       "globals, so that ground is not available")
+    if reason == "nothing_run" and observed:
+        return False, ("the reason is nothing_run but the harness observed the artifact running")
+    if reason == "capability_observed" and cap_count == 0:
+        return False, ("the reason is capability_observed but the harness counted 0 capability "
+                       "events")
+    if reason == "nothing_observed" and (cap_count or unresolved_count or not observed):
+        return False, (f"the reason is nothing_observed but the harness counted {cap_count} "
+                       f"capability events, {unresolved_count} unresolved globals, "
+                       f"observed={observed}")
+    return True, "admissible"
 
 
 def verdict_schema(valid_ids: list[int]) -> dict:
@@ -142,11 +218,24 @@ def _prompt(declared: str, code: str, events: list[dict], static: dict,
         "those are different questions and behaviour is the ground truth. A source file that "
         "mentions open() while performing zero file reads outside its own directory, in a box "
         "with the network off, has not done anything its declaration forbids.\n"
-        "  Step 3: if capability events is greater than 0, decide whether the DECLARED behaviour "
-        "permits each one. If any is not permitted by the declaration, the verdict is BLOCK and "
-        "evidence_ids must list the ids of the capability events you rely on.\n"
+        "  Step 3: if capability events is greater than 0, the verdict is BLOCK and evidence_ids "
+        "must list the ids of the capability events you rely on. Whether the declaration would "
+        "permit such a capability is not yours to allow: an observed capability is never an ALLOW "
+        "in this system, and the challenger and repairer handle that question after you.\n"
         "  Step 4: answer UNKNOWN only when the observation is genuinely partial "
-        "(unresolved globals > 0) or the evidence does not fit the two cases above.\n"
+        "(unresolved globals > 0) or the evidence is genuinely ambiguous.\n"
+        "\n=== THE GROUND YOU MUST STATE ===\n"
+        "  Every answer states `reason`, chosen from this list. The harness checks it against its\n"
+        "  own counts, and an answer whose ground is unavailable is rejected.\n"
+        "    nothing_observed      capability events = 0 and anything was observed   -> ALLOW\n"
+        "    capability_observed   capability events > 0, declaration does not permit -> BLOCK\n"
+        "    nothing_run           the code path never ran                            -> UNKNOWN\n"
+        "    counters_incomplete   unresolved globals make the observation partial    -> UNKNOWN\n"
+        "    evidence_ambiguous    the evidence fits none of the above                 -> UNKNOWN\n"
+        "  Do not claim counters_incomplete unless the harness counted unresolved globals > 0, and\n"
+        "  do not claim nothing_run if it observed the artifact running. If the capability count is\n"
+        "  zero and anything was observed, the ground is nothing_observed - there is no ground for an\n"
+        "  allowed capability, because an observed capability is never allowed here.\n"
         "Answer with JSON only."
     )
 
@@ -229,11 +318,35 @@ def analyse_artifact(declared: str, code: str, events: list[dict], static: dict,
         verdict_name = parsed.get("verdict")
         caps = capability_events(events)
         cap_ids = {e["i"] for e in caps}
+        ex = execution or {}
+        observed = bool((ex.get("executed") or []) or (ex.get("weights_loaded") or []))
+        unresolved = [e for e in events if e.get("event") == "weights.unresolved"]
+        reason = parsed.get("reason")
+        reason_ok, reason_why = reason_is_admissible(
+            reason, verdict_name, len(caps), len(unresolved), observed)
+        available = [r for r in REASONS
+                     if reason_is_admissible(r, verdict_name, len(caps), len(unresolved),
+                                             observed)[0]]
+        # The ground is recorded and annotated, and it does NOT veto the verdict.
+        #
+        # A first version ANDed reason_ok into grounded, so an unavailable ground rejected the
+        # answer. It was measured over two models and eleven artifacts, and it never once
+        # changed a decision for the better:
+        #   * the 7B still abstained on the artifacts that motivated the rule - three retries
+        #     did not correct it;
+        #   * the 3B lost a correct ALLOW (it labelled an ALLOW "capability_permitted" on an
+        #     artifact with no capability events) and then escalated `benign-unicode` after the
+        #     retries failed, taking the corpus from 0 escalations to 1.
+        # So the load-bearing check stays the one that is about evidence ids, and the ground is
+        # carried into the receipt as an annotation an auditor can read: reason, reason_ok,
+        # reason_why, admissible_reasons. A false ground is now visible rather than decisive.
         grounded = verdict_is_grounded(verdict_name, cited, valid_ids, cap_ids)
 
         out.update({"verdict": parsed, "cited_ids": cited, "grounded": grounded,
                     "valid_ids": sorted(valid_ids), "rounds": round_no + 1,
-                    "capability_events": [e["i"] for e in caps]})
+                    "capability_events": [e["i"] for e in caps],
+                    "reason": reason, "reason_ok": reason_ok, "reason_why": reason_why,
+                    "admissible_reasons": available})
         if grounded or not valid_ids or round_no == MAX_ROUNDS - 1:
             break
 

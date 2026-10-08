@@ -1028,3 +1028,106 @@ def test_the_whole_loop_on_a_known_probe(tmp_path):
     assert outcome.repair and outcome.repair["ok"] is True
     assert outcome.equivalence and outcome.equivalence["equivalent"] is True
     assert len(outcome.transcript) >= 4, "the transcript should carry the whole team's notes"
+
+
+# ---------------------------------------- the stated ground must be available
+
+def test_the_reason_vocabulary_is_grammar_enforced():
+    """The ground is a closed vocabulary, not free text.
+
+    Free text is how a 7B model came to answer UNKNOWN with the mechanism "unresolved globals"
+    on an artifact whose unresolved-globals count was zero.
+    """
+    from quarantine.semantic.analyst import REASONS, REASON_VERDICT, verdict_schema
+
+    schema = verdict_schema([1, 2, 3])
+    assert schema["properties"]["reason"]["enum"] == list(REASONS)
+    assert "reason" in schema["required"]
+    assert set(REASON_VERDICT) == set(REASONS)
+
+
+@pytest.mark.parametrize("reason,verdict,cap,unres,observed,admissible", [
+    ("nothing_observed", "ALLOW", 0, 0, True, True),
+    ("capability_observed", "BLOCK", 2, 0, True, True),
+    ("nothing_run", "UNKNOWN", 0, 0, False, True),
+    ("counters_incomplete", "UNKNOWN", 0, 1, True, True),
+    ("evidence_ambiguous", "UNKNOWN", 0, 0, True, True),
+    # the failure that motivated the rule: claiming partial counters when there are none
+    ("counters_incomplete", "UNKNOWN", 0, 0, True, False),
+    # claiming the artifact never ran when the harness watched it run
+    ("nothing_run", "UNKNOWN", 0, 0, True, False),
+    # asserting nothing happened when something did
+    ("nothing_observed", "ALLOW", 1, 0, True, False),
+    # a capability ground with no capability observed
+    ("capability_observed", "BLOCK", 0, 0, True, False),
+    # THE RULE CHECKS COUNTERS, NOT LABELS. A correct verdict with an imprecise or even a
+    # contradictory label is accepted: `bert-tiny` was rejected here and lost its ALLOW.
+    ("nothing_observed", "ALLOW", 0, 0, True, True),
+    ("evidence_ambiguous", "ALLOW", 0, 0, True, True),
+    ("nothing_observed", "UNKNOWN", 0, 0, True, True),
+])
+def test_reason_admissibility(reason, verdict, cap, unres, observed, admissible):
+    from quarantine.semantic.analyst import reason_is_admissible
+
+    ok, why = reason_is_admissible(reason, verdict, cap, unres, observed)
+    assert ok is admissible, why
+
+
+def test_a_ground_the_counters_contradict_is_recorded_but_does_not_veto(monkeypatch):
+    """The measured policy: a false ground is annotated, not decisive.
+
+    Enforcing it was tried and measured over two models and eleven artifacts. It never improved
+    a decision - the 7B still abstained after three retries - and it cost two: a correct ALLOW
+    rejected over a label, and `benign-unicode` escalated after its retries failed, taking the
+    corpus from 0 escalations to 1. So the ground is carried into the receipt and the decision
+    rests on the evidence ids.
+    """
+    from quarantine.semantic import analyst
+
+    calls: list[str] = []
+
+    def fake_chat(messages, schema=None, **kw):
+        calls.append(messages[-1]["content"][-400:])
+        if len(calls) == 1:
+            # The 7B's answer: UNKNOWN blaming unresolved globals that the harness counted as 0.
+            return ('{"verdict":"UNKNOWN","declared_matches_behaviour":false,'
+                    '"mechanism":"unresolved globals","evidence_ids":[],"confidence":0.4,'
+                    '"reason":"counters_incomplete"}', None)
+        return ('{"verdict":"ALLOW","declared_matches_behaviour":true,'
+                '"mechanism":"nothing capability-like happened","evidence_ids":[],'
+                '"confidence":0.9,"reason":"nothing_observed"}', None)
+
+    monkeypatch.setattr(analyst, "resolve_model", lambda name: "stub-model")
+    monkeypatch.setattr(analyst.llm, "chat", fake_chat)
+    events = [{"i": 1, "event": "import", "detail": "json"}]
+    out = analyst.analyse_artifact(
+        "declared: a pure text transform", "code", events, {"capability_graph": {}},
+        execution={"executed": [{"file": "custom_generate/generate.py"}]},
+    )
+    assert len(calls) == 1, "an unavailable ground no longer spends a retry: that was measured"
+    assert out["verdict"]["verdict"] == "UNKNOWN"
+    assert out["grounded"] is True, "UNKNOWN is admissible, and the ground does not veto it"
+    assert out["reason"] == "counters_incomplete"
+    assert out["reason_ok"] is False, "but the contradiction is recorded for the receipt"
+    assert "0 unresolved globals" in out["reason_why"]
+    assert "nothing_observed" in out["admissible_reasons"]
+    # and the label is not compared against the verdict: a loose label must not cost a decision
+    from quarantine.semantic.analyst import reason_is_admissible
+    assert reason_is_admissible("evidence_ambiguous", "ALLOW", 0, 0, True)[0] is True
+
+
+def test_an_honest_abstention_is_still_allowed(monkeypatch):
+    """evidence_ambiguous must survive, or the rule would eliminate abstention entirely."""
+    from quarantine.semantic import analyst
+
+    monkeypatch.setattr(analyst, "resolve_model", lambda name: "stub-model")
+    monkeypatch.setattr(analyst.llm, "chat", lambda messages, schema=None, **kw: (
+        '{"verdict":"UNKNOWN","declared_matches_behaviour":false,'
+        '"mechanism":"the evidence fits neither case","evidence_ids":[],"confidence":0.3,'
+        '"reason":"evidence_ambiguous"}', None))
+    out = analyst.analyse_artifact(
+        "declared: unclear", "code", [{"i": 1, "event": "import", "detail": "json"}],
+        {"capability_graph": {}}, execution={"executed": [{"file": "x.py"}]},
+    )
+    assert out["verdict"]["verdict"] == "UNKNOWN"
+    assert out["reason_ok"] is True

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T21:47:32+0545",
+  "generated_at": "2026-10-08T23:35:43+0545",
   "kind": "corpus",
   "n": 13,
   "benign": 4,
@@ -69,14 +69,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings also do not mention any capabilities that the artifact could have performed but did not. Therefore, the artifact's declared behaviour matches the actual behaviour observed.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.78,
+      "elapsed_s": 6.28,
       "label": "benign",
       "category": "control",
       "note": "declared and shipped behaviour match exactly"
@@ -111,14 +111,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings also do not mention any capabilities that the artifact could have performed but did not. Therefore, the artifact's declared behaviour matches the actual behaviour observed.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.72,
+      "elapsed_s": 6.2,
       "label": "benign",
       "category": "control",
       "note": "imports a pure stdlib module and does nothing else"
@@ -153,14 +153,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings also do not mention any capabilities that the artifact could have performed but did not. Therefore, the artifact's declared behaviour matches the actual behaviour observed.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.62,
+      "elapsed_s": 6.13,
       "label": "benign",
       "category": "control",
       "note": "several pure helpers, no capability"
@@ -195,14 +195,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings also do not mention any capabilities that would violate the artifact's declared behavior.",
+      "mechanism": "static",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.37,
+      "elapsed_s": 5.82,
       "label": "benign",
       "category": "control",
       "note": "pure transform using unicodedata"
@@ -241,7 +241,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "25434040179a.probe.invalid"
+          "detail": "741827835bcf.probe.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -253,17 +253,17 @@
         2,
         3
       ],
-      "mechanism": "The trace shows the artifact performing an operation (reading a file outside its own directory) that its declaration forbids.",
+      "mechanism": "capability_observed",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 50.97,
+      "elapsed_s": 63.99,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/hostname and puts it in a DNS query on load"
@@ -308,17 +308,17 @@
       "cited_ids": [
         2
       ],
-      "mechanism": "The artifact performed a subprocess.Popen operation, which is not allowed by the declared behavior.",
+      "mechanism": "static",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 34.44,
+      "elapsed_s": 63.67,
       "label": "undeclared",
       "category": "process-at-import",
       "note": "spawns a process on load"
@@ -363,17 +363,17 @@
       "cited_ids": [
         2
       ],
-      "mechanism": "The artifact performs a network operation (socket.getaddrinfo) that is not declared in the artifact's behaviour.",
+      "mechanism": "static",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 35.87,
+      "elapsed_s": 51.53,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads the environment and puts it in a DNS query"
@@ -424,7 +424,7 @@
         2,
         3
       ],
-      "mechanism": "The artifact performed a network operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "static",
       "agents": [
         "observer",
         "analyst",
@@ -434,7 +434,7 @@
         "supervisor"
       ],
       "turns": 5,
-      "elapsed_s": 28.27,
+      "elapsed_s": 50.63,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "reads /etc/passwd and puts it in a DNS query"
@@ -479,17 +479,17 @@
       "cited_ids": [
         2
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "capability_observed",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 34.73,
+      "elapsed_s": 51.53,
       "label": "undeclared",
       "category": "network-on-call",
       "note": "the undeclared effect only fires when generate() is called"
@@ -535,17 +535,17 @@
       "cited_ids": [
         3
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "capability events",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 29.97,
+      "elapsed_s": 30.33,
       "label": "undeclared",
       "category": "obfuscated",
       "note": "base64 + exec at import; the source does not name the behaviour"
@@ -584,7 +584,7 @@
         {
           "i": 3,
           "event": "socket.getaddrinfo",
-          "detail": "05fe49224ffa.modeling.invalid"
+          "detail": "5e753a2dffb7.modeling.invalid"
         }
       ],
       "verdict": "BLOCK",
@@ -596,17 +596,17 @@
         2,
         3
       ],
-      "mechanism": "The artifact performed a file read operation (id=2) and a socket getaddrinfo operation (id=3), which are not allowed by the declared behavior.",
+      "mechanism": "capability events",
       "agents": [
         "observer",
         "analyst",
         "challenger",
+        "supervisor",
         "repairer",
-        "verifier",
-        "supervisor"
+        "verifier"
       ],
       "turns": 5,
-      "elapsed_s": 41.74,
+      "elapsed_s": 57.55,
       "label": "undeclared",
       "category": "network-at-import",
       "note": "same probe shipped as modeling_*.py rather than custom_generate/"
@@ -658,10 +658,10 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [
-        5,
-        6
+        1,
+        5
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids.",
+      "mechanism": "capability events",
       "agents": [
         "observer",
         "analyst",
@@ -669,7 +669,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 25.6,
+      "elapsed_s": 51.08,
       "label": "undeclared",
       "category": "pickle-cve-pattern",
       "note": "reproduces the PATTERN of GHSA-93mv-x874-956g: a pickle whose global performs name resolution, with no blocklist term such as eval/exec/os.system"
@@ -721,10 +721,10 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [
-        5,
-        6
+        1,
+        5
       ],
-      "mechanism": "The trace shows the artifact performing an operation (socket.getaddrinfo) that its declaration forbids (must not use the network).",
+      "mechanism": "capability events",
       "agents": [
         "observer",
         "analyst",
@@ -732,7 +732,7 @@
         "supervisor"
       ],
       "turns": 3,
-      "elapsed_s": 23.49,
+      "elapsed_s": 21.82,
       "label": "undeclared",
       "category": "zip-checkpoint",
       "note": "a torch-format zip checkpoint whose data.pkl performs a DNS lookup on load; the format that previously could not be read at all, so nothing was observed and the case was escalated to a human"

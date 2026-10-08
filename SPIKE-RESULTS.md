@@ -391,6 +391,46 @@ is the direction a security gate should fail in.
 
 ---
 
+## 3f. A rule we built, measured, and then stopped enforcing
+
+Section 3c ended with a plan: the obstacle to abstention is "a model restating the harness's counters
+instead of reasoning from them", so *make the condition impossible to misstate.* So it was built. The
+verdict schema gained a `reason` field drawn from a closed, grammar-enforced vocabulary, and a deterministic
+check of the stated ground against the counters the harness made itself.
+
+Then it was measured over two models and eleven artifacts. **It never once improved a decision, and it cost
+two.**
+
+| | without the check | with the check |
+|---|---|---|
+| 7B abstentions | 4 | 4 (three retries could not correct it) |
+| corpus escalations | **0** | 1 (`benign-unicode`, after its retries failed) |
+| a real published model's verdict | **ALLOW** | rejected — it labelled an ALLOW `capability_permitted` on an artifact with **zero** capability events |
+
+The rejection was the interesting part. `bert-tiny`'s own mechanism read *"further supporting the ALLOW
+verdict"* — the decision was right and the label was loose, and the check threw the decision away over a
+word. A rule that rejects a correct answer for saying it imprecisely is worse than a rule that lets an
+imprecise answer stand.
+
+Two corrections followed, and both are in the code with the measurements beside them:
+
+1. **The vocabulary lost an item that named an impossible state.** `capability_permitted` described "a
+   capability happened and the declaration allows it" — but `verdict_is_grounded` requires zero capability
+   events for any ALLOW, so that outcome cannot occur. It was a label for a state the machine can never be
+   in, and the model reached for it exactly where it did not apply. A vocabulary should only name states
+   that exist.
+2. **The ground annotates; it does not veto.** `reason`, `reason_consistent_with_counters` and a note are
+   now carried into the signed receipt — an auditor can see what was decided, on what stated ground, and
+   whether that ground survives the counters. The decision itself rests on the evidence-id check, which is
+   already the load-bearing one. A false ground is visible rather than decisive.
+
+With the veto removed, the published numbers return exactly: corpus **9/9 with 0 false positives and 0
+escalations**, English controls **20/20 allowed**, Nepali/Indic **0 false positives**. Worth saying plainly:
+the corpus figure of 0 escalations was **earned by the check's absence**, and the honest way to report a rule
+that costs a correct decision while saving none is to remove the enforcement and publish the measurement.
+
+---
+
 ## 4. The corpus
 
 `scripts/make_corpus.py` generates it deterministically; `corpus/MANIFEST.json` is the label file. All
@@ -418,7 +458,7 @@ equivalence proof shows identical outputs on the fixed prompts; the receipt is s
 
 ---
 
-## 5. Thirty defects found by running it
+## 5. Thirty-one defects found by running it
 
 Each of these was invisible to reading. Numbering continues from the first spike.
 
@@ -472,9 +512,11 @@ and exited 0 — and it is the reason the third outcome exists here.
 | 28 | the analyst appeared to **hallucinate trace ids** (161/166/248 in a 25-event trace) | the static findings printed `file:line`, so source line numbers and trace ids were two namespaces rendered in the same shape — the model was reading one as the other | the evidence field is now enumerated in the JSON schema, which the runtime compiles to a grammar, so an id that does not exist **cannot be emitted**; findings print `file (source line N)`; behaviour-over-static precedence is stated as a rule |
 | 29 | the AI-usage disclosure claimed `src/quarantine/llm.py::chat` is **one place that talks to the model**, and it was not true | `analyst.py` and `repair/loader.py` each held their own HTTP client, own URL and own default model — the analyst's default was even the 1.5B while `llm.py` said 3B | both now call `llm.chat`; the duplicate clients and constants are deleted. Found because a "delete the AI" experiment patched the shared endpoint and measured **identical** results, which was the clue that nothing had been deleted |
 | 30 | `LIMITATIONS.md` named "a larger open-weight model" as the remedy for analyst abstention, and it was never tested | an untested remedy in a limitations list reads as a plan; this one was wrong, and it sat in the same document as the numbers it contradicted | measured instead with `scripts/compare_analyst_models.py`: the 7B abstains twice as often, twice as slowly, and states a reason the harness's own count contradicts. The remedy is struck from the documents |
+| 31 | a check added to make a model's stated ground impossible to misstate **cost two correct decisions and saved none** | it compared the reason against the *verdict label* rather than against the counters, so a correct ALLOW with a loose label was rejected and three retries degraded real model `bert-tiny` into an abstention; `benign-unicode` likewise escalated, taking the corpus from 0 escalations to 1 | measured over two models and eleven artifacts; the check now validates only claims about the harness's counters and **annotates** the receipt instead of vetoing the verdict, and the vocabulary lost `capability_permitted`, a ground naming an outcome the evidence rule forbids |
 
 
-Thirty defects, and the pattern is consistent: every one was found by a control group, a
+
+Thirty-one defects, and the pattern is consistent: every one was found by a control group, a
 third-party artifact, a rate, or a corpus — never by the case anyone was demonstrating.
 
 **#7 and #8 are the most instructive.** Both were *our* fault, both produced a detector that blocked

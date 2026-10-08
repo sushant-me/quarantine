@@ -115,7 +115,10 @@ attached.
     of `SPIKE-RESULTS.md`). Both new abstentions blamed *"unresolved globals"*, a number the harness counts as
     zero for those artifacts. The obstacle is a model's willingness to reason from the harness's counters
     rather than from its own impression, and that does not improve monotonically with parameter count. The fix
-    is to make the condition impossible to misstate, as was already done for evidence ids. Second, **version
+    is to make the condition impossible to misstate. That was then built and measured, and it was
+    net-negative: enforcing it cost a correct ALLOW on a real published model and one false escalation,
+    and saved none (§3f of `SPIKE-RESULTS.md`). The stated ground is therefore **recorded in the receipt
+    and checked for consistency, but it does not veto the verdict.** Second, **version
     skew is unsolvable in a
     single image**: a real model needs an older `transformers.pytorch_utils`. Per-artifact dependency
     resolution from the artifact's own manifest is the real feature, and it is not in this release.

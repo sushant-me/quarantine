@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T21:50:27+0545",
+  "generated_at": "2026-10-08T23:37:47+0545",
   "kind": "corpus-real",
   "n": 20,
   "benign": 20,
@@ -95,14 +95,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which aligns with the artifact's declared behaviour of performing no operations. The harness confirms that there are no unresolved globals, further supporting the ALLOW verdict.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.26,
+      "elapsed_s": 6.92,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -142,14 +142,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could not do anything its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.03,
+      "elapsed_s": 6.77,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -189,14 +189,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The evidence is sufficient to conclude that the artifact did not violate its declared behavior.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.38,
+      "elapsed_s": 6.25,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -236,14 +236,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could not do anything its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.15,
+      "elapsed_s": 6.1,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -299,14 +299,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could not do anything its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.11,
+      "elapsed_s": 6.3,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -367,14 +367,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings and capability counts confirm that the artifact did not perform any actions that would violate its declared behavior.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.91,
+      "elapsed_s": 6.11,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -435,14 +435,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings and capability counts confirm that the artifact did not perform any actions that would violate its declared behavior.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.69,
+      "elapsed_s": 6.12,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -498,14 +498,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids, and the trace shows no capability events.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 6.74,
+      "elapsed_s": 6.13,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -566,14 +566,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings and capability counts confirm that the artifact did not perform any actions that would violate its declared behavior.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.71,
+      "elapsed_s": 6.12,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -634,14 +634,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which aligns with the artifact's declared behavior. The absence of any observed operations that contradict the declaration indicates that the artifact did not perform any actions its declaration forbids.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.63,
+      "elapsed_s": 6.11,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -702,14 +702,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings and capability counts confirm that the artifact did not perform any actions that would violate its declared behavior.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.75,
+      "elapsed_s": 6.1,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -742,14 +742,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could do nothing that its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.04,
+      "elapsed_s": 6.06,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -805,14 +805,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could not do anything its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.03,
+      "elapsed_s": 6.09,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -868,14 +868,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings and capability counts confirm that the artifact did not perform any actions that its declaration prohibits.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.53,
+      "elapsed_s": 6.14,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -908,14 +908,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could not do anything its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.01,
+      "elapsed_s": 6.06,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -976,14 +976,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could not do anything its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.03,
+      "elapsed_s": 6.15,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1039,14 +1039,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could not do anything its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.08,
+      "elapsed_s": 6.1,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1102,14 +1102,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings and capability counts confirm that the artifact did not perform any actions that would block its declared behavior.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 8.74,
+      "elapsed_s": 6.09,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1165,14 +1165,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The trace shows no capability events, which means the artifact did not perform any operations its declaration forbids. The static findings indicate that the artifact could not do anything its declaration forbids, and the evidence does not fit the BLOCK case.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.11,
+      "elapsed_s": 6.11,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"
@@ -1228,14 +1228,14 @@
       "observed": true,
       "grounded": true,
       "cited_ids": [],
-      "mechanism": "The artifact did not perform any operations that its declaration forbids. The trace shows no capability events, and the static findings indicate that the code COULD do nothing that its declaration forbids.",
+      "mechanism": "capability events = 0 and anything was observed",
       "agents": [
         "observer",
         "analyst",
         "supervisor"
       ],
       "turns": 2,
-      "elapsed_s": 9.39,
+      "elapsed_s": 6.11,
       "label": "benign",
       "category": "real-published-model",
       "note": "third-party artifact fetched from the Hub; none of this code is ours"

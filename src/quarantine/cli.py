@@ -111,6 +111,13 @@ def cmd_inspect(args: argparse.Namespace) -> int:
             "grounded": (outcome.analysis or {}).get("grounded"),
             "model_output": (outcome.analysis or {}).get("verdict"),
             "cited_ids": (outcome.analysis or {}).get("cited_ids", []),
+            # The ground the model stated, and whether it survives the harness's own counters.
+            # It is an annotation rather than a veto, because enforcing it was measured to cost
+            # correct decisions and to save none - see SPIKE-RESEARCH.md section 3f. An auditor
+            # reading a receipt can now see not only what was decided but on what stated ground.
+            "stated_reason": (outcome.analysis or {}).get("reason"),
+            "reason_consistent_with_counters": (outcome.analysis or {}).get("reason_ok"),
+            "reason_note": (outcome.analysis or {}).get("reason_why"),
             "challenge": outcome.challenge,
         },
         "repair": {
