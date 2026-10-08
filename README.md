@@ -296,7 +296,7 @@ bug this tool can have.
 
 ## Released
 
-[v0.2.0](https://github.com/sushant-me/quarantine/releases/tag/v0.2.0) carries the project-idea PDF, the
+[v0.3.0](https://github.com/sushant-me/quarantine/releases/tag/v0.3.0) carries the project-idea PDF, the
 demo video as downloadables, with the measured table and the honest counterweight in the notes.
 
 ## Demo video and narration
